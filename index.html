@@ -9,10 +9,9 @@
     FONT: Drop your Dx-Sillage font file into a  fonts/  folder next to index.html.
     Accepted: .woff2 / .otf / .ttf
   -->
-
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@1,300;1,400&display=swap" rel="stylesheet" />
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
@@ -32,33 +31,69 @@
     }
 
     /* =============================================
-       THEME — OFF-WHITE + GRADIENT POPS
+       THEME
     ============================================= */
     :root {
-      --bg:         #f4f1ec;          /* warm off-white */
-      --bg-2:       #edeae3;
-      --ink:        #0d0d0d;          /* near-black text */
-      --ink-mid:    #555250;
-      --ink-dim:    #999490;
-      --grad-a:     #ff3cac;          /* hot pink */
-      --grad-b:     #7b61ff;          /* violet */
-      --grad-c:     #c2ff4d;          /* electric lime */
-      --grad-d:     #ff8c42;          /* orange */
-      --font-hero:  'DxSillage', 'Space Grotesk', sans-serif;
-      --font-body:  'Space Grotesk', sans-serif;
+      --bg:        #f4f1ec;
+      --bg-2:      #edeae3;
+      --ink:       #0d0d0d;
+      --ink-mid:   #555250;
+      --ink-dim:   #999490;
+      --grad-a:    #ff3cac;
+      --grad-b:    #7b61ff;
+      --grad-c:    #c2ff4d;
+      --grad-d:    #ff8c42;
+      --font-hero: 'DxSillage', 'Space Grotesk', sans-serif;
+      --font-body: 'Space Grotesk', sans-serif;
+      --font-serif:'Cormorant Garamond', Georgia, serif;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html {
-      background: var(--bg);
-      color: var(--ink);
-      font-family: var(--font-body);
-      overflow-x: hidden;
-      scroll-behavior: smooth;
-    }
+    html { background: var(--bg); color: var(--ink); font-family: var(--font-body); overflow-x: hidden; scroll-behavior: smooth; }
     body { overflow-x: hidden; }
     img, video { display: block; width: 100%; height: 100%; object-fit: cover; }
+    button { background: none; border: none; padding: 0; font: inherit; color: inherit; }
+
+    /* =============================================
+       SCROLL PROGRESS BAR
+    ============================================= */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 0%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--grad-a), var(--grad-b), var(--grad-c));
+      z-index: 9998;
+      transform-origin: left;
+      pointer-events: none;
+    }
+
+    /* =============================================
+       SPOTLIGHT — cursor punches a clear circle through
+       a dim overlay, hero section only.
+    ============================================= */
+    #spotlight {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 8500;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    /* Wide-angle vignette removed — blobs provide all the color/depth */
+
+    /* =============================================
+       FILM GRAIN — canvas-based
+    ============================================= */
+    #grain-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 8100;
+      opacity: 0.07;
+      mix-blend-mode: multiply;
+    }
 
     /* =============================================
        CURSOR
@@ -75,10 +110,11 @@
       z-index: 9999;
       transform: translate(-50%,-50%);
       transition: width .22s ease, height .22s ease,
-                  background .22s ease, border-radius .22s ease;
+                  background .22s ease, border-radius .22s ease,
+                  opacity .22s ease;
     }
     .cursor.big {
-      width: 60px; height: 60px;
+      width: 58px; height: 58px;
       background: transparent;
       border: 1.5px solid var(--ink);
     }
@@ -113,7 +149,7 @@
     }
 
     /* =============================================
-       NAV BAR — minimal top strip
+       NAV
     ============================================= */
     nav {
       position: fixed;
@@ -123,7 +159,7 @@
       justify-content: space-between;
       align-items: center;
       padding: clamp(1.2rem, 2.5vw, 1.8rem) clamp(1.5rem, 4vw, 4rem);
-      mix-blend-mode: multiply; /* blends with off-white bg */
+      mix-blend-mode: multiply;
       opacity: 0;
     }
     .nav-logo {
@@ -132,7 +168,11 @@
       font-weight: 700;
       letter-spacing: 0.06em;
       color: var(--ink);
+      cursor: none;
+      transition: opacity .2s ease;
     }
+    .nav-logo:hover { opacity: 0.45; }
+
     .nav-status {
       font-family: var(--font-body);
       font-size: 0.6rem;
@@ -143,17 +183,18 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      cursor: none;
+      transition: color .2s ease;
     }
+    .nav-status:hover { color: var(--ink); }
     .nav-dot {
       width: 6px; height: 6px;
       border-radius: 50%;
-      background: #22c55e; /* green = available */
+      background: #22c55e;
       animation: blink 2.5s ease-in-out infinite;
+      flex-shrink: 0;
     }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0.3; }
-    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
     /* =============================================
        HERO
@@ -170,13 +211,13 @@
       overflow: hidden;
     }
 
-    /* Gradient ink-blot accents — sit behind text */
     .hero-blob {
       position: absolute;
       border-radius: 50%;
       pointer-events: none;
       filter: blur(80px);
       opacity: 0.18;
+      will-change: transform;
     }
     .hero-blob-1 {
       width: 50vw; height: 50vw;
@@ -198,24 +239,96 @@
       opacity: 0.12;
     }
     @keyframes float {
-      from { transform: translate(0, 0) scale(1); }
-      to   { transform: translate(4%, 6%) scale(1.08); }
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(4%,6%) scale(1.08); }
     }
 
-    /* Eyebrow */
+    /* Portfolio stack — holds both big and small versions */
+    .portfolio-stack {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.8rem;
+      height: clamp(2.2rem, 4vw, 3.5rem); /* fixed height so layout doesn't jump */
+    }
+
+    /* BIG version — starts fully visible, will scale+fade out */
+    .portfolio-big {
+      font-family: var(--font-hero);
+      font-weight: 900;
+      font-size: clamp(2.8rem, 9vw, 8rem);
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      color: var(--ink);
+      line-height: 1;
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      white-space: nowrap;
+      transform-origin: center center;
+      will-change: transform, opacity;
+    }
+
+    /* SMALL outlined label — starts hidden, crossfades in */
+    .hero-portfolio-label {
+      font-family: var(--font-body);
+      font-weight: 900;
+      text-transform: uppercase;
+      display: inline-block;
+      opacity: 0;
+      font-size: 0.78rem;
+      letter-spacing: 0.6em;
+      color: transparent;
+      -webkit-text-stroke: 1px var(--grad-a);
+      line-height: 1;
+      position: relative;
+    }
+    /* Stars only show at final small state — controlled via .port-small class */
+    .hero-portfolio-label.port-small::before,
+    .hero-portfolio-label.port-small::after {
+      opacity: 0.7;
+    }
+    .hero-portfolio-label::before {
+      content: '✦';
+      -webkit-text-stroke: 0;
+      color: var(--grad-a);
+      font-size: 0.55em;
+      vertical-align: middle;
+      margin-right: 0.7em;
+      opacity: 0;
+      transition: opacity 0.4s ease 0.2s;
+      animation: star-spin 6s linear infinite;
+    }
+    .hero-portfolio-label::after {
+      content: '✦';
+      -webkit-text-stroke: 0;
+      color: var(--grad-b);
+      font-size: 0.55em;
+      vertical-align: middle;
+      margin-left: 0.5em;
+      opacity: 0;
+      transition: opacity 0.4s ease 0.2s;
+      animation: star-spin 6s linear infinite reverse;
+    }
+    @keyframes star-spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
     .hero-eyebrow {
       font-family: var(--font-body);
-      font-size: clamp(0.58rem, 1vw, 0.7rem);
-      font-weight: 600;
-      letter-spacing: 0.35em;
+      font-size: clamp(0.55rem, 1vw, 0.68rem);
+      font-weight: 500;
+      letter-spacing: 0.3em;
       text-transform: uppercase;
       color: var(--ink-dim);
-      margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+      margin-bottom: clamp(1rem, 2vw, 1.8rem);
       opacity: 0;
       transform: translateY(10px);
     }
 
-    /* THE NAME — full width, bold, centered */
+    /* THE NAME */
     .hero-name {
       font-family: var(--font-hero);
       font-size: clamp(4.5rem, 16vw, 18rem);
@@ -225,13 +338,13 @@
       color: var(--ink);
       position: relative;
       z-index: 1;
+      will-change: transform;
     }
-    .hero-name .line { display: block; overflow: hidden; }
-    .hero-name .word { display: inline-block; transform: translateY(110%); }
+    .hero-name .line  { display: block; overflow: hidden; }
+    .hero-name .word  { display: inline-block; transform: translateY(110%); }
 
-    /* Tagline */
     .hero-tagline {
-      margin-top: clamp(1.8rem, 3.5vw, 3rem);
+      margin-top: clamp(1.5rem, 3vw, 2.5rem);
       font-family: var(--font-body);
       font-size: clamp(0.85rem, 2vw, 1.3rem);
       font-weight: 400;
@@ -239,12 +352,12 @@
       color: var(--ink-mid);
       opacity: 0;
       transform: translateY(8px);
+      will-change: transform;
     }
 
-    /* Scroll nudge */
     .hero-scroll {
       position: absolute;
-      bottom: clamp(1.5rem, 3vw, 2.5rem);
+      bottom: clamp(1.5rem,3vw,2.5rem);
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -260,18 +373,17 @@
       opacity: 0;
     }
     .hero-scroll-arrow {
-      width: 1px;
-      height: 40px;
+      width: 1px; height: 40px;
       background: linear-gradient(to bottom, var(--grad-a), transparent);
       animation: arrow-drop 2s ease-in-out infinite;
     }
     @keyframes arrow-drop {
-      0%,100% { transform: scaleY(0); transform-origin: top; opacity:0; }
-      30%,70% { transform: scaleY(1); transform-origin: top; opacity:1; }
+      0%,100%{ transform:scaleY(0); transform-origin:top; opacity:0; }
+      30%,70%{ transform:scaleY(1); transform-origin:top; opacity:1; }
     }
 
     /* =============================================
-       MARQUEE STRIP — between hero and work
+       MARQUEE
     ============================================= */
     .marquee-wrap {
       overflow: hidden;
@@ -283,7 +395,6 @@
     }
     .marquee-track {
       display: flex;
-      gap: 0;
       animation: marquee-scroll 18s linear infinite;
       white-space: nowrap;
     }
@@ -297,34 +408,29 @@
       padding: 0 3rem;
       flex-shrink: 0;
     }
-    .marquee-item span {
-      margin-left: 3rem;
-      color: var(--grad-a);
-    }
+    .marquee-item span { margin-left: 3rem; color: var(--grad-a); }
     @keyframes marquee-scroll {
       from { transform: translateX(0); }
       to   { transform: translateX(-50%); }
     }
 
     /* =============================================
-       WORK SECTION
+       WORK
     ============================================= */
     #work {
-      padding: clamp(5rem, 8vw, 8rem) clamp(1.5rem, 4vw, 4rem) clamp(5rem, 8vw, 8rem);
+      padding: clamp(5rem,8vw,8rem) clamp(1.5rem,4vw,4rem) clamp(5rem,8vw,8rem);
     }
-
-    /* Section header */
     .work-header {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      margin-bottom: clamp(3rem, 5vw, 5rem);
+      margin-bottom: clamp(3rem,5vw,5rem);
       opacity: 0;
       transform: translateY(12px);
     }
     .work-title {
       font-family: var(--font-hero);
-      font-size: clamp(2.5rem, 6vw, 5.5rem);
+      font-size: clamp(2.5rem,6vw,5.5rem);
       font-weight: 900;
       line-height: 1;
       letter-spacing: -0.02em;
@@ -337,16 +443,15 @@
       letter-spacing: 0.25em;
       text-transform: uppercase;
       color: var(--ink-dim);
-      align-self: flex-end;
     }
 
-    /* Asymmetric grid */
+    /* Asymmetric 12-col grid */
     .work-grid {
       display: grid;
       grid-template-columns: repeat(12, 1fr);
-      gap: clamp(0.8rem, 2vw, 2rem);
+      gap: clamp(0.8rem,2vw,2rem);
+      /* perspective handled per-card by GSAP transformPerspective */
     }
-
     .card:nth-child(1)  { grid-column: 1 / 8; }
     .card:nth-child(2)  { grid-column: 8 / 13; }
     .card:nth-child(3)  { grid-column: 1 / 5; }
@@ -368,42 +473,66 @@
     .card:nth-child(8)  { --ca: var(--grad-d); }
     .card:nth-child(9)  { --ca: var(--grad-b); }
 
-    /* Card */
+    /* ---- CARD ---- */
     .card {
       opacity: 0;
       transform: translateY(36px);
+    }
+    .card-inner {
+      border-radius: 3px;
     }
 
     .card-media {
       overflow: hidden;
       position: relative;
       background: var(--bg-2);
+      border-radius: 3px;
     }
     .card[data-type="video"]                         .card-media { aspect-ratio: 16/9; }
     .card[data-type="video"][data-ratio="portrait"]  .card-media { aspect-ratio: 9/16; }
     .card[data-type="image"]                         .card-media { aspect-ratio: 3/4; }
     .card[data-type="image"][data-ratio="landscape"] .card-media { aspect-ratio: 16/10; }
 
-    /* Bottom color bar — slides up on hover */
+    /* Color bar slides in on hover */
     .card-media::before {
       content: '';
       position: absolute;
       bottom: 0; left: 0; right: 0;
-      height: 4px;
+      height: 3px;
       background: var(--ca);
-      z-index: 2;
+      z-index: 3;
       transform: scaleX(0);
       transform-origin: left;
       transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
     }
     .card:hover .card-media::before { transform: scaleX(1); }
 
+    /* Glint sweep — diagonal light streak on hover */
+    .card-media::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: linear-gradient(
+        108deg,
+        transparent 30%,
+        rgba(255,255,255,0.38) 48%,
+        rgba(255,255,255,0.12) 52%,
+        transparent 68%
+      );
+      transform: translateX(-120%);
+      pointer-events: none;
+    }
+    .card:hover .card-media::after {
+      transform: translateX(120%);
+      transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
     .card-media img,
     .card-media video {
       transform: scale(1.04);
       filter: saturate(0.4) brightness(0.88);
-      transition: transform 0.65s cubic-bezier(0.16,1,0.3,1),
-                  filter 0.65s ease;
+      transition: transform 0.65s cubic-bezier(0.16,1,0.3,1), filter 0.65s ease;
       will-change: transform;
     }
     .card:hover .card-media img,
@@ -412,7 +541,6 @@
       filter: saturate(1.05) brightness(0.95);
     }
 
-    /* Card info */
     .card-info {
       display: flex;
       justify-content: space-between;
@@ -423,7 +551,7 @@
     }
     .card-title {
       font-family: var(--font-body);
-      font-size: clamp(0.75rem, 1.3vw, 0.95rem);
+      font-size: clamp(0.75rem,1.3vw,0.95rem);
       font-weight: 500;
       color: var(--ink);
     }
@@ -437,24 +565,70 @@
     }
 
     /* =============================================
-       FOOTER STRIP
+       FOOTER
     ============================================= */
     footer {
       border-top: 1px solid rgba(0,0,0,0.08);
-      padding: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 4vw, 4rem);
+      padding: clamp(2rem,4vw,3.5rem) clamp(1.5rem,4vw,4rem);
+      opacity: 1;
+    }
+    .footer-top {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
+      align-items: baseline;
       flex-wrap: wrap;
-      opacity: 0;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
     }
     .footer-name {
       font-family: var(--font-hero);
-      font-size: clamp(1rem, 2vw, 1.5rem);
+      font-size: clamp(1.5rem,3vw,2.5rem);
       font-weight: 900;
       color: var(--ink);
-      letter-spacing: 0.04em;
+      letter-spacing: 0.02em;
+    }
+    .footer-since {
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      color: var(--ink-dim);
+      text-transform: uppercase;
+    }
+    .footer-contact {
+      display: flex;
+      gap: clamp(1.5rem,4vw,4rem);
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+    .footer-link {
+      font-family: var(--font-body);
+      font-size: clamp(0.8rem,1.4vw,1rem);
+      font-weight: 500;
+      color: var(--ink-mid);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color .2s ease;
+      position: relative;
+    }
+    .footer-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 0; height: 1px;
+      background: var(--grad-a);
+      transition: width .3s cubic-bezier(0.16,1,0.3,1);
+    }
+    .footer-link:hover { color: var(--ink); }
+    .footer-link:hover::after { width: 100%; }
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
     .footer-copy {
       font-family: var(--font-body);
@@ -464,7 +638,18 @@
       color: var(--ink-dim);
       text-transform: uppercase;
     }
-    /* Gradient accent bar at very bottom */
+    .footer-top-btn {
+      font-family: var(--font-body);
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      cursor: none;
+      transition: color .2s ease;
+    }
+    .footer-top-btn:hover { color: var(--grad-a); }
+
     .footer-bar {
       height: 3px;
       background: linear-gradient(90deg, var(--grad-a), var(--grad-b), var(--grad-c), var(--grad-d));
@@ -474,7 +659,7 @@
        MOBILE
     ============================================= */
     @media (max-width: 768px) {
-      .cursor { display: none; }
+      .cursor, #spotlight { display: none; }
       .work-grid { grid-template-columns: 1fr; gap: 1.2rem; }
       .card:nth-child(n) { grid-column: 1 / -1; }
       .card[data-type="video"] .card-media { aspect-ratio: 16/9; }
@@ -482,21 +667,30 @@
       .work-header { flex-direction: column; gap: 0.5rem; }
     }
 
-    /* =============================================
-       REDUCED MOTION
-    ============================================= */
     @media (prefers-reduced-motion: reduce) {
       .hero-blob, .marquee-track, .hero-scroll-arrow, .nav-dot { animation: none; }
       .card-media img, .card-media video { transition: filter .3s ease; }
+      #spotlight { display: none; }
     }
   </style>
 </head>
 <body>
 
+  <!-- Scroll progress -->
+  <div id="progress-bar" aria-hidden="true"></div>
+
+  <!-- Grain canvas (drawn by JS) -->
+  <canvas id="grain-canvas" aria-hidden="true"></canvas>
+
+  <!-- Spotlight (hero only) -->
+  <div id="spotlight" aria-hidden="true"></div>
+
+  <!-- Custom cursor -->
   <div class="cursor" id="cursor" aria-hidden="true">
     <span class="cursor-text" id="cursor-text"></span>
   </div>
 
+  <!-- Loader -->
   <div id="loader" aria-hidden="true">
     <div class="loader-line" id="loader-line" style="width:clamp(80px,15vw,140px)"></div>
   </div>
@@ -505,11 +699,13 @@
        NAV
   ============================================= -->
   <nav aria-label="Site navigation">
-    <span class="nav-logo">AY</span>
-    <span class="nav-status">
+    <button class="nav-logo" id="nav-logo" aria-label="Back to top">AY</button>
+    <button class="nav-status" id="nav-status"
+            onclick="document.getElementById('footer').scrollIntoView({behavior:'smooth'})"
+            aria-label="Scroll to contact">
       <span class="nav-dot" aria-hidden="true"></span>
       Available for work
-    </span>
+    </button>
   </nav>
 
   <!-- =============================================
@@ -522,8 +718,16 @@
 
     <p class="hero-eyebrow">Reel edits &nbsp;·&nbsp; Procreate art &nbsp;·&nbsp; Visual storytelling</p>
 
-    <h1 class="hero-name" aria-label="Anirudh Yadav">
-      <span class="line"><span class="word">Anirudh</span></span>
+    <!-- Portfolio stack: big bold first, then crossfades to small label -->
+    <div class="portfolio-stack" aria-hidden="true">
+      <!-- BIG: solid black, same weight as name, starts visible -->
+      <p class="portfolio-big" id="portfolio-big">PORTFOLIO</p>
+      <!-- SMALL: tracked outline version, starts hidden -->
+      <p class="hero-portfolio-label" id="portfolio-small"><span id="portfolio-scramble">Portfolio</span></p>
+    </div>
+
+    <h1 class="hero-name" id="hero-name" aria-label="Anirudh Yadav">
+      <span class="line"><span class="word" id="scramble-word">Anirudh</span></span>
       <span class="line"><span class="word">Yadav</span></span>
     </h1>
 
@@ -540,7 +744,6 @@
   ============================================= -->
   <div class="marquee-wrap" aria-hidden="true">
     <div class="marquee-track">
-      <!-- duplicated for seamless loop -->
       <span class="marquee-item">Reel Edits <span>✦</span></span>
       <span class="marquee-item">Procreate Art <span>✦</span></span>
       <span class="marquee-item">Motion Graphics <span>✦</span></span>
@@ -568,96 +771,110 @@
     <div class="work-grid">
 
       <article class="card" data-type="video" tabindex="0">
-        <div class="card-media">
-          <video src="https://www.w3schools.com/html/mov_bbb.mp4"
-                 muted loop playsinline preload="none" aria-label="Reel 001"></video>
-        </div>
-        <div class="card-info">
-          <span class="card-title">Reel 001</span>
-          <span class="card-tag">Edit</span>
-        </div>
-      </article>
-
-      <article class="card" data-type="image" tabindex="0">
-        <div class="card-media">
-          <img src="https://picsum.photos/seed/sketch04/600/800" alt="Sketch 004" loading="lazy" />
-        </div>
-        <div class="card-info">
-          <span class="card-title">Sketch 004</span>
-          <span class="card-tag">Procreate</span>
+        <div class="card-inner">
+          <div class="card-media">
+            <video src="https://www.w3schools.com/html/mov_bbb.mp4" muted loop playsinline preload="none" aria-label="Reel 001"></video>
+          </div>
+          <div class="card-info">
+            <span class="card-title">Reel 001</span>
+            <span class="card-tag">Edit</span>
+          </div>
         </div>
       </article>
 
       <article class="card" data-type="image" tabindex="0">
-        <div class="card-media">
-          <img src="https://picsum.photos/seed/art01/600/800" alt="Study 001" loading="lazy" />
+        <div class="card-inner">
+          <div class="card-media">
+            <img src="https://picsum.photos/seed/sketch04/600/800" alt="Sketch 004" loading="lazy" />
+          </div>
+          <div class="card-info">
+            <span class="card-title">Sketch 004</span>
+            <span class="card-tag">Procreate</span>
+          </div>
         </div>
-        <div class="card-info">
-          <span class="card-title">Study 001</span>
-          <span class="card-tag">Procreate</span>
+      </article>
+
+      <article class="card" data-type="image" tabindex="0">
+        <div class="card-inner">
+          <div class="card-media">
+            <img src="https://picsum.photos/seed/art01/600/800" alt="Study 001" loading="lazy" />
+          </div>
+          <div class="card-info">
+            <span class="card-title">Study 001</span>
+            <span class="card-tag">Procreate</span>
+          </div>
         </div>
       </article>
 
       <article class="card" data-type="video" tabindex="0">
-        <div class="card-media">
-          <video src="https://www.w3schools.com/html/mov_bbb.mp4"
-                 muted loop playsinline preload="none" aria-label="Reel 002"></video>
-        </div>
-        <div class="card-info">
-          <span class="card-title">Reel 002</span>
-          <span class="card-tag">Edit</span>
+        <div class="card-inner">
+          <div class="card-media">
+            <video src="https://www.w3schools.com/html/mov_bbb.mp4" muted loop playsinline preload="none" aria-label="Reel 002"></video>
+          </div>
+          <div class="card-info">
+            <span class="card-title">Reel 002</span>
+            <span class="card-tag">Edit</span>
+          </div>
         </div>
       </article>
 
       <article class="card" data-type="image" tabindex="0">
-        <div class="card-media">
-          <img src="https://picsum.photos/seed/thumb02/600/800" alt="Thumbnail 002" loading="lazy" />
-        </div>
-        <div class="card-info">
-          <span class="card-title">Thumbnail 002</span>
-          <span class="card-tag">Art</span>
+        <div class="card-inner">
+          <div class="card-media">
+            <img src="https://picsum.photos/seed/thumb02/600/800" alt="Thumbnail 002" loading="lazy" />
+          </div>
+          <div class="card-info">
+            <span class="card-title">Thumbnail 002</span>
+            <span class="card-tag">Art</span>
+          </div>
         </div>
       </article>
 
       <article class="card" data-type="image" data-ratio="landscape" tabindex="0">
-        <div class="card-media">
-          <img src="https://picsum.photos/seed/frame03/900/560" alt="Frame 003" loading="lazy" />
-        </div>
-        <div class="card-info">
-          <span class="card-title">Frame 003</span>
-          <span class="card-tag">Procreate</span>
+        <div class="card-inner">
+          <div class="card-media">
+            <img src="https://picsum.photos/seed/frame03/900/560" alt="Frame 003" loading="lazy" />
+          </div>
+          <div class="card-info">
+            <span class="card-title">Frame 003</span>
+            <span class="card-tag">Procreate</span>
+          </div>
         </div>
       </article>
 
       <article class="card" data-type="video" data-ratio="portrait" tabindex="0">
-        <div class="card-media">
-          <video src="https://www.w3schools.com/html/mov_bbb.mp4"
-                 muted loop playsinline preload="none" aria-label="Reel 003"></video>
-        </div>
-        <div class="card-info">
-          <span class="card-title">Reel 003</span>
-          <span class="card-tag">Edit</span>
+        <div class="card-inner">
+          <div class="card-media">
+            <video src="https://www.w3schools.com/html/mov_bbb.mp4" muted loop playsinline preload="none" aria-label="Reel 003"></video>
+          </div>
+          <div class="card-info">
+            <span class="card-title">Reel 003</span>
+            <span class="card-tag">Edit</span>
+          </div>
         </div>
       </article>
 
       <article class="card" data-type="image" tabindex="0">
-        <div class="card-media">
-          <img src="https://picsum.photos/seed/sketch07/600/800" alt="Sketch 007" loading="lazy" />
-        </div>
-        <div class="card-info">
-          <span class="card-title">Sketch 007</span>
-          <span class="card-tag">Procreate</span>
+        <div class="card-inner">
+          <div class="card-media">
+            <img src="https://picsum.photos/seed/sketch07/600/800" alt="Sketch 007" loading="lazy" />
+          </div>
+          <div class="card-info">
+            <span class="card-title">Sketch 007</span>
+            <span class="card-tag">Procreate</span>
+          </div>
         </div>
       </article>
 
       <article class="card" data-type="video" tabindex="0">
-        <div class="card-media">
-          <video src="https://www.w3schools.com/html/mov_bbb.mp4"
-                 muted loop playsinline preload="none" aria-label="Reel 004"></video>
-        </div>
-        <div class="card-info">
-          <span class="card-title">Reel 004</span>
-          <span class="card-tag">Edit</span>
+        <div class="card-inner">
+          <div class="card-media">
+            <video src="https://www.w3schools.com/html/mov_bbb.mp4" muted loop playsinline preload="none" aria-label="Reel 004"></video>
+          </div>
+          <div class="card-info">
+            <span class="card-title">Reel 004</span>
+            <span class="card-tag">Edit</span>
+          </div>
         </div>
       </article>
 
@@ -667,21 +884,97 @@
   <!-- =============================================
        FOOTER
   ============================================= -->
-  <footer>
-    <span class="footer-name">Anirudh Yadav</span>
-    <span class="footer-copy">© 2025 — Freelancing Pro Max</span>
+  <footer id="footer">
+    <div class="footer-top">
+      <span class="footer-name">Anirudh Yadav</span>
+      <span class="footer-since">Freelancing since 2020</span>
+    </div>
+    <div class="footer-contact">
+      <a href="mailto:hello@anirudhyadav.com" class="footer-link">hello@anirudhyadav.com</a>
+      <a href="https://instagram.com/anirudhyadav" target="_blank" rel="noopener" class="footer-link">@anirudhyadav</a>
+      <a href="https://twitter.com/anirudhyadav" target="_blank" rel="noopener" class="footer-link">Twitter / X</a>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 — Freelancing Pro Max</span>
+      <button class="footer-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to top ↑</button>
+    </div>
   </footer>
   <div class="footer-bar" aria-hidden="true"></div>
 
   <!-- =============================================
-       JS
+       JAVASCRIPT
   ============================================= -->
   <script>
-    /* ---- Cursor ---- */
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isFine  = window.matchMedia('(pointer: fine)').matches;
+
+    /* =============================================
+       SCROLL PROGRESS BAR
+    ============================================= */
+    const progressBar = document.getElementById('progress-bar');
+    window.addEventListener('scroll', () => {
+      const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+      progressBar.style.width = pct + '%';
+    }, { passive: true });
+
+    /* =============================================
+       CANVAS GRAIN — animated, stronger than CSS approach
+    ============================================= */
+    (function initGrain() {
+      const canvas = document.getElementById('grain-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w, h;
+      function resize() {
+        w = canvas.width  = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize, { passive: true });
+
+      function drawGrain() {
+        const img = ctx.createImageData(w, h);
+        const d   = img.data;
+        for (let i = 0; i < d.length; i += 4) {
+          const v = Math.random() * 255 | 0;
+          d[i] = d[i+1] = d[i+2] = v;
+          d[i+3] = 28; // alpha — controls intensity
+        }
+        ctx.putImageData(img, 0, 0);
+        requestAnimationFrame(drawGrain);
+      }
+      drawGrain();
+    })();
+
+    /* =============================================
+       SPOTLIGHT — hero only, dark vignette with
+       a clear circle punched where the cursor is
+    ============================================= */
+    const spotlight = document.getElementById('spotlight');
+    if (isFine && !reduced && spotlight) {
+      const heroSection = document.getElementById('hero');
+      document.addEventListener('mousemove', e => {
+        const rect   = heroSection.getBoundingClientRect();
+        const inHero = e.clientY >= rect.top && e.clientY <= rect.bottom;
+        spotlight.style.opacity = inHero ? '1' : '0';
+        if (inHero) {
+          spotlight.style.background = `radial-gradient(
+            circle 200px at ${e.clientX}px ${e.clientY}px,
+            transparent 0%,
+            transparent 45%,
+            rgba(244,241,236,0.6) 100%
+          )`;
+        }
+      }, { passive: true });
+    }
+
+    /* =============================================
+       CURSOR
+    ============================================= */
     const cursor     = document.getElementById('cursor');
     const cursorText = document.getElementById('cursor-text');
 
-    if (window.matchMedia('(pointer: fine)').matches) {
+    if (isFine) {
       document.addEventListener('mousemove', e => {
         cursor.style.transform = `translate(${e.clientX - cursor.offsetWidth/2}px, ${e.clientY - cursor.offsetHeight/2}px)`;
       }, { passive: true });
@@ -698,7 +991,9 @@
       });
     }
 
-    /* ---- Video hover ---- */
+    /* =============================================
+       VIDEO hover play/pause
+    ============================================= */
     document.querySelectorAll('.card[data-type="video"]').forEach(card => {
       const v = card.querySelector('video');
       if (!v) return;
@@ -708,117 +1003,229 @@
       card.addEventListener('blur',       () => { v.pause(); v.currentTime = 0; });
     });
 
-    /* ---- GSAP init (after scripts load) ---- */
+    /* 3D card tilt removed — cylinder scroll handles all depth */
+
+    /* =============================================
+       TEXT SCRAMBLE
+    ============================================= */
+    const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+    // Track active scramble intervals so we can cancel on replay
+    let scrambleIntervals = [];
+
+    function scramble(el, finalText, duration = 800) {
+      // Cancel any running scramble on this element
+      el._scrambleInterval && clearInterval(el._scrambleInterval);
+      let frame = 0;
+      const totalFrames = Math.round(duration / 16);
+      el._scrambleInterval = setInterval(() => {
+        const progress = frame / totalFrames;
+        let out = '';
+        for (let i = 0; i < finalText.length; i++) {
+          if (finalText[i] === ' ') { out += ' '; continue; }
+          out += i < finalText.length * progress
+            ? finalText[i]
+            : CHARS[Math.floor(Math.random() * CHARS.length)];
+        }
+        el.textContent = out;
+        if (++frame > totalFrames) {
+          clearInterval(el._scrambleInterval);
+          el.textContent = finalText;
+        }
+      }, 16);
+    }
+
+    /* Portfolio crossfade: big → small
+       BIG scales down + fades out while SMALL fades in.
+       Both run simultaneously as the name sweeps up. */
+    function showPortfolio(gsapInstance) {
+      const bigEl    = document.getElementById('portfolio-big');
+      const smallEl  = document.querySelector('.hero-portfolio-label');
+      const portText = document.getElementById('portfolio-scramble');
+      if (!bigEl || !smallEl) return gsapInstance.timeline();
+
+      smallEl.classList.add('port-small');
+
+      const tl = gsapInstance.timeline();
+
+      // Big: scale down to 0 + fade out
+      tl.to(bigEl, {
+        scale: 0.15,
+        opacity: 0,
+        duration: 0.75,
+        ease: 'power3.in',
+        transformOrigin: 'center center'
+      });
+
+      // Small: fade in + letter-spacing expand (starts at same time)
+      tl.fromTo(smallEl,
+        { opacity: 0, letterSpacing: '0.05em' },
+        { opacity: 1, letterSpacing: '0.6em', duration: 0.7, ease: 'power3.out' },
+        '-=0.4'  // overlap with big fading out
+      );
+
+      // Scramble the small text
+      tl.call(() => {
+        if (portText && !reduced) scramble(portText, 'Portfolio', 700);
+      }, [], '-=0.3');
+
+      return tl;
+    }
+
+    /* =============================================
+       GSAP INIT
+    ============================================= */
     window.addEventListener('load', () => {
       if (typeof gsap === 'undefined') return;
       gsap.registerPlugin(ScrollTrigger);
 
-      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      /* Loader */
+      /* ---- Loader ---- */
       const tl = gsap.timeline();
-      tl.to('#loader-line', {
-        width: '100%',
-        duration: 0.7,
-        ease: 'power2.inOut'
-      })
-      .to('#loader', {
-        yPercent: -100,
-        duration: 0.7,
-        ease: 'power4.inOut',
-        onComplete: () => { document.getElementById('loader').style.display = 'none'; }
-      }, '+=0.1')
 
-      /* Nav */
-      .to('nav', { opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.1')
+      tl.to('#loader-line', { width: '100%', duration: 0.7, ease: 'power2.inOut' })
+        .to('#loader', {
+          yPercent: -100, duration: 0.7, ease: 'power4.inOut',
+          onComplete: () => { document.getElementById('loader').style.display = 'none'; }
+        }, '+=0.1')
+        .to('nav', { opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.1')
 
-      /* Hero eyebrow */
-      .to('.hero-eyebrow', {
-        opacity: 1, y: 0,
-        duration: 0.6, ease: 'power3.out'
-      }, '-=0.2')
+        /* Eyebrow fades in */
+        .to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '-=0.2')
 
-      /* Name words sweep up */
-      .to('.hero-name .word', {
-        y: '0%',
-        duration: 1.1,
-        ease: 'power4.out',
-        stagger: 0.1
-      }, '-=0.3')
+        /* BIG Portfolio is already visible — hold for a beat so viewer reads it */
+        .to({}, { duration: 0.45 })
 
-      /* Tagline */
-      .to('.hero-tagline', {
-        opacity: 1, y: 0,
-        duration: 0.7, ease: 'power3.out'
-      }, '-=0.5')
+        /* Name sweeps up AND portfolio crossfades (big→small) simultaneously */
+        .to('.hero-name .word', { y: '0%', duration: 1.1, ease: 'power4.out', stagger: 0.1 })
+        .add(showPortfolio(gsap), '<')   /* '<' = start at same time as name */
 
-      /* Scroll hint */
-      .to('.hero-scroll', {
-        opacity: 1,
-        duration: 0.5, ease: 'power2.out'
-      }, '-=0.4');
+        /* Name scramble */
+        .call(() => { if (!reduced) scramble(document.getElementById('scramble-word'), 'Anirudh', 800); }, [], '-=0.8')
 
-      /* Marquee */
+        /* Tagline */
+        .to('.hero-tagline', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.4')
+
+        /* Scroll hint */
+        .to('.hero-scroll', { opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.4');
+
+      /* ---- Marquee ---- */
       ScrollTrigger.create({
-        trigger: '.marquee-wrap',
-        start: 'top 90%',
-        onEnter: () => gsap.to('.marquee-wrap', { opacity: 1, duration: 0.6, ease: 'power2.out' })
+        trigger: '.marquee-wrap', start: 'top 90%',
+        onEnter: () => gsap.to('.marquee-wrap', { opacity: 1, duration: 0.6 })
       });
 
-      /* Work header */
+      /* ---- Work header ---- */
       gsap.to('.work-header', {
-        opacity: 1, y: 0,
-        duration: 0.8, ease: 'power3.out',
+        opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
         scrollTrigger: { trigger: '#work', start: 'top 82%' }
       });
 
-      /* Cards */
-      if (!reduced) {
-        gsap.utils.toArray('.card').forEach((card, i) => {
-          gsap.to(card, {
-            opacity: 1, y: 0,
-            duration: 0.65,
-            ease: 'power3.out',
-            delay: (i % 3) * 0.06,
-            scrollTrigger: { trigger: card, start: 'top 92%' }
-          });
+      /* ---- Cards — IntersectionObserver (works with html filter) ---- */
+      const cardObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry, _) => {
+          if (entry.isIntersecting) {
+            const card = entry.target;
+            const i    = [...document.querySelectorAll('.card')].indexOf(card);
+            gsap.to(card, {
+              opacity: 1, y: 0,
+              duration: 0.65, ease: 'power3.out',
+              delay: (i % 3) * 0.06
+            });
+            cardObserver.unobserve(card);
+          }
         });
+      }, { threshold: 0.08 });
 
-        /* Image parallax */
-        gsap.utils.toArray('.card[data-type="image"] img').forEach(img => {
-          gsap.fromTo(img,
-            { yPercent: 5 },
-            { yPercent: -5, ease: 'none',
-              scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: 1.5 }
-            }
-          );
+      document.querySelectorAll('.card').forEach(c => cardObserver.observe(c));
+
+      /* ---- Work header — IntersectionObserver ---- */
+      const headerObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            gsap.to('.work-header', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' });
+            headerObs.disconnect();
+          }
         });
-      } else {
-        gsap.set('.card, .work-header, .marquee-wrap', { opacity: 1, y: 0 });
+      }, { threshold: 0.1 });
+      headerObs.observe(document.querySelector('.work-header'));
+
+      /* ---- Marquee ---- */
+      const marqObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            gsap.to('.marquee-wrap', { opacity: 1, duration: 0.6 });
+            marqObs.disconnect();
+          }
+        });
+      }, { threshold: 0.1 });
+      marqObs.observe(document.querySelector('.marquee-wrap'));
+
+      /* ---- Footer ---- */
+      ScrollTrigger.create({
+        trigger: 'footer', start: 'top 90%',
+        onEnter: () => gsap.to('footer', { opacity: 1, duration: 0.7 })
+      });
+
+      /* =============================================
+         AY CLICK — scroll to top + replay scramble + portfolio shrink
+      ============================================= */
+      document.getElementById('nav-logo').addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Only replay the name scramble — nothing else
+        setTimeout(() => {
+          if (!reduced) scramble(document.getElementById('scramble-word'), 'Anirudh', 800);
+        }, 350);
+      });
+
+      /* =============================================
+         MOUSE PARALLAX
+      ============================================= */
+      if (!reduced && isFine) {
+        const hero      = document.getElementById('hero');
+        const heroName  = document.getElementById('hero-name');
+        const eyebrow   = document.querySelector('.hero-eyebrow');
+        const portLabel = document.querySelector('.hero-portfolio-label');
+        const tagline   = document.querySelector('.hero-tagline');
+        const blobs     = document.querySelectorAll('.hero-blob');
+        let mx = 0, my = 0, tx = 0, ty = 0;
+
+        document.addEventListener('mousemove', e => {
+          const rect = hero.getBoundingClientRect();
+          if (e.clientY > rect.bottom + 100) return;
+          tx = (e.clientX / window.innerWidth)  - 0.5;
+          ty = (e.clientY / window.innerHeight) - 0.5;
+        }, { passive: true });
+
+        (function parallaxLoop() {
+          mx += (tx - mx) * 0.06;
+          my += (ty - my) * 0.06;
+          gsap.set(heroName,            { x: mx * -36, y: my * -18 });
+          gsap.set([eyebrow, portLabel],{ x: mx *  24, y: my *  14 });
+          gsap.set(tagline,             { x: mx *  18, y: my *  10 });
+          blobs.forEach((b, i) => {
+            const d = (i + 1) * 50, dir = i % 2 === 0 ? 1 : -1;
+            gsap.set(b, { x: mx * d * dir, y: my * d * 0.7 * dir });
+          });
+          requestAnimationFrame(parallaxLoop);
+        })();
       }
 
-      /* Footer */
-      ScrollTrigger.create({
-        trigger: 'footer',
-        start: 'top 90%',
-        onEnter: () => gsap.to('footer', { opacity: 1, duration: 0.7, ease: 'power2.out' })
-      });
-    });
+
+    }); // end load
   </script>
 
   <!--
   ═══════════════════════════════════════════════════════
-  GITHUB PAGES — HOW TO DEPLOY (free, forever)
+  GITHUB PAGES — DEPLOY IN 3 STEPS
 
-  1. Go to github.com → New repository → name it  "portfolio"
-  2. Upload this index.html + your  fonts/  folder + your  assets/  folder
-  3. Settings → Pages → Source: Deploy from branch → main → / (root) → Save
+  1. github.com → New repo → e.g. "portfolio"
+  2. Upload: index.html + fonts/ folder + assets/ folder
+  3. Settings → Pages → Branch: main → / (root) → Save
 
-  Your live URL:  https://YOUR-USERNAME.github.io/portfolio/
+  Live at: https://YOUR-USERNAME.github.io/portfolio/
 
   TO ADD YOUR MEDIA:
-  • Put files in assets/ folder  (e.g. assets/reel-001.mp4, assets/sketch-004.jpg)
-  • Tell me the filenames — I'll update all the src="" in 30 seconds.
+  Put files in assets/ (e.g. assets/reel-001.mp4, assets/sketch-004.jpg)
+  Tell me the filenames → I update all src="" in seconds.
   ═══════════════════════════════════════════════════════
   -->
 </body>

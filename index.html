@@ -11,9 +11,9 @@
   -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@1,300;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,700;12..96,800&family=Space+Grotesk:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@1,300;1,400&display=swap" rel="stylesheet" />
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
 
   <style>
@@ -43,7 +43,7 @@
       --grad-b:    #7b61ff;
       --grad-c:    #c2ff4d;
       --grad-d:    #ff8c42;
-      --font-hero: 'DxSillage', 'Space Grotesk', sans-serif;
+      --font-hero: 'DxSillage', 'Bricolage Grotesque', 'Space Grotesk', sans-serif;
       --font-body: 'Space Grotesk', sans-serif;
       --font-serif:'Cormorant Garamond', Georgia, serif;
     }
@@ -131,7 +131,7 @@
     @media (pointer: coarse) { .cursor { display: none; } }
 
     /* =============================================
-       LOADER
+       LOADER — counter style
     ============================================= */
     #loader {
       position: fixed; inset: 0;
@@ -140,12 +140,28 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
     }
-    .loader-line {
-      width: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--grad-a), var(--grad-b), var(--grad-c));
-      border-radius: 2px;
+    .loader-counter {
+      font-family: var(--font-hero);
+      font-size: clamp(5rem, 20vw, 18rem);
+      font-weight: 900;
+      color: var(--ink);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      opacity: 1;
+      user-select: none;
+    }
+    .loader-name-bg {
+      position: absolute;
+      font-family: var(--font-hero);
+      font-size: clamp(1.4rem, 4vw, 3rem);
+      font-weight: 900;
+      color: var(--ink);
+      letter-spacing: 0.04em;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
     }
 
     /* =============================================
@@ -170,8 +186,20 @@
       color: var(--ink);
       cursor: none;
       transition: opacity .2s ease;
+      position: relative;
     }
     .nav-logo:hover { opacity: 0.45; }
+    .nav-ay { display: inline-block; transition: opacity .4s ease, transform .4s ease; }
+    .nav-fullname {
+      position: absolute;
+      left: 0; top: 50%;
+      transform: translateY(-50%) translateY(6px);
+      white-space: nowrap;
+      opacity: 0;
+      letter-spacing: 0.04em;
+      transition: opacity .4s ease, transform .4s ease;
+      pointer-events: none;
+    }
 
     .nav-status {
       font-family: var(--font-body);
@@ -277,7 +305,7 @@
       text-transform: uppercase;
       display: inline-block;
       opacity: 0;
-      font-size: 0.78rem;
+      font-size: 1rem;
       letter-spacing: 0.6em;
       color: transparent;
       -webkit-text-stroke: 1px var(--grad-a);
@@ -328,17 +356,20 @@
       transform: translateY(10px);
     }
 
-    /* THE NAME */
+    /* THE NAME — bleeds off edges on desktop for poster effect */
     .hero-name {
       font-family: var(--font-hero);
-      font-size: clamp(4.5rem, 16vw, 18rem);
-      font-weight: 900;
-      line-height: 0.85;
-      letter-spacing: -0.02em;
+      font-size: clamp(5rem, 26vw, 36rem);
+      font-weight: 800;
+      line-height: 0.88;
+      letter-spacing: -0.03em;
       color: var(--ink);
       position: relative;
       z-index: 1;
       will-change: transform;
+    }
+    @media (max-width: 768px) {
+      .hero-name { font-size: clamp(4.5rem, 19vw, 10rem); }
     }
     .hero-name .line  { display: block; overflow: hidden; }
     .hero-name .word  { display: inline-block; transform: translateY(110%); }
@@ -353,6 +384,24 @@
       opacity: 0;
       transform: translateY(8px);
       will-change: transform;
+      overflow: hidden;
+      height: 1.6em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .tagline-word {
+      display: inline-block;
+      transition: transform 0.45s cubic-bezier(0.76,0,0.24,1), opacity 0.45s ease;
+    }
+    .tagline-word.exit-up {
+      transform: translateY(-110%);
+      opacity: 0;
+    }
+    .tagline-word.enter-below {
+      transform: translateY(110%);
+      opacity: 0;
+      transition: none;
     }
 
     .hero-scroll {
@@ -452,26 +501,25 @@
       gap: clamp(0.8rem,2vw,2rem);
       /* perspective handled per-card by GSAP transformPerspective */
     }
-    .card:nth-child(1)  { grid-column: 1 / 8; }
-    .card:nth-child(2)  { grid-column: 8 / 13; }
-    .card:nth-child(3)  { grid-column: 1 / 5; }
-    .card:nth-child(4)  { grid-column: 5 / 10; }
-    .card:nth-child(5)  { grid-column: 10 / 13; }
-    .card:nth-child(6)  { grid-column: 2 / 7; }
-    .card:nth-child(7)  { grid-column: 7 / 13; }
-    .card:nth-child(8)  { grid-column: 1 / 6; }
-    .card:nth-child(9)  { grid-column: 6 / 13; }
+    /* 8-card grid — showreel lives in its own section now */
+    .card:nth-child(1)  { grid-column: 1 / 6; }
+    .card:nth-child(2)  { grid-column: 6 / 13; }
+    .card:nth-child(3)  { grid-column: 1 / 8; }
+    .card:nth-child(4)  { grid-column: 8 / 13; }
+    .card:nth-child(5)  { grid-column: 2 / 9; }
+    .card:nth-child(6)  { grid-column: 9 / 13; }
+    .card:nth-child(7)  { grid-column: 1 / 6; }
+    .card:nth-child(8)  { grid-column: 6 / 13; }
 
     /* Per-card accent colors */
-    .card:nth-child(1)  { --ca: var(--grad-a); }
-    .card:nth-child(2)  { --ca: var(--grad-b); }
-    .card:nth-child(3)  { --ca: var(--grad-d); }
-    .card:nth-child(4)  { --ca: var(--grad-a); }
-    .card:nth-child(5)  { --ca: var(--grad-b); }
-    .card:nth-child(6)  { --ca: var(--grad-c); }
-    .card:nth-child(7)  { --ca: var(--grad-a); }
-    .card:nth-child(8)  { --ca: var(--grad-d); }
-    .card:nth-child(9)  { --ca: var(--grad-b); }
+    .card:nth-child(1)  { --ca: var(--grad-b); }
+    .card:nth-child(2)  { --ca: var(--grad-d); }
+    .card:nth-child(3)  { --ca: var(--grad-a); }
+    .card:nth-child(4)  { --ca: var(--grad-b); }
+    .card:nth-child(5)  { --ca: var(--grad-c); }
+    .card:nth-child(6)  { --ca: var(--grad-a); }
+    .card:nth-child(7)  { --ca: var(--grad-d); }
+    .card:nth-child(8)  { --ca: var(--grad-b); }
 
     /* ---- CARD ---- */
     .card {
@@ -667,10 +715,550 @@
       .work-header { flex-direction: column; gap: 0.5rem; }
     }
 
+    /* =============================================
+       FILMSTRIP
+    ============================================= */
+    .filmstrip-section {
+      padding: clamp(2.5rem, 4vw, 4rem) 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.5rem, 1vw, 0.9rem);
+      border-top: 1px solid rgba(0,0,0,0.06);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      background: var(--bg-2);
+      /* Edge fade vignette */
+      mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+    }
+    .filmstrip-row { overflow: hidden; }
+    .filmstrip-track {
+      display: flex;
+      gap: clamp(0.4rem, 0.8vw, 0.8rem);
+      width: max-content;
+    }
+    .filmstrip-track--a { animation: fs-left 32s linear infinite; }
+    .filmstrip-track--b { animation: fs-right 24s linear infinite; }
+    @keyframes fs-left  { from { transform: translateX(0);    } to { transform: translateX(-50%); } }
+    @keyframes fs-right { from { transform: translateX(-50%); } to { transform: translateX(0);    } }
+    .fs-img {
+      width: clamp(200px, 24vw, 360px);
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      border-radius: 3px;
+      flex-shrink: 0;
+      filter: saturate(0.65) brightness(0.9);
+      transition: filter 0.4s ease;
+    }
+    .fs-img:hover { filter: saturate(1) brightness(1); }
+    @media (prefers-reduced-motion: reduce) {
+      .filmstrip-track--a, .filmstrip-track--b { animation: none; }
+    }
+
+    /* =============================================
+       POLAROID CAMERA SECTION
+    ============================================= */
+    /* Fixed-based scroll section —
+       pol-section provides scroll height,
+       pol-scene is fixed and only shown while section is in view */
+    .pol-section {
+      position: relative;
+      width: 100%;
+      height: calc(100svh + 2400px);
+    }
+    .pol-scene {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100svh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      visibility: hidden;    /* hidden until section enters view */
+      pointer-events: none;
+      z-index: 5;
+    }
+    .pol-scene.pol-active {
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    /* — CSS Camera — centred as flex item, polaroids absolute around it */
+    .pol-camera {
+      width: clamp(180px, 20vw, 240px);
+      position: relative; /* stacking context so polaroids layer correctly */
+      filter: drop-shadow(0 28px 55px rgba(0,0,0,0.22));
+      z-index: 10;
+      flex-shrink: 0;
+    }
+    .pol-cam-top {
+      background: #1c1c1e;
+      border-radius: 20px 20px 0 0;
+      height: clamp(42px, 5vw, 54px);
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      gap: 8px;
+    }
+    .pol-cam-flash {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, #d8d8d8, #888);
+      border: 2px solid #555;
+      flex-shrink: 0;
+    }
+    .pol-cam-selfie-led {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 6px #22c55e;
+      flex-shrink: 0;
+      animation: blink 2.5s ease-in-out infinite;
+    }
+    .pol-cam-viewfinder {
+      width: 36px; height: 20px;
+      border-radius: 4px;
+      background: #4a90d9;
+      opacity: 0.65;
+      border: 2px solid #333;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    .pol-cam-btn {
+      width: 13px; height: 13px;
+      border-radius: 50%;
+      background: #c0392b;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2);
+      flex-shrink: 0;
+    }
+    .pol-cam-body {
+      background: #f5f2ec;
+      padding: clamp(18px, 2.5vw, 28px) clamp(18px, 2.5vw, 28px) clamp(12px, 1.5vw, 18px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pol-cam-lens {
+      width: clamp(80px, 9vw, 108px);
+      height: clamp(80px, 9vw, 108px);
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 28%, #3a3a5c 0%, #1a1a2e 45%, #07070f 100%);
+      border: 4px solid #707070;
+      box-shadow:
+        0 0 0 2px #4a4a4a,
+        0 0 0 5px #888,
+        inset 0 4px 14px rgba(0,0,0,0.85);
+      position: relative;
+    }
+    .pol-cam-lens-ring {
+      position: absolute;
+      inset: 13px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .pol-cam-lens-shine {
+      position: absolute;
+      top: 11px; left: 15px;
+      width: 22px; height: 13px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.11);
+      transform: rotate(-22deg);
+    }
+    .pol-cam-stripe {
+      background: #f5f2ec;
+      padding: 0 14px 10px;
+      display: flex;
+      gap: 3px;
+    }
+    .pol-cam-stripe span {
+      flex: 1;
+      height: 9px;
+      border-radius: 3px;
+    }
+    .pol-cam-bottom {
+      background: #1c1c1e;
+      border-radius: 0 0 16px 16px;
+      height: clamp(36px, 4.5vw, 48px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pol-cam-slot {
+      width: 52%;
+      height: 5px;
+      background: #060606;
+      border-radius: 3px;
+      box-shadow:
+        0 3px 8px rgba(0,0,0,0.9),
+        inset 0 1px 3px rgba(0,0,0,0.9),
+        0 -1px 0 rgba(255,255,255,0.04);
+    }
+
+    /* — Polaroid cards — anchored to scene centre via top/left 50% */
+    .pol-card {
+      position: absolute;
+      top: 50%; left: 50%;
+      background: #fdfcfa;
+      padding: clamp(6px, 0.8vw, 10px) clamp(6px, 0.8vw, 10px) clamp(28px, 3.5vw, 42px);
+      box-shadow:
+        0 14px 40px rgba(0,0,0,0.18),
+        0 3px 10px rgba(0,0,0,0.1);
+      border-radius: 2px;
+      width: clamp(130px, 14vw, 180px);
+      will-change: transform;
+      transform-origin: center center;
+    }
+    .pol-card-img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      display: block;
+      filter: saturate(0.8);
+    }
+    .pol-card-caption {
+      position: absolute;
+      bottom: clamp(6px, 1vw, 10px);
+      left: 0; right: 0;
+      text-align: center;
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: clamp(0.55rem, 0.8vw, 0.72rem);
+      font-weight: 300;
+      color: #aaa;
+      letter-spacing: 0.02em;
+    }
+
+    /* Mobile — natural height, visible, simple stacked layout */
+    @media (max-width: 768px) {
+      .pol-section { height: auto !important; padding: 3rem 1.5rem 4rem; }
+      .pol-scene {
+        position: relative !important;
+        visibility: visible !important;
+        height: auto !important;
+        flex-direction: column;
+        gap: 2.5rem;
+        overflow: visible;
+      }
+      .pol-camera { position: relative !important; width: clamp(150px, 45vw, 200px); }
+      .pol-card {
+        position: relative !important;
+        top: auto !important; left: auto !important;
+        transform: none !important;
+        opacity: 1 !important;
+        width: clamp(120px, 36vw, 160px);
+      }
+      .pol-cards-mobile {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        justify-content: center;
+      }
+    }
+
+    /* =============================================
+       TOOLS SECTION
+    ============================================= */
+    .tools-section {
+      padding: clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 4vw, 4rem);
+      border-top: 1px solid rgba(0,0,0,0.07);
+    }
+    .tools-label {
+      font-family: var(--font-body);
+      font-size: 0.52rem;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    }
+    .tools-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: clamp(1.5rem, 3vw, 3rem) clamp(2rem, 4vw, 4rem);
+      align-items: flex-start;
+    }
+    .tool-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.55rem;
+      opacity: 0.4;
+      transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.16,1,0.3,1);
+      cursor: default;
+    }
+    .tool-item:hover {
+      opacity: 1;
+      transform: translateY(-3px);
+    }
+    .tool-item img {
+      width: clamp(28px, 3vw, 40px);
+      height: clamp(28px, 3vw, 40px);
+      object-fit: contain;
+      display: block;
+    }
+    .tool-item span {
+      font-family: var(--font-body);
+      font-size: 0.5rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      white-space: nowrap;
+    }
+
+
+    /* =============================================
+       SHOWREEL SECTION
+    ============================================= */
+    .showreel-section {
+      position: relative;
+      width: 100%;
+      height: 100svh;
+      overflow: hidden;
+      background: #060403;
+    }
+    .showreel-video {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      filter: brightness(0.55) saturate(0.85);
+      transition: filter 0.9s ease;
+    }
+    .showreel-section.has-sound .showreel-video {
+      filter: brightness(0.72) saturate(1.05);
+    }
+    .showreel-ui {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .showreel-ring {
+      width: clamp(96px, 11vw, 148px);
+      height: clamp(96px, 11vw, 148px);
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 0.3rem;
+      backdrop-filter: blur(8px);
+      background: rgba(255,255,255,0.05);
+      cursor: none;
+      transition: transform 0.45s cubic-bezier(0.16,1,0.3,1),
+                  background 0.4s ease,
+                  border-color 0.3s ease;
+    }
+    .showreel-section:hover .showreel-ring {
+      transform: scale(1.12);
+      background: rgba(255,255,255,0.11);
+      border-color: rgba(255,255,255,0.65);
+    }
+    .showreel-ring svg { fill: white; width: 18px; height: 18px; }
+    .showreel-ring-label {
+      font-family: var(--font-body);
+      font-size: 0.44rem;
+      font-weight: 700;
+      letter-spacing: 0.28em;
+      color: rgba(255,255,255,0.75);
+      text-align: center;
+      text-transform: uppercase;
+      line-height: 1.5;
+    }
+    .showreel-corner {
+      position: absolute;
+      font-family: var(--font-body);
+      font-size: 0.5rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.38);
+    }
+    .showreel-tl { top: clamp(1.2rem,2.5vw,2rem); left: clamp(1.5rem,4vw,4rem); }
+    .showreel-tr {
+      top: clamp(1.2rem,2.5vw,2rem); right: clamp(1.5rem,4vw,4rem);
+      cursor: none;
+      padding: 0.45em 0.9em;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 2rem;
+      transition: color 0.25s, border-color 0.25s;
+    }
+    .showreel-tr:hover { color: rgba(255,255,255,0.75); border-color: rgba(255,255,255,0.45); }
+    .showreel-bl { bottom: clamp(1.5rem,3vw,2.5rem); left: clamp(1.5rem,4vw,4rem); }
+    .showreel-br { bottom: clamp(1.5rem,3vw,2.5rem); right: clamp(1.5rem,4vw,4rem); }
+    /* sound-on state label changes */
+    .showreel-section.has-sound .showreel-tr { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.4); }
+
     @media (prefers-reduced-motion: reduce) {
       .hero-blob, .marquee-track, .hero-scroll-arrow, .nav-dot { animation: none; }
       .card-media img, .card-media video { transition: filter .3s ease; }
       #spotlight { display: none; }
+    }
+
+    /* =============================================
+       BLOB MORPHING — organic light-leak feel
+    ============================================= */
+    .hero-blob-1 { animation: float 20s ease-in-out infinite alternate, blob-morph-a 14s ease-in-out infinite; }
+    .hero-blob-2 { animation: float 17s ease-in-out infinite alternate-reverse, blob-morph-b 18s ease-in-out infinite; }
+    .hero-blob-3 { animation: float 14s ease-in-out infinite alternate, blob-morph-a 10s ease-in-out infinite reverse; }
+
+    @keyframes blob-morph-a {
+      0%   { border-radius: 50%; }
+      25%  { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+      50%  { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+      75%  { border-radius: 40% 60% 50% 30% / 70% 30% 50% 60%; }
+      100% { border-radius: 50%; }
+    }
+    @keyframes blob-morph-b {
+      0%   { border-radius: 50%; }
+      33%  { border-radius: 70% 30% 40% 60% / 40% 70% 30% 60%; }
+      66%  { border-radius: 40% 70% 60% 30% / 60% 40% 70% 30%; }
+      100% { border-radius: 50%; }
+    }
+
+    /* =============================================
+       FEATURED CARD (card 1 — hero reel)
+    ============================================= */
+    .card--featured {
+      grid-column: 1 / -1 !important;
+    }
+    .card--featured .card-media { aspect-ratio: 21 / 9; }
+
+    /* Big circle play button */
+    .card-play-btn {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+    .card-play-btn-ring {
+      width: clamp(56px, 6vw, 80px);
+      height: clamp(56px, 6vw, 80px);
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.65);
+      backdrop-filter: blur(8px);
+      background: rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.35s cubic-bezier(0.16,1,0.3,1),
+                  background 0.35s ease;
+    }
+    .card-play-btn-ring svg {
+      width: 20px; height: 20px;
+      fill: white;
+      margin-left: 3px; /* optical align for triangle */
+    }
+    .card--featured:hover .card-play-btn-ring { transform: scale(1.12); background: rgba(255,255,255,0.2); }
+    .card--featured.is-playing .card-play-btn  { opacity: 0; }
+    .card--featured:hover.is-playing .card-play-btn { opacity: 1; }
+
+    /* Mobile featured ratio */
+    @media (max-width: 768px) {
+      .card--featured .card-media { aspect-ratio: 16 / 9; }
+    }
+
+    /* =============================================
+       FILM-TITLE OVERLAY — all cards
+    ============================================= */
+    .card-overlay {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: clamp(0.9rem,1.8vw,1.4rem) clamp(0.9rem,1.8vw,1.4rem);
+      background: linear-gradient(to top, rgba(8,5,3,0.82) 0%, transparent 100%);
+      z-index: 4;
+      clip-path: inset(100% 0 0 0);
+      transition: clip-path 0.55s cubic-bezier(0.16,1,0.3,1);
+      border-radius: 0 0 3px 3px;
+    }
+    .card-overlay-cat {
+      display: block;
+      font-family: var(--font-body);
+      font-size: 0.48rem;
+      font-weight: 700;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 0.3rem;
+    }
+    .card-overlay-title {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: clamp(1rem, 2.2vw, 1.65rem);
+      font-weight: 300;
+      color: #fff;
+      line-height: 1.1;
+    }
+    /* Desktop hover — clip-path wipes up like a curtain */
+    .card:hover .card-overlay { clip-path: inset(0% 0 0 0); }
+
+    /* Mobile — always visible */
+    @media (pointer: coarse) {
+      .card-overlay {
+        clip-path: inset(0% 0 0 0);
+        padding-bottom: clamp(0.7rem,1.5vw,1rem);
+      }
+    }
+
+    /* Mobile video badge — small ▶ so users know it's tappable */
+    .card-video-badge {
+      display: none;
+      position: absolute;
+      top: 0.75rem; right: 0.75rem;
+      z-index: 5;
+      font-size: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: white;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(4px);
+      border-radius: 2rem;
+      padding: 0.3em 0.7em;
+    }
+    @media (pointer: coarse) {
+      .card[data-type="video"] .card-video-badge { display: block; }
+    }
+
+    /* =============================================
+       FOOTER CTA
+    ============================================= */
+    .footer-cta-wrap {
+      padding: clamp(3.5rem, 7vw, 6rem) clamp(1.5rem,4vw,4rem) 0;
+      border-top: 1px solid rgba(0,0,0,0.08);
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .footer-cta {
+      font-family: var(--font-hero);
+      font-size: clamp(2.8rem, 9vw, 8.5rem);
+      font-weight: 900;
+      color: var(--ink);
+      letter-spacing: -0.03em;
+      line-height: 0.92;
+    }
+    .footer-cta em {
+      font-style: italic;
+      font-family: var(--font-serif);
+      font-weight: 300;
+      color: var(--grad-a);
+      font-size: 1.05em;
+    }
+    .footer-cta-sub {
+      margin-top: clamp(1rem,2vw,1.5rem);
+      font-family: var(--font-body);
+      font-size: clamp(0.7rem,1.2vw,0.9rem);
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
     }
   </style>
 </head>
@@ -692,14 +1280,18 @@
 
   <!-- Loader -->
   <div id="loader" aria-hidden="true">
-    <div class="loader-line" id="loader-line" style="width:clamp(80px,15vw,140px)"></div>
+    <p class="loader-name-bg" id="loader-name-bg">Anirudh Yadav</p>
+    <div class="loader-counter" id="loader-counter">0</div>
   </div>
 
   <!-- =============================================
        NAV
   ============================================= -->
   <nav aria-label="Site navigation">
-    <button class="nav-logo" id="nav-logo" aria-label="Back to top">AY</button>
+    <button class="nav-logo" id="nav-logo" aria-label="Back to top">
+      <span class="nav-ay" id="nav-ay">AY</span>
+      <span class="nav-fullname" id="nav-fullname">Anirudh Yadav</span>
+    </button>
     <button class="nav-status" id="nav-status"
             onclick="document.getElementById('footer').scrollIntoView({behavior:'smooth'})"
             aria-label="Scroll to contact">
@@ -731,7 +1323,7 @@
       <span class="line"><span class="word">Yadav</span></span>
     </h1>
 
-    <p class="hero-tagline">Freelancing Pro Max</p>
+    <p class="hero-tagline" id="hero-tagline"><span class="tagline-word" id="tagline-word">Freelancing Pro Max</span></p>
 
     <div class="hero-scroll" aria-hidden="true">
       <div class="hero-scroll-arrow"></div>
@@ -760,32 +1352,160 @@
   </div>
 
   <!-- =============================================
+       FILMSTRIP
+  ============================================= -->
+  <div class="filmstrip-section" aria-hidden="true">
+    <!-- Row A — scrolls left -->
+    <div class="filmstrip-row">
+      <div class="filmstrip-track filmstrip-track--a">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-a1/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-a2/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-a3/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-a4/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-a5/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-a6/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-a7/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-a8/640/360" alt="" loading="lazy">
+        <!-- duplicated for seamless loop -->
+        <img class="fs-img" src="https://picsum.photos/seed/fs-a1/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-a2/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-a3/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-a4/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-a5/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-a6/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-a7/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-a8/640/360" alt="" loading="lazy">
+      </div>
+    </div>
+    <!-- Row B — scrolls right -->
+    <div class="filmstrip-row">
+      <div class="filmstrip-track filmstrip-track--b">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-b1/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-b2/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-b3/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-b4/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-b5/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-b6/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-b7/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-b8/640/360" alt="" loading="lazy">
+        <!-- duplicated -->
+        <img class="fs-img" src="https://picsum.photos/seed/fs-b1/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-b2/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-b3/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-b4/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-b5/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-b6/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-b7/640/360" alt="" loading="lazy">
+        <img class="fs-img" src="https://picsum.photos/seed/fs-b8/640/360" alt="" loading="lazy">
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================
+       POLAROID CAMERA
+  ============================================= -->
+  <div class="pol-section" id="pol-section">
+    <div class="pol-scene" id="pol-scene">
+
+      <!-- CSS Polaroid camera -->
+      <div class="pol-camera" id="pol-camera">
+        <div class="pol-cam-top">
+          <div class="pol-cam-flash"></div>
+          <div class="pol-cam-selfie-led"></div>
+          <div class="pol-cam-viewfinder"></div>
+          <div class="pol-cam-btn"></div>
+        </div>
+        <div class="pol-cam-body">
+          <div class="pol-cam-lens">
+            <div class="pol-cam-lens-ring"></div>
+            <div class="pol-cam-lens-shine"></div>
+          </div>
+        </div>
+        <div class="pol-cam-stripe">
+          <span style="background:#e63946"></span>
+          <span style="background:#f4a261"></span>
+          <span style="background:#f9c74f"></span>
+          <span style="background:#90be6d"></span>
+          <span style="background:#43aa8b"></span>
+          <span style="background:#4361ee"></span>
+        </div>
+        <div class="pol-cam-bottom">
+          <div class="pol-cam-slot"></div>
+        </div>
+      </div>
+
+      <!-- Polaroid cards — start hidden at camera slot, GSAP moves them -->
+      <div class="pol-card pol-card-0" data-final-x="-310" data-final-y="-200" data-final-r="-14">
+        <img class="pol-card-img" src="https://picsum.photos/seed/pol1/400/400" alt="Studio sketch" loading="lazy">
+        <p class="pol-card-caption">studio sketch</p>
+      </div>
+      <div class="pol-card pol-card-1" data-final-x="290" data-final-y="-170" data-final-r="11">
+        <img class="pol-card-img" src="https://picsum.photos/seed/pol2/400/400" alt="Golden hour" loading="lazy">
+        <p class="pol-card-caption">golden hour</p>
+      </div>
+      <div class="pol-card pol-card-2" data-final-x="-270" data-final-y="130" data-final-r="-7">
+        <img class="pol-card-img" src="https://picsum.photos/seed/pol3/400/400" alt="Late night edit" loading="lazy">
+        <p class="pol-card-caption">late night edit</p>
+      </div>
+      <div class="pol-card pol-card-3" data-final-x="260" data-final-y="150" data-final-r="16">
+        <img class="pol-card-img" src="https://picsum.photos/seed/pol4/400/400" alt="The process" loading="lazy">
+        <p class="pol-card-caption">the process</p>
+      </div>
+      <div class="pol-card pol-card-4" data-final-x="30" data-final-y="310" data-final-r="-3">
+        <img class="pol-card-img" src="https://picsum.photos/seed/pol5/400/400" alt="In between" loading="lazy">
+        <p class="pol-card-caption">in between</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =============================================
+       SHOWREEL
+  ============================================= -->
+  <section class="showreel-section" id="showreel" aria-label="Showreel">
+    <video class="showreel-video" id="showreel-video"
+           src="https://www.w3schools.com/html/mov_bbb.mp4"
+           muted loop playsinline preload="none"
+           aria-label="Showreel 2024–2025"></video>
+
+    <div class="showreel-ui" id="showreel-ui">
+      <!-- Top-left -->
+      <span class="showreel-corner showreel-tl">Anirudh Yadav</span>
+      <!-- Top-right: sound toggle -->
+      <button class="showreel-corner showreel-tr" id="showreel-sound-btn" aria-label="Toggle sound">
+        ♪ SOUND
+      </button>
+      <!-- Centre: play ring -->
+      <div class="showreel-ring" id="showreel-ring" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <span class="showreel-ring-label">SHOW<br>REEL</span>
+      </div>
+      <!-- Bottom-left -->
+      <span class="showreel-corner showreel-bl">2024 — 2025</span>
+      <!-- Bottom-right -->
+      <span class="showreel-corner showreel-br">Selected work</span>
+    </div>
+  </section>
+
+  <!-- =============================================
        WORK
   ============================================= -->
   <section id="work">
     <div class="work-header">
       <h2 class="work-title">Work</h2>
-      <span class="work-count">09 pieces</span>
+      <span class="work-count">08 pieces</span>
     </div>
 
     <div class="work-grid">
-
-      <article class="card" data-type="video" tabindex="0">
-        <div class="card-inner">
-          <div class="card-media">
-            <video src="https://www.w3schools.com/html/mov_bbb.mp4" muted loop playsinline preload="none" aria-label="Reel 001"></video>
-          </div>
-          <div class="card-info">
-            <span class="card-title">Reel 001</span>
-            <span class="card-tag">Edit</span>
-          </div>
-        </div>
-      </article>
 
       <article class="card" data-type="image" tabindex="0">
         <div class="card-inner">
           <div class="card-media">
             <img src="https://picsum.photos/seed/sketch04/600/800" alt="Sketch 004" loading="lazy" />
+            <div class="card-overlay">
+              <span class="card-overlay-cat">Procreate</span>
+              <p class="card-overlay-title">Sketch 004</p>
+            </div>
           </div>
           <div class="card-info">
             <span class="card-title">Sketch 004</span>
@@ -798,6 +1518,10 @@
         <div class="card-inner">
           <div class="card-media">
             <img src="https://picsum.photos/seed/art01/600/800" alt="Study 001" loading="lazy" />
+            <div class="card-overlay">
+              <span class="card-overlay-cat">Procreate</span>
+              <p class="card-overlay-title">Study 001</p>
+            </div>
           </div>
           <div class="card-info">
             <span class="card-title">Study 001</span>
@@ -810,6 +1534,11 @@
         <div class="card-inner">
           <div class="card-media">
             <video src="https://www.w3schools.com/html/mov_bbb.mp4" muted loop playsinline preload="none" aria-label="Reel 002"></video>
+            <span class="card-video-badge">▶ VIDEO</span>
+            <div class="card-overlay">
+              <span class="card-overlay-cat">Reel Edit</span>
+              <p class="card-overlay-title">Reel 002</p>
+            </div>
           </div>
           <div class="card-info">
             <span class="card-title">Reel 002</span>
@@ -822,6 +1551,10 @@
         <div class="card-inner">
           <div class="card-media">
             <img src="https://picsum.photos/seed/thumb02/600/800" alt="Thumbnail 002" loading="lazy" />
+            <div class="card-overlay">
+              <span class="card-overlay-cat">Art Direction</span>
+              <p class="card-overlay-title">Thumbnail 002</p>
+            </div>
           </div>
           <div class="card-info">
             <span class="card-title">Thumbnail 002</span>
@@ -834,6 +1567,10 @@
         <div class="card-inner">
           <div class="card-media">
             <img src="https://picsum.photos/seed/frame03/900/560" alt="Frame 003" loading="lazy" />
+            <div class="card-overlay">
+              <span class="card-overlay-cat">Procreate</span>
+              <p class="card-overlay-title">Frame 003</p>
+            </div>
           </div>
           <div class="card-info">
             <span class="card-title">Frame 003</span>
@@ -846,6 +1583,11 @@
         <div class="card-inner">
           <div class="card-media">
             <video src="https://www.w3schools.com/html/mov_bbb.mp4" muted loop playsinline preload="none" aria-label="Reel 003"></video>
+            <span class="card-video-badge">▶ VIDEO</span>
+            <div class="card-overlay">
+              <span class="card-overlay-cat">Reel Edit</span>
+              <p class="card-overlay-title">Reel 003</p>
+            </div>
           </div>
           <div class="card-info">
             <span class="card-title">Reel 003</span>
@@ -858,6 +1600,10 @@
         <div class="card-inner">
           <div class="card-media">
             <img src="https://picsum.photos/seed/sketch07/600/800" alt="Sketch 007" loading="lazy" />
+            <div class="card-overlay">
+              <span class="card-overlay-cat">Procreate</span>
+              <p class="card-overlay-title">Sketch 007</p>
+            </div>
           </div>
           <div class="card-info">
             <span class="card-title">Sketch 007</span>
@@ -870,6 +1616,11 @@
         <div class="card-inner">
           <div class="card-media">
             <video src="https://www.w3schools.com/html/mov_bbb.mp4" muted loop playsinline preload="none" aria-label="Reel 004"></video>
+            <span class="card-video-badge">▶ VIDEO</span>
+            <div class="card-overlay">
+              <span class="card-overlay-cat">Reel Edit</span>
+              <p class="card-overlay-title">Reel 004</p>
+            </div>
           </div>
           <div class="card-info">
             <span class="card-title">Reel 004</span>
@@ -884,6 +1635,52 @@
   <!-- =============================================
        FOOTER
   ============================================= -->
+  <div class="footer-cta-wrap" id="footer-cta-wrap">
+    <p class="footer-cta">Let's make<br><em>something.</em></p>
+    <p class="footer-cta-sub">Open for freelance — hello@anirudhyadav.com</p>
+  </div>
+
+  <!-- =============================================
+       TOOLS
+  ============================================= -->
+  <div class="tools-section" id="tools-section">
+    <p class="tools-label">Tools I work with</p>
+    <div class="tools-row">
+      <div class="tool-item">
+        <img src="https://cdn.simpleicons.org/procreate/4B5DFD" alt="Procreate" loading="lazy">
+        <span>Procreate</span>
+      </div>
+      <div class="tool-item">
+        <img src="https://cdn.simpleicons.org/finalcutpro/333333" alt="Final Cut Pro" loading="lazy">
+        <span>Final Cut Pro</span>
+      </div>
+      <div class="tool-item">
+        <img src="https://cdn.simpleicons.org/adobefresco/FF0000" alt="Adobe Fresco" loading="lazy">
+        <span>Adobe Fresco</span>
+      </div>
+      <div class="tool-item">
+        <img src="https://cdn.simpleicons.org/davinciresolve/222222" alt="DaVinci Resolve" loading="lazy">
+        <span>DaVinci Resolve</span>
+      </div>
+      <div class="tool-item">
+        <img src="https://cdn.simpleicons.org/canva/00C4CC" alt="Canva" loading="lazy">
+        <span>Canva</span>
+      </div>
+      <div class="tool-item">
+        <img src="https://cdn.simpleicons.org/capcut/222222" alt="CapCut" loading="lazy">
+        <span>CapCut</span>
+      </div>
+      <div class="tool-item">
+        <img src="https://cdn.simpleicons.org/adobeaftereffects/9999FF" alt="After Effects" loading="lazy">
+        <span>After Effects</span>
+      </div>
+      <div class="tool-item">
+        <img src="https://cdn.simpleicons.org/adobepremierepro/9999FF" alt="Premiere Pro" loading="lazy">
+        <span>Premiere Pro</span>
+      </div>
+    </div>
+  </div>
+
   <footer id="footer">
     <div class="footer-top">
       <span class="footer-name">Anirudh Yadav</span>
@@ -907,6 +1704,36 @@
   <script>
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const isFine  = window.matchMedia('(pointer: fine)').matches;
+
+    /* =============================================
+       LOADER COUNTER — counts 0→100, name fades in behind
+    ============================================= */
+    (function initCounter() {
+      const counterEl = document.getElementById('loader-counter');
+      const nameBgEl  = document.getElementById('loader-name-bg');
+      if (!counterEl) return;
+      let current = 0;
+      const target = 100;
+      const duration = 1100; // ms
+      const start = performance.now();
+
+      function tick(now) {
+        const elapsed  = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        // Ease out quad
+        const eased = 1 - (1 - progress) * (1 - progress);
+        current = Math.floor(eased * target);
+        counterEl.textContent = current;
+        // Name fades in from halfway
+        if (nameBgEl) nameBgEl.style.opacity = Math.max(0, (progress - 0.4) / 0.6) * 0.12;
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          counterEl.textContent = '100';
+        }
+      }
+      requestAnimationFrame(tick);
+    })();
 
     /* =============================================
        SCROLL PROGRESS BAR
@@ -992,15 +1819,39 @@
     }
 
     /* =============================================
-       VIDEO hover play/pause
+       VIDEO play/pause
+       Desktop: hover in/out
+       Mobile: tap to toggle (featured card tracks state)
     ============================================= */
     document.querySelectorAll('.card[data-type="video"]').forEach(card => {
       const v = card.querySelector('video');
       if (!v) return;
-      card.addEventListener('mouseenter', () => v.play().catch(() => {}));
-      card.addEventListener('mouseleave', () => { v.pause(); v.currentTime = 0; });
-      card.addEventListener('focus',      () => v.play().catch(() => {}));
-      card.addEventListener('blur',       () => { v.pause(); v.currentTime = 0; });
+      const isFeatured = card.classList.contains('card--featured');
+
+      if (isFine) {
+        // Desktop hover
+        card.addEventListener('mouseenter', () => {
+          v.play().catch(() => {});
+          if (isFeatured) card.classList.add('is-playing');
+        });
+        card.addEventListener('mouseleave', () => {
+          v.pause(); v.currentTime = 0;
+          if (isFeatured) card.classList.remove('is-playing');
+        });
+        card.addEventListener('focus', () => v.play().catch(() => {}));
+        card.addEventListener('blur',  () => { v.pause(); v.currentTime = 0; });
+      } else {
+        // Mobile tap toggle
+        card.addEventListener('click', () => {
+          if (v.paused) {
+            v.play().catch(() => {});
+            if (isFeatured) card.classList.add('is-playing');
+          } else {
+            v.pause();
+            if (isFeatured) { v.currentTime = 0; card.classList.remove('is-playing'); }
+          }
+        });
+      }
     });
 
     /* 3D card tilt removed — cylinder scroll handles all depth */
@@ -1012,17 +1863,18 @@
     // Track active scramble intervals so we can cancel on replay
     let scrambleIntervals = [];
 
-    function scramble(el, finalText, duration = 800) {
-      // Cancel any running scramble on this element
+    function scramble(el, finalText, duration = 1100) {
       el._scrambleInterval && clearInterval(el._scrambleInterval);
       let frame = 0;
       const totalFrames = Math.round(duration / 16);
+      // Start with all chars randomised, resolve left-to-right over duration
       el._scrambleInterval = setInterval(() => {
         const progress = frame / totalFrames;
         let out = '';
         for (let i = 0; i < finalText.length; i++) {
           if (finalText[i] === ' ') { out += ' '; continue; }
-          out += i < finalText.length * progress
+          // Each char resolves when progress passes its position threshold
+          out += progress >= i / finalText.length
             ? finalText[i]
             : CHARS[Math.floor(Math.random() * CHARS.length)];
         }
@@ -1063,10 +1915,10 @@
         '-=0.4'  // overlap with big fading out
       );
 
-      // Scramble the small text
+      // Scramble the small text — after fade-in completes
       tl.call(() => {
-        if (portText && !reduced) scramble(portText, 'Portfolio', 700);
-      }, [], '-=0.3');
+        if (portText && !reduced) scramble(portText, 'Portfolio', 1000);
+      }, [], '+=0.05');
 
       return tl;
     }
@@ -1078,14 +1930,15 @@
       if (typeof gsap === 'undefined') return;
       gsap.registerPlugin(ScrollTrigger);
 
-      /* ---- Loader ---- */
+
+      /* ---- Loader — counter fades out, screen wipes up ---- */
       const tl = gsap.timeline();
 
-      tl.to('#loader-line', { width: '100%', duration: 0.7, ease: 'power2.inOut' })
+      tl.to('#loader-counter', { opacity: 0, scale: 1.08, duration: 0.35, ease: 'power2.in', delay: 1.15 })
         .to('#loader', {
-          yPercent: -100, duration: 0.7, ease: 'power4.inOut',
+          yPercent: -100, duration: 0.65, ease: 'power4.inOut',
           onComplete: () => { document.getElementById('loader').style.display = 'none'; }
-        }, '+=0.1')
+        }, '+=0.05')
         .to('nav', { opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.1')
 
         /* Eyebrow fades in */
@@ -1098,8 +1951,8 @@
         .to('.hero-name .word', { y: '0%', duration: 1.1, ease: 'power4.out', stagger: 0.1 })
         .add(showPortfolio(gsap), '<')   /* '<' = start at same time as name */
 
-        /* Name scramble */
-        .call(() => { if (!reduced) scramble(document.getElementById('scramble-word'), 'Anirudh', 800); }, [], '-=0.8')
+        /* Name scramble — fires AFTER sweep completes so all chars are visible and scrambling */
+        .call(() => { if (!reduced) scramble(document.getElementById('scramble-word'), 'Anirudh', 1100); }, [], '+=0.05')
 
         /* Tagline */
         .to('.hero-tagline', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.4')
@@ -1164,6 +2017,211 @@
         trigger: 'footer', start: 'top 90%',
         onEnter: () => gsap.to('footer', { opacity: 1, duration: 0.7 })
       });
+
+      /* ---- Footer CTA reveal ---- */
+      ScrollTrigger.create({
+        trigger: '#footer-cta-wrap', start: 'top 85%',
+        onEnter: () => gsap.to('#footer-cta-wrap', { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' })
+      });
+
+      /* =============================================
+         POLAROID CAMERA — scroll-scrubbed ejection
+         Desktop: pinned section, polaroids scatter as you scroll
+         Mobile: handled via CSS (static layout)
+      ============================================= */
+      const polSection = document.getElementById('pol-section');
+      const polScene   = document.getElementById('pol-scene');
+      const polCards   = document.querySelectorAll('.pol-card');
+      // pol-scene needs to be a child of body (not pol-section) for fixed positioning
+      // Move it if needed — it's already in pol-section in HTML but fixed ignores parent
+      // (fixed positions relative to viewport regardless of parent)
+
+      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+      if (polSection && polCards.length && !reduced && !isMobile) {
+
+        // Wrap cards in a container for mobile fallback (desktop keeps absolute)
+        // Set all cards to start at camera slot — center of scene, bottom of camera
+        // Camera is ~240px wide, bottom slot is roughly at y=+50px from camera center
+        // Polaroids start at camera slot — center of viewport + slotY offset
+        // Their CSS anchor is top:50% left:50%, so GSAP x/y are pixel offsets from there
+        const slotY = 80; // camera slot is ~80px below scene center
+
+        gsap.set(polCards, {
+          x: 0,
+          y: slotY,
+          xPercent: -50, // compensate for card width (top:50%,left:50% anchor)
+          yPercent: -50,
+          rotation: 0,
+          opacity: 0,
+          scale: 0.18,
+          transformOrigin: 'center bottom',
+        });
+
+        // Build the eject timeline — each card gets its own moment
+        const polTl = gsap.timeline();
+
+        polCards.forEach((card, i) => {
+          const fx = parseFloat(card.dataset.finalX) || 0;
+          const fy = parseFloat(card.dataset.finalY) || 0;
+          const fr = parseFloat(card.dataset.finalR) || 0;
+
+          polTl.to(card, {
+            x: fx,
+            y: fy,
+            rotation: fr,
+            opacity: 1,
+            scale: 1,
+            ease: 'power3.out',
+            duration: 1,
+          }, i * 0.55);
+        });
+
+        // Show/hide the fixed scene while section is in view
+        ScrollTrigger.create({
+          trigger: polSection,
+          start: 'top top',
+          end: 'bottom bottom',
+          onEnter:     () => polScene.classList.add('pol-active'),
+          onLeave:     () => polScene.classList.remove('pol-active'),
+          onEnterBack: () => polScene.classList.add('pol-active'),
+          onLeaveBack: () => polScene.classList.remove('pol-active'),
+        });
+
+        // Scrub polaroid eject animation through the section's scroll range
+        ScrollTrigger.create({
+          trigger: polSection,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 1.4,
+          animation: polTl,
+        });
+
+      } else if (polCards.length) {
+        // Mobile: make all cards visible immediately, wrapped layout via CSS
+        gsap.set(polCards, { opacity: 1, scale: 1, x: 0, y: 0, rotation: 0 });
+        // Wrap them in a flex container for mobile layout
+        const scene = document.getElementById('pol-scene');
+        if (scene) {
+          const wrap = document.createElement('div');
+          wrap.className = 'pol-cards-mobile';
+          polCards.forEach(c => wrap.appendChild(c));
+          scene.appendChild(wrap);
+        }
+      }
+
+      /* =============================================
+         SHOWREEL — autoplay muted on enter, click toggles sound
+      ============================================= */
+      const showreelSection = document.getElementById('showreel');
+      const showreelVideo   = document.getElementById('showreel-video');
+      const showreelSoundBtn = document.getElementById('showreel-sound-btn');
+
+      if (showreelSection && showreelVideo) {
+        // Autoplay when scrolled into view
+        const reelObs = new IntersectionObserver(entries => {
+          entries.forEach(e => {
+            if (e.isIntersecting) {
+              showreelVideo.play().catch(() => {});
+            } else {
+              showreelVideo.pause();
+            }
+          });
+        }, { threshold: 0.25 });
+        reelObs.observe(showreelSection);
+
+        // Click anywhere on section to toggle sound
+        let hasSoundOn = false;
+        function toggleShowreelSound() {
+          hasSoundOn = !hasSoundOn;
+          showreelVideo.muted = !hasSoundOn;
+          showreelSection.classList.toggle('has-sound', hasSoundOn);
+          if (showreelSoundBtn) {
+            showreelSoundBtn.textContent = hasSoundOn ? '✕ MUTE' : '♪ SOUND';
+          }
+        }
+        showreelSection.addEventListener('click', toggleShowreelSound);
+      }
+
+
+      /* =============================================
+         GLOBE / CYLINDER SCROLL
+         Cards in viewport centre face flat; cards above/below
+         tilt away on rotateX — applied to .card-inner so GSAP's
+         opacity/y on .card doesn't stomp the transform.
+      ============================================= */
+      if (!reduced) {
+        const allCards  = document.querySelectorAll('.card');
+        const MAX_ROT   = 38; // degrees — crank this up so it's visible
+
+        (function cylinderLoop() {
+          const vh  = window.innerHeight;
+          const mid = vh / 2;
+          allCards.forEach(card => {
+            const inner = card.querySelector('.card-inner');
+            if (!inner) return;
+            const rect    = card.getBoundingClientRect();
+            const cardMid = rect.top + rect.height / 2;
+            // Normalise: 0 = card centre at viewport centre, ±1 = at edge
+            const dist = Math.max(-1, Math.min(1, (cardMid - mid) / (vh * 0.55)));
+            const rot  = dist * MAX_ROT;
+            gsap.set(inner, { rotateX: rot, transformPerspective: 1100 });
+          });
+          requestAnimationFrame(cylinderLoop);
+        })();
+      }
+
+      /* =============================================
+         KINETIC TAGLINE — cycles through phrases every 3.5 s
+      ============================================= */
+      const TAGLINE_PHRASES = [
+        'Freelancing Pro Max',
+        'Motion artist',
+        'Visual chaos',
+        'Available now',
+        'Reel editor'
+      ];
+      let taglineIdx = 0;
+      const taglineEl = document.getElementById('tagline-word');
+
+      if (taglineEl && !reduced) {
+        setInterval(() => {
+          taglineIdx = (taglineIdx + 1) % TAGLINE_PHRASES.length;
+          // Slide current out upward
+          taglineEl.classList.add('exit-up');
+          setTimeout(() => {
+            // Instantly jump to below, then slide up into place
+            taglineEl.classList.remove('exit-up');
+            taglineEl.classList.add('enter-below');
+            taglineEl.textContent = TAGLINE_PHRASES[taglineIdx];
+            // Force reflow so the no-transition class sticks
+            void taglineEl.offsetWidth;
+            taglineEl.classList.remove('enter-below');
+          }, 460);
+        }, 1800);
+      }
+
+      /* =============================================
+         NAV NAME SCROLL — "AY" crossfades to "Anirudh Yadav"
+         once hero scrolls out of view
+      ============================================= */
+      const navAy       = document.getElementById('nav-ay');
+      const navFullname = document.getElementById('nav-fullname');
+
+      if (navAy && navFullname) {
+        ScrollTrigger.create({
+          trigger: '#hero',
+          start: 'bottom 80%',
+          onEnter: () => {
+            gsap.to(navAy,       { opacity: 0, y: -6, duration: 0.35, ease: 'power2.in' });
+            gsap.to(navFullname, { opacity: 1, y: 0,  duration: 0.45, ease: 'power2.out', delay: 0.15, pointerEvents: 'auto' });
+          },
+          onLeaveBack: () => {
+            gsap.to(navAy,       { opacity: 1, y: 0,  duration: 0.35, ease: 'power2.out' });
+            gsap.to(navFullname, { opacity: 0, y: 6,  duration: 0.3,  ease: 'power2.in', pointerEvents: 'none' });
+          }
+        });
+      }
 
       /* =============================================
          AY CLICK — scroll to top + replay scramble + portfolio shrink

@@ -759,12 +759,12 @@
        POLAROID CAMERA SECTION
     ============================================= */
     /* Fixed-based scroll section —
-       pol-section provides scroll height,
+       pol-section provides scroll height (entry + 5 ejects + buffer)
        pol-scene is fixed and only shown while section is in view */
     .pol-section {
       position: relative;
       width: 100%;
-      height: calc(100svh + 2400px);
+      height: calc(100svh + 3800px);
     }
     .pol-scene {
       position: fixed;
@@ -784,128 +784,228 @@
       pointer-events: auto;
     }
 
-    /* — CSS Camera — centred as flex item, polaroids absolute around it */
-    .pol-camera {
-      width: clamp(180px, 20vw, 240px);
-      position: relative; /* stacking context so polaroids layer correctly */
-      filter: drop-shadow(0 28px 55px rgba(0,0,0,0.22));
+    /* =============================================
+       CAMERA WRAP — perspective 3D container + float
+    ============================================= */
+    .pol-camera-wrap {
+      position: relative;
       z-index: 10;
       flex-shrink: 0;
+      transform: perspective(1100px) rotateX(6deg) rotateY(-4deg);
+      transform-style: preserve-3d;
+      animation: cam-float 5s ease-in-out infinite;
+      will-change: transform;
     }
+    @keyframes cam-float {
+      0%,100% { transform: perspective(1100px) rotateX(6deg) rotateY(-4deg) translateY(0px);   }
+      50%      { transform: perspective(1100px) rotateX(6deg) rotateY(-4deg) translateY(-10px); }
+    }
+    .cam-svg {
+      width: clamp(180px, 22vw, 280px);
+      display: block;
+      /* Entry animation overrides float via GSAP — float continues underneath */
+    }
+    /* Legacy camera class kept empty for mobile CSS */
+    .pol-camera {
+      width: clamp(160px, 18vw, 215px);
+      position: relative;
+      z-index: 10;
+      flex-shrink: 0;
+      /* Multi-layer drop shadow for depth */
+      filter:
+        drop-shadow(0 2px 0 #c8c4bc)
+        drop-shadow(0 4px 0 #b8b4ac)
+        drop-shadow(0 6px 0 #a8a49c)
+        drop-shadow(0 20px 40px rgba(0,0,0,0.35))
+        drop-shadow(0 8px 16px rgba(0,0,0,0.2));
+    }
+    /* Outer body — white plastic with sheen */
     .pol-cam-top {
-      background: #1c1c1e;
-      border-radius: 20px 20px 0 0;
-      height: clamp(42px, 5vw, 54px);
+      background: linear-gradient(170deg, #2c2c2e 0%, #1e1e20 50%, #141416 100%);
+      border-radius: clamp(14px,2vw,18px) clamp(14px,2vw,18px) 0 0;
+      height: clamp(44px, 5.5vw, 56px);
       display: flex;
       align-items: center;
-      padding: 0 14px;
-      gap: 8px;
+      padding: 0 clamp(10px,1.4vw,16px);
+      gap: 7px;
+      position: relative;
+      /* Highlight line across top edge */
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,0.3);
     }
     .pol-cam-flash {
-      width: 18px; height: 18px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 40% 35%, #d8d8d8, #888);
-      border: 2px solid #555;
+      width: clamp(16px,2vw,22px); height: clamp(16px,2vw,22px);
+      border-radius: 5px;
+      background: linear-gradient(135deg, #e0e0e0 0%, #a8a8a8 60%, #888 100%);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.5);
       flex-shrink: 0;
     }
     .pol-cam-selfie-led {
-      width: 6px; height: 6px;
+      width: 5px; height: 5px;
       border-radius: 50%;
       background: #22c55e;
-      box-shadow: 0 0 6px #22c55e;
+      box-shadow: 0 0 5px 2px rgba(34,197,94,0.6);
       flex-shrink: 0;
       animation: blink 2.5s ease-in-out infinite;
     }
     .pol-cam-viewfinder {
-      width: 36px; height: 20px;
-      border-radius: 4px;
-      background: #4a90d9;
-      opacity: 0.65;
-      border: 2px solid #333;
+      width: clamp(28px,3.5vw,38px); height: clamp(16px,2vw,22px);
+      border-radius: 3px;
+      background: linear-gradient(135deg, #1a3a5c 0%, #0d2540 100%);
+      border: 1.5px solid #444;
       margin-left: auto;
       flex-shrink: 0;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.08);
     }
     .pol-cam-btn {
-      width: 13px; height: 13px;
+      width: clamp(11px,1.4vw,15px); height: clamp(11px,1.4vw,15px);
       border-radius: 50%;
-      background: #c0392b;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2);
+      background: linear-gradient(145deg, #d44 60%, #922 100%);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.25);
       flex-shrink: 0;
     }
+    /* White plastic body */
     .pol-cam-body {
-      background: #f5f2ec;
-      padding: clamp(18px, 2.5vw, 28px) clamp(18px, 2.5vw, 28px) clamp(12px, 1.5vw, 18px);
+      background: linear-gradient(160deg,
+        #ffffff 0%,
+        #f8f6f2 30%,
+        #f2ede6 65%,
+        #e9e3da 100%
+      );
+      /* Inset highlights = plastic sheen */
+      box-shadow:
+        inset 3px 0 8px rgba(255,255,255,0.6),
+        inset -2px 0 6px rgba(0,0,0,0.06),
+        inset 0 3px 8px rgba(255,255,255,0.7),
+        inset 0 -2px 4px rgba(0,0,0,0.06);
+      padding: clamp(16px, 2.2vw, 24px) clamp(16px, 2.2vw, 24px) clamp(10px, 1.2vw, 14px);
       display: flex;
       align-items: center;
       justify-content: center;
     }
+    /* Multi-ring glass lens */
     .pol-cam-lens {
-      width: clamp(80px, 9vw, 108px);
-      height: clamp(80px, 9vw, 108px);
+      width: clamp(72px, 8.5vw, 102px);
+      height: clamp(72px, 8.5vw, 102px);
       border-radius: 50%;
-      background: radial-gradient(circle at 32% 28%, #3a3a5c 0%, #1a1a2e 45%, #07070f 100%);
-      border: 4px solid #707070;
-      box-shadow:
-        0 0 0 2px #4a4a4a,
-        0 0 0 5px #888,
-        inset 0 4px 14px rgba(0,0,0,0.85);
       position: relative;
+      /* Outer chrome ring */
+      background: conic-gradient(
+        from 0deg,
+        #b0aca4 0%, #e8e4de 20%, #b0aca4 40%,
+        #e8e4de 60%, #b0aca4 80%, #e8e4de 100%
+      );
+      box-shadow:
+        0 2px 8px rgba(0,0,0,0.4),
+        inset 0 1px 3px rgba(255,255,255,0.5),
+        inset 0 -1px 2px rgba(0,0,0,0.3);
+      padding: 5px;
     }
+    /* Inner chrome ring */
     .pol-cam-lens-ring {
       position: absolute;
-      inset: 13px;
+      inset: 5px;
       border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.08);
+      background: conic-gradient(
+        from 45deg,
+        #888480 0%, #c4c0b8 25%, #888480 50%,
+        #c4c0b8 75%, #888480 100%
+      );
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+      padding: 4px;
     }
+    /* Glass element */
+    .pol-cam-lens-ring::before {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle at 38% 32%,
+        #4a5068 0%,
+        #1e2235 35%,
+        #0c0e18 65%,
+        #060810 100%
+      );
+      box-shadow: inset 0 3px 12px rgba(0,0,0,0.9);
+    }
+    /* Glass shine */
     .pol-cam-lens-shine {
       position: absolute;
-      top: 11px; left: 15px;
-      width: 22px; height: 13px;
+      top: 14px; left: 16px;
+      width: 28%; height: 18%;
       border-radius: 50%;
-      background: rgba(255,255,255,0.11);
-      transform: rotate(-22deg);
+      background: rgba(255,255,255,0.18);
+      transform: rotate(-30deg);
+      z-index: 2;
     }
+    /* Small secondary shine */
+    .pol-cam-lens-shine::after {
+      content: '';
+      position: absolute;
+      bottom: -8px; right: -4px;
+      width: 40%; height: 35%;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+    }
+    /* Rainbow stripe */
     .pol-cam-stripe {
-      background: #f5f2ec;
-      padding: 0 14px 10px;
+      background: linear-gradient(160deg, #f2ede6 0%, #eae4dc 100%);
+      padding: 0 clamp(10px,1.4vw,14px) clamp(8px,1vw,12px);
       display: flex;
-      gap: 3px;
+      gap: 2.5px;
     }
     .pol-cam-stripe span {
       flex: 1;
-      height: 9px;
-      border-radius: 3px;
+      height: clamp(7px,0.9vw,10px);
+      border-radius: 2.5px;
+      /* Each stripe has a subtle gloss */
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.1);
     }
+    /* Ejection slot */
     .pol-cam-bottom {
-      background: #1c1c1e;
-      border-radius: 0 0 16px 16px;
-      height: clamp(36px, 4.5vw, 48px);
+      background: linear-gradient(170deg, #222224 0%, #18181a 100%);
+      border-radius: 0 0 clamp(14px,2vw,18px) clamp(14px,2vw,18px);
+      height: clamp(34px, 4.2vw, 46px);
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
     }
     .pol-cam-slot {
-      width: 52%;
+      width: 54%;
       height: 5px;
-      background: #060606;
+      background: linear-gradient(to bottom, #030303, #0a0a0a);
       border-radius: 3px;
       box-shadow:
-        0 3px 8px rgba(0,0,0,0.9),
-        inset 0 1px 3px rgba(0,0,0,0.9),
-        0 -1px 0 rgba(255,255,255,0.04);
+        0 2px 6px rgba(0,0,0,0.9),
+        inset 0 1px 2px rgba(0,0,0,1),
+        0 -1px 0 rgba(80,80,80,0.2);
     }
 
-    /* — Polaroid cards — anchored to scene centre via top/left 50% */
+    /* =============================================
+       3D POLAROID CARDS
+    ============================================= */
     .pol-card {
       position: absolute;
       top: 50%; left: 50%;
-      background: #fdfcfa;
-      padding: clamp(6px, 0.8vw, 10px) clamp(6px, 0.8vw, 10px) clamp(28px, 3.5vw, 42px);
+      /* White photo border — thicker at bottom like real polaroids */
+      background: linear-gradient(
+        145deg,
+        #ffffff 0%,
+        #faf9f7 50%,
+        #f5f3ef 100%
+      );
+      padding: clamp(7px, 0.9vw, 11px) clamp(7px, 0.9vw, 11px) clamp(28px, 3.6vw, 44px);
+      /* 3D layered shadows */
       box-shadow:
-        0 14px 40px rgba(0,0,0,0.18),
-        0 3px 10px rgba(0,0,0,0.1);
+        0 1px 0 rgba(0,0,0,0.04),
+        0 2px 0 rgba(0,0,0,0.05),
+        0 4px 0 rgba(0,0,0,0.04),
+        0 8px 16px rgba(0,0,0,0.14),
+        0 20px 48px rgba(0,0,0,0.10),
+        inset 0 0 0 0.5px rgba(0,0,0,0.05);
       border-radius: 2px;
-      width: clamp(130px, 14vw, 180px);
+      width: clamp(130px, 14vw, 175px);
       will-change: transform;
       transform-origin: center center;
     }
@@ -914,18 +1014,20 @@
       aspect-ratio: 1;
       object-fit: cover;
       display: block;
-      filter: saturate(0.8);
+      filter: saturate(0.85) contrast(1.05);
+      /* Inner shadow gives slight depth to photo */
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
     }
     .pol-card-caption {
       position: absolute;
-      bottom: clamp(6px, 1vw, 10px);
+      bottom: clamp(6px, 1vw, 11px);
       left: 0; right: 0;
       text-align: center;
       font-family: var(--font-serif);
       font-style: italic;
-      font-size: clamp(0.55rem, 0.8vw, 0.72rem);
+      font-size: clamp(0.55rem, 0.75vw, 0.7rem);
       font-weight: 300;
-      color: #aaa;
+      color: #b0aba4;
       letter-spacing: 0.02em;
     }
 
@@ -940,7 +1042,12 @@
         gap: 2.5rem;
         overflow: visible;
       }
-      .pol-camera { position: relative !important; width: clamp(150px, 45vw, 200px); }
+      .pol-camera-wrap {
+        position: relative !important;
+        width: clamp(150px, 55vw, 210px);
+        animation: none; /* no float on mobile */
+        transform: perspective(800px) rotateX(4deg) rotateY(-2deg) !important;
+      }
       .pol-card {
         position: relative !important;
         top: auto !important; left: auto !important;
@@ -1320,7 +1427,7 @@
 
     <h1 class="hero-name" id="hero-name" aria-label="Anirudh Yadav">
       <span class="line"><span class="word" id="scramble-word">Anirudh</span></span>
-      <span class="line"><span class="word">Yadav</span></span>
+      <span class="line"><span class="word" id="scramble-word-2">Yadav</span></span>
     </h1>
 
     <p class="hero-tagline" id="hero-tagline"><span class="tagline-word" id="tagline-word">Freelancing Pro Max</span></p>
@@ -1407,31 +1514,170 @@
   <div class="pol-section" id="pol-section">
     <div class="pol-scene" id="pol-scene">
 
-      <!-- CSS Polaroid camera -->
-      <div class="pol-camera" id="pol-camera">
-        <div class="pol-cam-top">
-          <div class="pol-cam-flash"></div>
-          <div class="pol-cam-selfie-led"></div>
-          <div class="pol-cam-viewfinder"></div>
-          <div class="pol-cam-btn"></div>
-        </div>
-        <div class="pol-cam-body">
-          <div class="pol-cam-lens">
-            <div class="pol-cam-lens-ring"></div>
-            <div class="pol-cam-lens-shine"></div>
-          </div>
-        </div>
-        <div class="pol-cam-stripe">
-          <span style="background:#e63946"></span>
-          <span style="background:#f4a261"></span>
-          <span style="background:#f9c74f"></span>
-          <span style="background:#90be6d"></span>
-          <span style="background:#43aa8b"></span>
-          <span style="background:#4361ee"></span>
-        </div>
-        <div class="pol-cam-bottom">
-          <div class="pol-cam-slot"></div>
-        </div>
+      <!-- SVG Polaroid Go Gen 2 camera — inline for full CSS control -->
+      <div class="pol-camera-wrap" id="pol-camera-wrap">
+        <svg class="cam-svg" viewBox="0 0 200 215" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <!-- Body: warm white with subtle depth gradient -->
+            <linearGradient id="gBody" x1="20" y1="0" x2="180" y2="215" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="40%" stop-color="#f5f2ed"/>
+              <stop offset="100%" stop-color="#e6e0d4"/>
+            </linearGradient>
+            <!-- Top dark strip -->
+            <linearGradient id="gTop" x1="0" y1="0" x2="0" y2="50" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#2d2d2f"/>
+              <stop offset="100%" stop-color="#141416"/>
+            </linearGradient>
+            <!-- Bottom dark strip -->
+            <linearGradient id="gBot" x1="0" y1="192" x2="0" y2="215" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#1c1c1e"/>
+              <stop offset="100%" stop-color="#0e0e10"/>
+            </linearGradient>
+            <!-- Flash: silver metallic -->
+            <radialGradient id="gFlash" cx="32%" cy="32%" r="68%">
+              <stop offset="0%" stop-color="#e2e2e2"/>
+              <stop offset="55%" stop-color="#a8a8a8"/>
+              <stop offset="100%" stop-color="#707070"/>
+            </radialGradient>
+            <!-- Lens chrome ring A (lighter) -->
+            <linearGradient id="gChA" x1="55" y1="70" x2="145" y2="168" gradientUnits="userSpaceOnUse">
+              <stop offset="0%"   stop-color="#d8d4cc"/>
+              <stop offset="22%"  stop-color="#f2ece4"/>
+              <stop offset="48%"  stop-color="#b4b0a8"/>
+              <stop offset="72%"  stop-color="#e8e4dc"/>
+              <stop offset="100%" stop-color="#9e9a94"/>
+            </linearGradient>
+            <!-- Lens chrome ring B (darker inner) -->
+            <linearGradient id="gChB" x1="62" y1="78" x2="138" y2="158" gradientUnits="userSpaceOnUse">
+              <stop offset="0%"   stop-color="#ccc8c0"/>
+              <stop offset="30%"  stop-color="#e4e0d8"/>
+              <stop offset="65%"  stop-color="#a0a098"/>
+              <stop offset="100%" stop-color="#d0ccc4"/>
+            </linearGradient>
+            <!-- Lens glass: deep blue-black -->
+            <radialGradient id="gGlass" cx="37%" cy="33%" r="72%">
+              <stop offset="0%"   stop-color="#3c4264"/>
+              <stop offset="22%"  stop-color="#1e2238"/>
+              <stop offset="52%"  stop-color="#0d0f1e"/>
+              <stop offset="100%" stop-color="#040408"/>
+            </radialGradient>
+            <!-- Viewfinder glass -->
+            <radialGradient id="gVF" cx="38%" cy="38%" r="70%">
+              <stop offset="0%"  stop-color="#1a2840"/>
+              <stop offset="100%" stop-color="#070e18"/>
+            </radialGradient>
+            <!-- Multi-layer drop shadow for 3D lift -->
+            <filter id="fShadow" x="-25%" y="-15%" width="150%" height="145%">
+              <feDropShadow dx="0" dy="3"  stdDeviation="2"  flood-color="#000" flood-opacity="0.22"/>
+              <feDropShadow dx="0" dy="10" stdDeviation="8"  flood-color="#000" flood-opacity="0.16"/>
+              <feDropShadow dx="0" dy="24" stdDeviation="16" flood-color="#000" flood-opacity="0.11"/>
+              <feDropShadow dx="3" dy="36" stdDeviation="24" flood-color="#000" flood-opacity="0.07"/>
+            </filter>
+            <!-- Clip to camera outline -->
+            <clipPath id="cpCam">
+              <rect width="200" height="215" rx="24"/>
+            </clipPath>
+          </defs>
+
+          <!-- Whole camera with shadow -->
+          <g filter="url(#fShadow)">
+
+            <!-- ─── BODY ─── -->
+            <rect width="200" height="215" rx="24" fill="url(#gBody)"/>
+
+            <!-- ─── TOP + BOTTOM DARK STRIPS (clipped to body shape) ─── -->
+            <g clip-path="url(#cpCam)">
+              <rect width="200" height="50" fill="url(#gTop)"/>
+              <!-- subtle top highlight -->
+              <rect width="200" height="1" y="0" fill="rgba(255,255,255,0.18)"/>
+              <rect width="200" height="24" y="192" fill="url(#gBot)"/>
+              <rect width="200" height="215" y="192" fill="url(#gBot)"/>
+            </g>
+
+            <!-- ─── FLASH ─── -->
+            <rect x="14" y="11" width="27" height="27" rx="6" fill="url(#gFlash)"/>
+            <!-- flash inner reflection -->
+            <rect x="17" y="14" width="12" height="8"  rx="2.5" fill="rgba(255,255,255,0.28)"/>
+            <rect x="14" y="11" width="27" height="27" rx="6" fill="none" stroke="rgba(0,0,0,0.22)" stroke-width="0.6"/>
+
+            <!-- ─── LED ─── -->
+            <circle cx="55" cy="25" r="4.5" fill="#c05000"/>
+            <circle cx="55" cy="25" r="3"   fill="#ff7200"/>
+            <circle cx="53.5" cy="23.5" r="1.3" fill="rgba(255,200,80,0.75)"/>
+
+            <!-- ─── VIEWFINDER ─── -->
+            <rect x="142" y="13" width="38" height="23" rx="4" fill="url(#gVF)"/>
+            <rect x="145" y="16" width="32" height="17" rx="3" fill="url(#gVF)"/>
+            <!-- VF reflection -->
+            <rect x="146" y="17" width="9" height="4" rx="2" fill="rgba(255,255,255,0.08)"/>
+            <rect x="142" y="13" width="38" height="23" rx="4" fill="none" stroke="rgba(0,0,0,0.35)" stroke-width="0.5"/>
+
+            <!-- ─── SHUTTER BUTTON (partially visible on right edge) ─── -->
+            <circle cx="194" cy="25" r="12" fill="#252527"/>
+            <circle cx="194" cy="25" r="9"  fill="#1e1e20"/>
+            <circle cx="194" cy="25" r="7"  fill="#2a2a2c"/>
+            <circle cx="191" cy="22" r="2.5" fill="rgba(255,255,255,0.12)"/>
+
+            <!-- ─── LENS ASSEMBLY ─── -->
+            <!-- Outer chrome flange (largest ring) -->
+            <circle cx="100" cy="118" r="51" fill="url(#gChA)"/>
+            <circle cx="100" cy="118" r="51" fill="none" stroke="rgba(0,0,0,0.12)" stroke-width="0.8"/>
+
+            <!-- Gap 1 — dark -->
+            <circle cx="100" cy="118" r="47" fill="#1c1c1e"/>
+
+            <!-- Chrome ring 2 -->
+            <circle cx="100" cy="118" r="44" fill="url(#gChB)"/>
+
+            <!-- Gap 2 — dark barrel -->
+            <circle cx="100" cy="118" r="40" fill="#161618"/>
+
+            <!-- Chrome ring 3 (focusing ring) -->
+            <circle cx="100" cy="118" r="37" fill="url(#gChA)"/>
+
+            <!-- Gap 3 — innermost dark ring -->
+            <circle cx="100" cy="118" r="33" fill="#0e0e10"/>
+
+            <!-- Glass element -->
+            <circle cx="100" cy="118" r="30" fill="url(#gGlass)"/>
+
+            <!-- Inner glass ring details -->
+            <circle cx="100" cy="118" r="23" fill="none" stroke="rgba(255,255,255,0.055)" stroke-width="1.5"/>
+            <circle cx="100" cy="118" r="15" fill="none" stroke="rgba(255,255,255,0.04)"  stroke-width="1"/>
+
+            <!-- Primary lens reflection (large crescent) -->
+            <ellipse cx="88"  cy="107" rx="12" ry="7"   fill="rgba(255,255,255,0.14)" transform="rotate(-28 88 107)"/>
+            <!-- Secondary reflection (smaller) -->
+            <ellipse cx="114" cy="131" rx="6.5" ry="3.5" fill="rgba(255,255,255,0.07)" transform="rotate(-28 114 131)"/>
+            <!-- Bright specular dot -->
+            <ellipse cx="85"  cy="106" rx="5"   ry="3"   fill="rgba(255,255,255,0.26)" transform="rotate(-25 85 106)"/>
+
+            <!-- ─── RAINBOW STRIPE ─── -->
+            <rect x="10"  y="165" width="29" height="14" rx="3.5" fill="#e8002d"/>
+            <rect x="43"  y="165" width="29" height="14" rx="3.5" fill="#f5821f"/>
+            <rect x="76"  y="165" width="29" height="14" rx="3.5" fill="#f9d01c"/>
+            <rect x="109" y="165" width="29" height="14" rx="3.5" fill="#00ab44"/>
+            <rect x="142" y="165" width="24" height="14" rx="3.5" fill="#00bcd4"/>
+            <rect x="170" y="165" width="21" height="14" rx="3.5" fill="#6829c2"/>
+            <!-- rainbow gloss overlay -->
+            <rect x="10"  y="165" width="181" height="5" rx="2.5" fill="rgba(255,255,255,0.22)"/>
+
+            <!-- ─── EJECTION SLOT ─── -->
+            <rect x="50" y="199" width="100" height="7" rx="3.5" fill="#050508"/>
+            <rect x="51" y="199" width="98"  height="1.5" rx="1" fill="rgba(255,255,255,0.04)"/>
+
+            <!-- ─── BODY EDGE HIGHLIGHTS (light from top-left) ─── -->
+            <!-- Top edge -->
+            <path d="M24 0.8 Q100 0.8 176 0.8" stroke="rgba(255,255,255,0.32)" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- Left edge -->
+            <path d="M0.8 24 L0.8 191" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-linecap="round"/>
+            <!-- Right + bottom shadow edges -->
+            <path d="M199.2 24 L199.2 191" stroke="rgba(0,0,0,0.07)" stroke-width="1" stroke-linecap="round"/>
+            <path d="M24 214.2 Q100 214.2 176 214.2" stroke="rgba(0,0,0,0.07)" stroke-width="1" stroke-linecap="round"/>
+
+          </g>
+        </svg>
       </div>
 
       <!-- Polaroid cards — start hidden at camera slot, GSAP moves them -->
@@ -1947,12 +2193,25 @@
         /* BIG Portfolio is already visible — hold for a beat so viewer reads it */
         .to({}, { duration: 0.45 })
 
-        /* Name sweeps up AND portfolio crossfades (big→small) simultaneously */
-        .to('.hero-name .word', { y: '0%', duration: 1.1, ease: 'power4.out', stagger: 0.1 })
-        .add(showPortfolio(gsap), '<')   /* '<' = start at same time as name */
+        /* Pre-scramble both words BEFORE the slide so they come up already scrambled */
+        .call(() => {
+          const w1 = document.getElementById('scramble-word');
+          const w2 = document.getElementById('scramble-word-2');
+          if (!reduced && w1) w1.textContent = Array.from({length:7},()=>CHARS[Math.floor(Math.random()*CHARS.length)]).join('');
+          if (!reduced && w2) w2.textContent = Array.from({length:5},()=>CHARS[Math.floor(Math.random()*CHARS.length)]).join('');
+        })
 
-        /* Name scramble — fires AFTER sweep completes so all chars are visible and scrambling */
-        .call(() => { if (!reduced) scramble(document.getElementById('scramble-word'), 'Anirudh', 1100); }, [], '+=0.05')
+        /* Name sweeps up — both words arrive scrambled */
+        .to('.hero-name .word', { y: '0%', duration: 1.1, ease: 'power4.out', stagger: 0.1 })
+        .add(showPortfolio(gsap), '<')
+
+        /* Both words unscramble once fully in view */
+        .call(() => {
+          if (!reduced) {
+            scramble(document.getElementById('scramble-word'),  'Anirudh', 1100);
+            scramble(document.getElementById('scramble-word-2'), 'Yadav',  1100);
+          }
+        }, [], '+=0.05')
 
         /* Tagline */
         .to('.hero-tagline', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.4')
@@ -2029,12 +2288,10 @@
          Desktop: pinned section, polaroids scatter as you scroll
          Mobile: handled via CSS (static layout)
       ============================================= */
-      const polSection = document.getElementById('pol-section');
-      const polScene   = document.getElementById('pol-scene');
-      const polCards   = document.querySelectorAll('.pol-card');
-      // pol-scene needs to be a child of body (not pol-section) for fixed positioning
-      // Move it if needed — it's already in pol-section in HTML but fixed ignores parent
-      // (fixed positions relative to viewport regardless of parent)
+      const polSection    = document.getElementById('pol-section');
+      const polScene      = document.getElementById('pol-scene');
+      const polCameraWrap = document.getElementById('pol-camera-wrap');
+      const polCards      = document.querySelectorAll('.pol-card');
 
       const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
@@ -2043,64 +2300,86 @@
         // Wrap cards in a container for mobile fallback (desktop keeps absolute)
         // Set all cards to start at camera slot — center of scene, bottom of camera
         // Camera is ~240px wide, bottom slot is roughly at y=+50px from camera center
-        // Polaroids start at camera slot — center of viewport + slotY offset
-        // Their CSS anchor is top:50% left:50%, so GSAP x/y are pixel offsets from there
-        const slotY = 80; // camera slot is ~80px below scene center
+        // ── Camera slot offset: slot is near camera bottom (~43% of cam height below center)
+        const slotY = polCameraWrap ? Math.round(polCameraWrap.offsetHeight * 0.44) : 120;
 
+        // Initial polaroid state: invisible, at camera slot position
         gsap.set(polCards, {
-          x: 0,
-          y: slotY,
-          xPercent: -50, // compensate for card width (top:50%,left:50% anchor)
-          yPercent: -50,
+          xPercent: -50, yPercent: -50,   // pivot from card centre
+          x: 0, y: slotY,
+          scale: 0.08, opacity: 0,
           rotation: 0,
-          opacity: 0,
-          scale: 0.18,
-          transformOrigin: 'center bottom',
+          transformOrigin: 'center center',
         });
 
-        // Build the eject timeline — each card gets its own moment
-        const polTl = gsap.timeline();
-
-        polCards.forEach((card, i) => {
-          const fx = parseFloat(card.dataset.finalX) || 0;
-          const fy = parseFloat(card.dataset.finalY) || 0;
-          const fr = parseFloat(card.dataset.finalR) || 0;
-
-          polTl.to(card, {
-            x: fx,
-            y: fy,
-            rotation: fr,
-            opacity: 1,
-            scale: 1,
-            ease: 'power3.out',
-            duration: 1,
-          }, i * 0.55);
-        });
-
-        // Show/hide the fixed scene while section is in view
+        // ─────────────────────────────────────────────
+        // PHASE 0: Visibility gate — camera visible while section is in flow
+        // ─────────────────────────────────────────────
         ScrollTrigger.create({
           trigger: polSection,
-          start: 'top top',
-          end: 'bottom bottom',
+          start: 'top bottom',     // show as soon as section bottom enters viewport
+          end:   'bottom top',
           onEnter:     () => polScene.classList.add('pol-active'),
           onLeave:     () => polScene.classList.remove('pol-active'),
           onEnterBack: () => polScene.classList.add('pol-active'),
           onLeaveBack: () => polScene.classList.remove('pol-active'),
         });
 
-        // Scrub polaroid eject animation through the section's scroll range
+        // ─────────────────────────────────────────────
+        // PHASE 1: Camera entry — rises from below as section approaches
+        // section top: viewport bottom → viewport 8%
+        // ─────────────────────────────────────────────
+        const entryTl = gsap.timeline();
+        entryTl
+          .fromTo(polCameraWrap,
+            { y: 360, scale: 0.55, opacity: 0, filter: 'blur(14px)' },
+            { y: 0,   scale: 1,    opacity: 1, filter: 'blur(0px)',
+              ease: 'power2.out', duration: 1 }
+          );
+
         ScrollTrigger.create({
           trigger: polSection,
-          start: 'top top',
-          end: 'bottom bottom',
-          scrub: 1.4,
-          animation: polTl,
+          start: 'top bottom',
+          end:   'top 8%',
+          scrub: 1.8,
+          animation: entryTl,
+        });
+
+        // ─────────────────────────────────────────────
+        // PHASE 2: Polaroid ejection — camera pinned, photos fly out
+        // section top: 8% → section bottom: viewport bottom
+        // ─────────────────────────────────────────────
+        const ejectTl = gsap.timeline();
+
+        const positions = [
+          { x: -310, y: -210, r: -15, dur: 1   },
+          { x:  290, y: -180, r:  12, dur: 1   },
+          { x: -270, y:  120, r:  -8, dur: 1   },
+          { x:  265, y:  140, r:  17, dur: 1   },
+          { x:   30, y:  310, r:  -4, dur: 1   },
+        ];
+
+        polCards.forEach((card, i) => {
+          const p = positions[i] || {};
+          ejectTl.to(card, {
+            x: p.x, y: p.y, rotation: p.r,
+            opacity: 1, scale: 1,
+            ease: 'back.out(1.5)',
+            duration: p.dur,
+          }, i * 0.58);   // stagger each eject
+        });
+
+        ScrollTrigger.create({
+          trigger: polSection,
+          start: 'top 8%',
+          end:   'bottom bottom',
+          scrub: 1.6,
+          animation: ejectTl,
         });
 
       } else if (polCards.length) {
-        // Mobile: make all cards visible immediately, wrapped layout via CSS
-        gsap.set(polCards, { opacity: 1, scale: 1, x: 0, y: 0, rotation: 0 });
-        // Wrap them in a flex container for mobile layout
+        // Mobile: clear all GSAP transforms, show cards in CSS flex layout
+        gsap.set(polCards, { clearProps: 'all' });
         const scene = document.getElementById('pol-scene');
         if (scene) {
           const wrap = document.createElement('div');
@@ -2228,9 +2507,11 @@
       ============================================= */
       document.getElementById('nav-logo').addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        // Only replay the name scramble — nothing else
         setTimeout(() => {
-          if (!reduced) scramble(document.getElementById('scramble-word'), 'Anirudh', 800);
+          if (!reduced) {
+            scramble(document.getElementById('scramble-word'),  'Anirudh', 900);
+            scramble(document.getElementById('scramble-word-2'), 'Yadav',  900);
+          }
         }, 350);
       });
 

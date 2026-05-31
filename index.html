@@ -41,8 +41,56 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { background: var(--bg); color: var(--ink); font-family: var(--font-body); overflow-x: hidden; scroll-behavior: smooth; }
-    body { overflow-x: hidden; }
+    html { background: transparent; color: var(--ink); font-family: var(--font-body); overflow-x: hidden; scroll-behavior: smooth; }
+    body { overflow-x: hidden; background: transparent; }
+
+    /* ── AMBIENT GRADIENT UNDERLAY ── */
+    #gradient-bg {
+      position: fixed; inset: 0; z-index: -2;
+      background: var(--bg); overflow: hidden; pointer-events: none;
+    }
+    .gb-blob {
+      position: absolute; border-radius: 50%;
+      filter: blur(90px); will-change: transform;
+    }
+    .gb-1 {
+      width: 80vw; height: 80vw;
+      background: rgba(255,60,172,0.82);
+      top: -25%; left: -20%;
+      animation: gb1 28s ease-in-out infinite alternate;
+    }
+    .gb-2 {
+      width: 70vw; height: 70vw;
+      background: rgba(123,97,255,0.76);
+      top: 25%; right: -18%;
+      animation: gb2 34s ease-in-out infinite alternate;
+    }
+    .gb-3 {
+      width: 60vw; height: 60vw;
+      background: rgba(194,255,77,0.65);
+      bottom: 5%; left: 15%;
+      animation: gb3 24s ease-in-out infinite alternate;
+    }
+    .gb-4 {
+      width: 58vw; height: 58vw;
+      background: rgba(255,140,66,0.65);
+      top: 55%; left: -12%;
+      animation: gb4 30s ease-in-out infinite alternate;
+    }
+    @keyframes gb1 { from{transform:translate(0,0) scale(1)} to{transform:translate(18vw,22vh) scale(1.18)} }
+    @keyframes gb2 { from{transform:translate(0,0) scale(1)} to{transform:translate(-22vw,-18vh) scale(1.12)} }
+    @keyframes gb3 { from{transform:translate(0,0) scale(1)} to{transform:translate(12vw,-28vh) scale(1.22)} }
+    @keyframes gb4 { from{transform:translate(0,0) scale(1)} to{transform:translate(22vw,16vh) scale(0.88)} }
+
+    /* cream wash — mutes the gradient to ~35% showing through */
+    #gradient-wash {
+      position: fixed; inset: 0; z-index: -1;
+      background: rgba(244,241,236, 0.60);
+      pointer-events: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .gb-blob { animation: none; }
+    }
     img, video { display: block; width: 100%; height: 100%; object-fit: cover; }
     button { background: none; border: none; padding: 0; font: inherit; color: inherit; }
 
@@ -1181,7 +1229,6 @@
       padding: clamp(4rem,8vw,8rem) clamp(1.5rem,4vw,4rem);
       border-top: 1px solid rgba(0,0,0,0.08);
       display: flex; flex-direction: column; align-items: center; gap: clamp(3rem,5vw,5rem);
-      background: var(--bg);
     }
     .invoice-cta {
       width: 100%; max-width: 760px;
@@ -1845,6 +1892,13 @@
   </style>
 </head>
 <body>
+  <div id="gradient-bg" aria-hidden="true">
+    <div class="gb-blob gb-1"></div>
+    <div class="gb-blob gb-2"></div>
+    <div class="gb-blob gb-3"></div>
+    <div class="gb-blob gb-4"></div>
+  </div>
+  <div id="gradient-wash" aria-hidden="true"></div>
 
   <!-- SVG FILTER DEFS — ripple + hero distort -->
   <svg id="fx-defs" xmlns="http://www.w3.org/2000/svg"

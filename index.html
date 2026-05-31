@@ -5,47 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Anirudh Yadav — Freelancing Pro Max</title>
 
-  <!--
-    FONT: Drop your Dx-Sillage font file into a  fonts/  folder next to index.html.
-    Accepted: .woff2 / .otf / .ttf
-  -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,700;12..96,800&family=Space+Grotesk:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@1,300;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Unbounded:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@1,300;1,400&display=swap" rel="stylesheet" />
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
 
   <style>
-    /* =============================================
-       DX SILLAGE FONT
-    ============================================= */
     @font-face {
       font-family: 'DxSillage';
       src: url('fonts/Dx-Sillage-Free-Personal-Use.woff2') format('woff2'),
            url('fonts/Dx-Sillage-Free-Personal-Use.otf')  format('opentype'),
            url('fonts/Dx-Sillage-Free-Personal-Use.ttf')  format('truetype');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
+      font-weight: normal; font-style: normal; font-display: swap;
     }
 
-    /* =============================================
-       THEME
-    ============================================= */
     :root {
-      --bg:        #f4f1ec;
-      --bg-2:      #edeae3;
-      --ink:       #0d0d0d;
-      --ink-mid:   #555250;
-      --ink-dim:   #999490;
-      --grad-a:    #ff3cac;
-      --grad-b:    #7b61ff;
-      --grad-c:    #c2ff4d;
-      --grad-d:    #ff8c42;
-      --font-hero: 'DxSillage', 'Bricolage Grotesque', 'Space Grotesk', sans-serif;
-      --font-body: 'Space Grotesk', sans-serif;
-      --font-serif:'Cormorant Garamond', Georgia, serif;
+      --bg:          #f4f1ec;
+      --bg-2:        #edeae3;
+      --ink:         #0d0d0d;
+      --ink-mid:     #555250;
+      --ink-dim:     #999490;
+      --grad-a:      #ff3cac;
+      --grad-b:      #7b61ff;
+      --grad-c:      #c2ff4d;
+      --grad-d:      #ff8c42;
+      --font-hero:      'DxSillage', 'Clash Display', sans-serif;
+      --font-display:   'Clash Display', sans-serif;
+      --font-accent:    'Unbounded', sans-serif;
+      --font-editorial: 'Syne', sans-serif;
+      --font-body:      'Space Grotesk', sans-serif;
+      --font-serif:     'Cormorant Garamond', Georgia, serif;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -54,464 +46,545 @@
     img, video { display: block; width: 100%; height: 100%; object-fit: cover; }
     button { background: none; border: none; padding: 0; font: inherit; color: inherit; }
 
-    /* =============================================
-       SCROLL PROGRESS BAR
-    ============================================= */
+    /* SCROLL PROGRESS */
     #progress-bar {
-      position: fixed;
-      top: 0; left: 0;
-      width: 0%;
-      height: 2px;
+      position: fixed; top: 0; left: 0; width: 0%; height: 2px;
       background: linear-gradient(90deg, var(--grad-a), var(--grad-b), var(--grad-c));
-      z-index: 9998;
-      transform-origin: left;
-      pointer-events: none;
+      z-index: 9998; transform-origin: left; pointer-events: none;
     }
 
-    /* =============================================
-       SPOTLIGHT — cursor punches a clear circle through
-       a dim overlay, hero section only.
-    ============================================= */
-    #spotlight {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 8500;
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
+    #spotlight { position: fixed; inset: 0; pointer-events: none; z-index: 8500; opacity: 0; transition: opacity 0.4s ease; }
 
-    /* Wide-angle vignette removed — blobs provide all the color/depth */
+    #grain-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 8100; opacity: 0.11; mix-blend-mode: overlay; }
 
-    /* =============================================
-       FILM GRAIN — canvas-based
-    ============================================= */
-    #grain-canvas {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 8100;
-      opacity: 0.07;
-      mix-blend-mode: multiply;
-    }
-
-    /* =============================================
-       CURSOR
-    ============================================= */
+    /* CURSOR */
     @media (pointer: fine) { * { cursor: none; } }
-
     .cursor {
-      position: fixed;
-      top: 0; left: 0;
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      background: var(--ink);
-      pointer-events: none;
-      z-index: 9999;
-      transform: translate(-50%,-50%);
-      transition: width .22s ease, height .22s ease,
-                  background .22s ease, border-radius .22s ease,
-                  opacity .22s ease;
+      position: fixed; top: 0; left: 0; width: 10px; height: 10px; border-radius: 50%;
+      background: var(--ink); pointer-events: none; z-index: 9999; transform: translate(-50%,-50%);
+      transition: width .22s ease, height .22s ease, background .22s ease, border-radius .22s ease;
     }
-    .cursor.big {
-      width: 58px; height: 58px;
-      background: transparent;
-      border: 1.5px solid var(--ink);
-    }
+    .cursor.big { width: 58px; height: 58px; background: transparent; border: 1.5px solid var(--ink); }
     .cursor-text {
-      position: absolute; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-family: var(--font-body);
-      font-size: 7px; font-weight: 700;
-      letter-spacing: 0.15em;
-      color: var(--ink);
-      opacity: 0; transition: opacity .2s ease;
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-body); font-size: 7px; font-weight: 700; letter-spacing: 0.15em;
+      color: var(--ink); opacity: 0; transition: opacity .2s ease;
     }
     .cursor.big .cursor-text { opacity: 1; }
     @media (pointer: coarse) { .cursor { display: none; } }
 
-    /* =============================================
-       LOADER — counter style
-    ============================================= */
+    /* LOADER */
     #loader {
-      position: fixed; inset: 0;
-      background: var(--bg);
-      z-index: 7000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
+      position: fixed; inset: 0; background: var(--bg); z-index: 7000;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 1.5rem; overflow: hidden;
     }
     .loader-counter {
-      font-family: var(--font-hero);
-      font-size: clamp(5rem, 20vw, 18rem);
-      font-weight: 900;
-      color: var(--ink);
-      letter-spacing: -0.03em;
-      line-height: 1;
-      opacity: 1;
-      user-select: none;
+      font-family: var(--font-hero); font-size: clamp(5rem, 20vw, 18rem);
+      font-weight: 900; color: var(--ink); letter-spacing: -0.03em; line-height: 1; user-select: none;
     }
     .loader-name-bg {
-      position: absolute;
-      font-family: var(--font-hero);
-      font-size: clamp(1.4rem, 4vw, 3rem);
-      font-weight: 900;
-      color: var(--ink);
-      letter-spacing: 0.04em;
-      opacity: 0;
-      pointer-events: none;
-      white-space: nowrap;
+      position: absolute; font-family: var(--font-hero); font-size: clamp(1.4rem, 4vw, 3rem);
+      font-weight: 900; color: var(--ink); letter-spacing: 0.04em; opacity: 0; pointer-events: none; white-space: nowrap;
+    }
+    /* loader avatar — fill effect */
+    @keyframes la-idle {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-5px); }
+    }
+    #loader-avatar-wrap {
+      position: relative; order: -1;
+      width: clamp(140px, 20vw, 220px); height: auto;
+      animation: la-idle 1.8s ease-in-out infinite;
+    }
+    #loader-avatar-wrap img {
+      image-rendering: pixelated; image-rendering: crisp-edges;
+      width: clamp(140px, 20vw, 220px); height: auto; display: block;
+    }
+    /* grey base — always visible */
+    #loader-avatar-gray { filter: grayscale(1) brightness(0.82); }
+    /* color layer — clipped from top, revealed bottom-up */
+    #loader-avatar-color {
+      position: absolute; inset: 0;
+      clip-path: inset(100% 0 0 0); /* starts fully hidden */
+      filter: saturate(1.6) brightness(1.08) contrast(1.05);
+    }
+    .loader-dots {
+      display: flex; gap: 6px; order: 1;
+    }
+    .loader-dots span {
+      width: 5px; height: 5px; border-radius: 50%; background: var(--ink);
+      opacity: 0.25; animation: dot-blink 1.2s ease-in-out infinite;
+    }
+    .loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dot-blink {
+      0%,100% { opacity: 0.2; transform: scale(0.8); }
+      50%      { opacity: 0.8; transform: scale(1.2); }
     }
 
-    /* =============================================
-       NAV
-    ============================================= */
+    /* NAV */
     nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: baseline;
       padding: clamp(1.2rem, 2.5vw, 1.8rem) clamp(1.5rem, 4vw, 4rem);
-      mix-blend-mode: multiply;
-      opacity: 0;
+      opacity: 0; transition: background 0.3s ease, backdrop-filter 0.3s ease;
+    }
+    nav.scrolled {
+      background: rgba(244,241,236,0.82);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
     }
     .nav-logo {
-      font-family: var(--font-hero);
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      color: var(--ink);
-      cursor: none;
-      transition: opacity .2s ease;
-      position: relative;
+      font-family: var(--font-hero); font-size: 1rem; font-weight: 700;
+      letter-spacing: 0.06em; color: var(--ink); cursor: none; transition: opacity .2s ease; position: relative;
     }
     .nav-logo:hover { opacity: 0.45; }
     .nav-ay { display: inline-block; transition: opacity .4s ease, transform .4s ease; }
     .nav-fullname {
-      position: absolute;
-      left: 0; top: 50%;
-      transform: translateY(-50%) translateY(6px);
-      white-space: nowrap;
-      opacity: 0;
-      letter-spacing: 0.04em;
-      transition: opacity .4s ease, transform .4s ease;
-      pointer-events: none;
+      position: absolute; left: 0; top: 50%; transform: translateY(-50%) translateY(6px);
+      white-space: nowrap; opacity: 0; letter-spacing: 0.04em;
+      transition: opacity .4s ease, transform .4s ease; pointer-events: none;
     }
-
     .nav-status {
-      font-family: var(--font-body);
-      font-size: 0.6rem;
-      font-weight: 600;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--ink-mid);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      cursor: none;
-      transition: color .2s ease;
+      font-family: var(--font-body); font-size: 0.6rem; font-weight: 600;
+      letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-mid);
+      display: flex; align-items: center; gap: 0.5rem; cursor: none; transition: color .2s ease;
     }
     .nav-status:hover { color: var(--ink); }
-    .nav-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: #22c55e;
-      animation: blink 2.5s ease-in-out infinite;
-      flex-shrink: 0;
-    }
+    .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--grad-a); animation: blink 2.5s ease-in-out infinite; flex-shrink: 0; transition: background 1s ease; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-    /* =============================================
-       HERO
-    ============================================= */
+    /* HERO */
     #hero {
-      min-height: 100svh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
+      min-height: 100svh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
       padding: clamp(6rem, 10vw, 10rem) clamp(1rem, 4vw, 4rem) clamp(3rem, 6vw, 6rem);
       position: relative;
-      overflow: hidden;
+    }
+    .hero-blob { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(80px); opacity: 0.18; will-change: transform; }
+    .hero-blob-1 { width: 50vw; height: 50vw; background: var(--grad-a); top: -10%; right: -15%; }
+    .hero-blob-2 { width: 38vw; height: 38vw; background: var(--grad-b); bottom: 0%; left: -8%; }
+    .hero-blob-3 { width: 25vw; height: 25vw; background: var(--grad-c); top: 35%; left: 55%; opacity: 0.12; }
+    .hero-blob-1 { animation: float 20s ease-in-out infinite alternate, blob-morph-a 14s ease-in-out infinite; }
+    .hero-blob-2 { animation: float 17s ease-in-out infinite alternate-reverse, blob-morph-b 18s ease-in-out infinite; }
+    .hero-blob-3 { animation: float 14s ease-in-out infinite alternate, blob-morph-a 10s ease-in-out infinite reverse; }
+    @keyframes float { from{transform:translate(0,0) scale(1)} to{transform:translate(4%,6%) scale(1.08)} }
+    @keyframes blob-morph-a {
+      0%{border-radius:50%} 25%{border-radius:60% 40% 30% 70%/60% 30% 70% 40%}
+      50%{border-radius:30% 60% 70% 40%/50% 60% 30% 60%} 75%{border-radius:40% 60% 50% 30%/70% 30% 50% 60%} 100%{border-radius:50%}
+    }
+    @keyframes blob-morph-b {
+      0%{border-radius:50%} 33%{border-radius:70% 30% 40% 60%/40% 70% 30% 60%}
+      66%{border-radius:40% 70% 60% 30%/60% 40% 70% 30%} 100%{border-radius:50%}
     }
 
-    .hero-blob {
-      position: absolute;
-      border-radius: 50%;
-      pointer-events: none;
-      filter: blur(80px);
-      opacity: 0.18;
-      will-change: transform;
-    }
-    .hero-blob-1 {
-      width: 50vw; height: 50vw;
-      background: var(--grad-a);
-      top: -10%; right: -15%;
-      animation: float 20s ease-in-out infinite alternate;
-    }
-    .hero-blob-2 {
-      width: 38vw; height: 38vw;
-      background: var(--grad-b);
-      bottom: 0%; left: -8%;
-      animation: float 17s ease-in-out infinite alternate-reverse;
-    }
-    .hero-blob-3 {
-      width: 25vw; height: 25vw;
-      background: var(--grad-c);
-      top: 35%; left: 55%;
-      animation: float 14s ease-in-out infinite alternate;
-      opacity: 0.12;
-    }
-    @keyframes float {
-      from { transform: translate(0,0) scale(1); }
-      to   { transform: translate(4%,6%) scale(1.08); }
-    }
-
-    /* Portfolio stack — holds both big and small versions */
     .portfolio-stack {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 0.8rem;
-      height: clamp(2.2rem, 4vw, 3.5rem); /* fixed height so layout doesn't jump */
+      position: relative; display: flex; align-items: center; justify-content: center;
+      margin-bottom: 0.8rem; height: clamp(2.2rem, 4vw, 3.5rem);
     }
-
-    /* BIG version — starts fully visible, will scale+fade out */
     .portfolio-big {
-      font-family: var(--font-hero);
-      font-weight: 900;
-      font-size: clamp(2.8rem, 9vw, 8rem);
-      letter-spacing: -0.01em;
-      text-transform: uppercase;
-      color: var(--ink);
-      line-height: 1;
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%) scale(1);
-      white-space: nowrap;
-      transform-origin: center center;
-      will-change: transform, opacity;
+      font-family: var(--font-hero); font-weight: 900; font-size: clamp(2.8rem, 9vw, 8rem);
+      letter-spacing: -0.01em; text-transform: uppercase; color: var(--ink); line-height: 1;
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1);
+      white-space: nowrap; transform-origin: center center; will-change: transform, opacity;
     }
-
-    /* SMALL outlined label — starts hidden, crossfades in */
     .hero-portfolio-label {
-      font-family: var(--font-body);
-      font-weight: 900;
-      text-transform: uppercase;
-      display: inline-block;
-      opacity: 0;
-      font-size: 1rem;
-      letter-spacing: 0.6em;
-      color: transparent;
-      -webkit-text-stroke: 1px var(--grad-a);
-      line-height: 1;
-      position: relative;
+      font-family: var(--font-body); font-weight: 900; text-transform: uppercase;
+      display: inline-block; opacity: 0; font-size: 1rem; letter-spacing: 0.6em;
+      color: transparent; -webkit-text-stroke: 1px var(--grad-a); line-height: 1; position: relative;
     }
-    /* Stars only show at final small state — controlled via .port-small class */
     .hero-portfolio-label.port-small::before,
-    .hero-portfolio-label.port-small::after {
-      opacity: 0.7;
-    }
+    .hero-portfolio-label.port-small::after { opacity: 0.7; }
     .hero-portfolio-label::before {
-      content: '✦';
-      -webkit-text-stroke: 0;
-      color: var(--grad-a);
-      font-size: 0.55em;
-      vertical-align: middle;
-      margin-right: 0.7em;
-      opacity: 0;
-      transition: opacity 0.4s ease 0.2s;
+      content: '✦'; -webkit-text-stroke: 0; color: var(--grad-a); font-size: 0.55em;
+      vertical-align: middle; margin-right: 0.7em; opacity: 0; transition: opacity 0.4s ease 0.2s;
       animation: star-spin 6s linear infinite;
     }
     .hero-portfolio-label::after {
-      content: '✦';
-      -webkit-text-stroke: 0;
-      color: var(--grad-b);
-      font-size: 0.55em;
-      vertical-align: middle;
-      margin-left: 0.5em;
-      opacity: 0;
-      transition: opacity 0.4s ease 0.2s;
+      content: '✦'; -webkit-text-stroke: 0; color: var(--grad-b); font-size: 0.55em;
+      vertical-align: middle; margin-left: 0.5em; opacity: 0; transition: opacity 0.4s ease 0.2s;
       animation: star-spin 6s linear infinite reverse;
     }
-    @keyframes star-spin {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
+    @keyframes star-spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 
     .hero-eyebrow {
-      font-family: var(--font-body);
-      font-size: clamp(0.55rem, 1vw, 0.68rem);
-      font-weight: 500;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--ink-dim);
-      margin-bottom: clamp(1rem, 2vw, 1.8rem);
-      opacity: 0;
-      transform: translateY(10px);
+      font-family: var(--font-body); font-size: clamp(0.55rem, 1vw, 0.68rem); font-weight: 500;
+      letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink-dim);
+      margin-bottom: clamp(1rem, 2vw, 1.8rem); opacity: 0; transform: translateY(10px);
     }
-
-    /* THE NAME — bleeds off edges on desktop for poster effect */
     .hero-name {
-      font-family: var(--font-hero);
-      font-size: clamp(5rem, 26vw, 36rem);
-      font-weight: 800;
-      line-height: 0.88;
-      letter-spacing: -0.03em;
-      color: var(--ink);
-      position: relative;
-      z-index: 1;
-      will-change: transform;
+      font-family: var(--font-hero); font-size: clamp(5rem, 26vw, 36rem); font-weight: 800;
+      line-height: 0.88; letter-spacing: -0.03em; color: var(--ink); position: relative; z-index: 1; will-change: transform;
     }
-    @media (max-width: 768px) {
-      .hero-name { font-size: clamp(4.5rem, 19vw, 10rem); }
-    }
-    .hero-name .line  { display: block; overflow: hidden; }
-    .hero-name .word  { display: inline-block; transform: translateY(110%); }
+    @media (max-width: 768px) { .hero-name { font-size: clamp(4.5rem, 19vw, 10rem); } }
+    .hero-name .line { display: block; overflow: hidden; }
+    .hero-name .word { display: inline-block; transform: translateY(110%); }
 
     .hero-tagline {
-      margin-top: clamp(1.5rem, 3vw, 2.5rem);
-      font-family: var(--font-body);
-      font-size: clamp(0.85rem, 2vw, 1.3rem);
-      font-weight: 400;
-      letter-spacing: 0.04em;
-      color: var(--ink-mid);
-      opacity: 0;
-      transform: translateY(8px);
-      will-change: transform;
-      overflow: hidden;
-      height: 1.6em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      margin-top: clamp(1.5rem, 3vw, 2.5rem); font-family: var(--font-body);
+      font-size: clamp(0.85rem, 2vw, 1.3rem); font-weight: 400; letter-spacing: 0.04em;
+      color: var(--ink-mid); opacity: 0; transform: translateY(8px); will-change: transform;
+      overflow: hidden; height: 1.6em; display: flex; align-items: center; justify-content: center;
     }
-    .tagline-word {
-      display: inline-block;
-      transition: transform 0.45s cubic-bezier(0.76,0,0.24,1), opacity 0.45s ease;
-    }
-    .tagline-word.exit-up {
-      transform: translateY(-110%);
-      opacity: 0;
-    }
-    .tagline-word.enter-below {
-      transform: translateY(110%);
-      opacity: 0;
-      transition: none;
-    }
+    .tagline-word { display: inline-block; transition: transform 0.45s cubic-bezier(0.76,0,0.24,1), opacity 0.45s ease; }
+    .tagline-word.exit-up { transform: translateY(-110%); opacity: 0; }
+    .tagline-word.enter-below { transform: translateY(110%); opacity: 0; transition: none; }
 
     .hero-scroll {
-      position: absolute;
-      bottom: clamp(1.5rem,3vw,2.5rem);
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-      font-family: var(--font-body);
-      font-size: 0.55rem;
-      font-weight: 600;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--ink-dim);
-      opacity: 0;
+      position: absolute; bottom: clamp(1.5rem,3vw,2.5rem); left: 50%;
+      transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      font-family: var(--font-body); font-size: 0.55rem; font-weight: 600;
+      letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink-dim); opacity: 0;
     }
     .hero-scroll-arrow {
       width: 1px; height: 40px;
       background: linear-gradient(to bottom, var(--grad-a), transparent);
       animation: arrow-drop 2s ease-in-out infinite;
     }
-    @keyframes arrow-drop {
-      0%,100%{ transform:scaleY(0); transform-origin:top; opacity:0; }
-      30%,70%{ transform:scaleY(1); transform-origin:top; opacity:1; }
-    }
+    @keyframes arrow-drop { 0%,100%{transform:scaleY(0);transform-origin:top;opacity:0} 30%,70%{transform:scaleY(1);transform-origin:top;opacity:1} }
 
-    /* =============================================
-       MARQUEE
-    ============================================= */
+    /* MARQUEE */
     .marquee-wrap {
-      overflow: hidden;
-      border-top: 1px solid rgba(0,0,0,0.08);
-      border-bottom: 1px solid rgba(0,0,0,0.08);
-      padding: 0.85rem 0;
-      background: var(--bg-2);
-      opacity: 0;
+      overflow: hidden; border-top: 1px solid rgba(0,0,0,0.08);
+      border-bottom: 1px solid rgba(0,0,0,0.08); padding: 0.85rem 0; background: var(--bg-2); opacity: 0;
     }
-    .marquee-track {
-      display: flex;
-      animation: marquee-scroll 18s linear infinite;
-      white-space: nowrap;
-    }
+    .marquee-track { display: flex; animation: marquee-scroll 18s linear infinite; white-space: nowrap; }
     .marquee-item {
-      font-family: var(--font-body);
-      font-size: 0.62rem;
-      font-weight: 600;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      color: var(--ink-dim);
-      padding: 0 3rem;
-      flex-shrink: 0;
+      font-family: var(--font-body); font-size: 0.62rem; font-weight: 600;
+      letter-spacing: 0.28em; text-transform: uppercase; color: var(--ink-dim); padding: 0 3rem; flex-shrink: 0;
     }
     .marquee-item span { margin-left: 3rem; color: var(--grad-a); }
-    @keyframes marquee-scroll {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
+    @keyframes marquee-scroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* =============================================
+       THUMBNAILS SECTION — single row
+    ============================================= */
+    .thumbnails-section {
+      padding: clamp(3rem, 5vw, 5rem) 0 clamp(2.5rem, 4vw, 4rem);
+      border-top: 1px solid rgba(0,0,0,0.06);
+    }
+    .thumbnails-header {
+      padding: 0 clamp(1.5rem, 4vw, 4rem);
+      margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+      display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); flex-wrap: wrap;
+    }
+    .thumbnails-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 4.5rem); font-weight: 700;
+      line-height: 1; letter-spacing: -0.02em; color: var(--ink);
+    }
+    .thumbnails-desc {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: clamp(0.85rem, 1.5vw, 1.05rem); color: var(--ink-dim);
+      margin-left: auto; align-self: center;
+    }
+    @media (max-width: 768px) { .thumbnails-desc { margin-left: 0; } }
+
+    .thumbnails-strip {
+      padding: 0;
+      mask-image: linear-gradient(90deg, transparent 0%, black 5%, black 95%, transparent 100%);
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 5%, black 95%, transparent 100%);
+      cursor: grab;
+    }
+    .thumbnails-strip:first-of-type { padding-top: 2rem; }
+    .thumbnails-strip:last-of-type  { padding-bottom: 2rem; }
+    .thumbnails-strip:active { cursor: grabbing; }
+
+    /* DRAG HINT */
+    .drag-hint {
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      margin-top: 1.4rem; font-family: var(--font-body); font-size: 0.48rem; font-weight: 600;
+      letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink-dim);
+      transition: opacity 0.6s ease;
+    }
+    .drag-hint.gone { opacity: 0; pointer-events: none; }
+    .drag-hint-arrow { display: inline-block; animation: hint-pulse 1.6s ease-in-out infinite; }
+    @keyframes hint-pulse { 0%,100%{transform:translateX(0)} 50%{transform:translateX(5px)} }
+
+    /* TYPEWRITER CURSOR */
+    .tw-cursor {
+      display: inline-block; width: 2px; height: 1em; background: var(--ink-mid);
+      margin-left: 2px; vertical-align: middle;
+      animation: blink-cur 0.75s step-end infinite;
+    }
+    @keyframes blink-cur { 0%,100%{opacity:1} 50%{opacity:0} }
+    .thumbnails-track {
+      display: flex; gap: 0;
+      width: max-content; will-change: transform;
+    }
+    .fs-card {
+      position: relative; flex-shrink: 0;
+      width: clamp(220px, 26vw, 400px); aspect-ratio: 4/5;
+      overflow: hidden; cursor: none;
+      box-shadow: 0 0 22px 7px rgba(var(--gc, 180,140,200), 0.28);
+      transition: box-shadow 0.45s ease, transform 0.4s ease;
+    }
+    .fs-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 0 45px 16px rgba(var(--gc, 180,140,200), 0.6);
+    }
+    .fs-img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 0.55s ease;
+    }
+    .fs-card:hover .fs-img { transform: scale(1.04); }
+
+    /* HOVER LABEL */
+    .fs-label {
+      position: absolute; bottom: 0; left: 0; right: 0; z-index: 2;
+      padding: 2.5rem 1rem 0.9rem;
+      background: linear-gradient(to top, rgba(0,0,0,0.82), transparent);
+      font-family: var(--font-body); font-size: 0.5rem; font-weight: 700;
+      letter-spacing: 0.24em; text-transform: uppercase; color: rgba(255,255,255,0.88);
+      transform: translateY(100%); transition: transform 0.38s cubic-bezier(0.16,1,0.3,1);
+      pointer-events: none;
+    }
+    .fs-card:hover .fs-label,
+    .fs-card.tapped .fs-label { transform: translateY(0); }
+
+    /* LIGHTBOX */
+    #thumb-lightbox {
+      position: fixed; inset: 0; z-index: 6000;
+      display: none; align-items: center; justify-content: center;
+      cursor: none; overflow: hidden;
+    }
+    #thumb-lightbox.open { display: flex; }
+
+    /* blurred image fill — no grey bars */
+    #lb-bg {
+      position: absolute; inset: -5%; z-index: 0;
+      background-size: cover; background-position: center;
+      filter: blur(36px) brightness(0.45) saturate(1.3);
+      transform: scale(1.08);
+      transition: background-image 0.3s ease;
+    }
+    #lb-bg::after {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 60% at center, rgba(var(--lb-gc,180,140,200),0.22) 0%, transparent 70%);
+    }
+
+    #thumb-lightbox-img {
+      position: relative; z-index: 1;
+      max-width: 86vw; max-height: 86vh;
+      object-fit: contain; border-radius: 4px;
+      box-shadow: 0 0 60px rgba(var(--lb-gc,180,140,200),0.4), 0 20px 60px rgba(0,0,0,0.6);
+      animation: lb-in 0.38s cubic-bezier(0.16,1,0.3,1);
+      user-select: none; -webkit-user-drag: none;
+    }
+    @keyframes lb-in { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
+
+    #thumb-lightbox-close {
+      position: absolute; top: 1.4rem; right: 1.4rem; z-index: 3;
+      font-family: var(--font-body); font-size: 0.55rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.45);
+      cursor: none; transition: color 0.2s;
+    }
+    #thumb-lightbox-close:hover { color: white; }
+
+    .lb-nav {
+      position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
+      color: rgba(255,255,255,0.45); cursor: none;
+      transition: color 0.2s, transform 0.2s;
+      padding: 1rem 1.2rem;
+    }
+    .lb-nav svg { width: 28px; height: 28px; display: block; }
+    .lb-nav:hover { color: white; }
+    #lb-prev { left: 0.5rem; }
+    #lb-prev:hover { transform: translateY(-50%) translateX(-2px); }
+    #lb-next { right: 0.5rem; }
+    #lb-next:hover { transform: translateY(-50%) translateX(2px); }
+
+    /* =============================================
+       SHARED TOOLS HEADING
+    ============================================= */
+    .tools-section-header {
+      padding: clamp(3rem, 5vw, 5rem) clamp(1.5rem, 4vw, 4rem) clamp(1.5rem, 2.5vw, 2rem);
+      border-top: 1px solid rgba(0,0,0,0.07);
+      display: flex; align-items: baseline; gap: 1.5rem; flex-wrap: wrap;
+    }
+    .tools-heading {
+      font-family: var(--font-display); font-size: clamp(2rem, 5vw, 4.5rem);
+      font-weight: 700; line-height: 1; letter-spacing: -0.02em; color: var(--ink);
+    }
+    .tools-sub {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: clamp(0.85rem, 1.5vw, 1.05rem); color: var(--ink-dim);
+    }
+    .tools-option-label {
+      font-family: var(--font-accent); font-size: 0.5rem; font-weight: 700;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      padding: clamp(1.5rem, 3vw, 2.5rem) clamp(1.5rem, 4vw, 4rem) 1rem;
+      color: var(--ink-dim);
+    }
+    .tools-option-label span { color: var(--grad-a); }
+
+    /* =============================================
+       OPTION A — CARD FLIP
+    ============================================= */
+    .tools-flip-section {
+      padding: 0 clamp(1.5rem, 4vw, 4rem) clamp(3rem, 5vw, 5rem);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    .tools-flip-grid {
+      display: flex; flex-wrap: wrap;
+      gap: clamp(0.8rem, 1.5vw, 1.2rem);
+    }
+    .flip-card {
+      perspective: 900px;
+      width: clamp(100px, 12vw, 148px);
+      height: clamp(100px, 12vw, 148px);
+      cursor: none;
+    }
+    .flip-card-inner {
+      position: relative; width: 100%; height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+    .flip-card-front, .flip-card-back {
+      position: absolute; inset: 0;
+      backface-visibility: hidden; -webkit-backface-visibility: hidden;
+      border-radius: 10px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 1rem 0.8rem; gap: 0.6rem;
+    }
+    .flip-card-front {
+      background: var(--bg-2);
+      border: 1px solid rgba(0,0,0,0.07);
+    }
+    .flip-card-back {
+      background: var(--ink);
+      transform: rotateY(180deg);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .flip-card-front img {
+      width: clamp(28px, 3.5vw, 44px); height: clamp(28px, 3.5vw, 44px);
+      object-fit: contain; display: block; width: auto; height: auto;
+      max-width: clamp(28px, 3.5vw, 44px); max-height: clamp(28px, 3.5vw, 44px);
+      filter: grayscale(0.2);
+      transition: filter 0.3s ease;
+    }
+    .flip-card:hover .flip-card-front img { filter: grayscale(0); }
+    .flip-card-front span {
+      font-family: var(--font-body); font-size: 0.48rem; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-dim); white-space: nowrap;
+    }
+    .flip-card-back-text {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: clamp(0.75rem, 1.2vw, 0.95rem); font-weight: 300;
+      color: #fff; line-height: 1.35; text-align: center;
+    }
+    .flip-card-back-tag {
+      font-family: var(--font-accent); font-size: 0.4rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--grad-a); margin-top: 0.2rem;
     }
 
     /* =============================================
-       WORK
+       OPTION B — MAGNETIC SCATTER
     ============================================= */
-    #work {
-      padding: clamp(5rem,8vw,8rem) clamp(1.5rem,4vw,4rem) clamp(5rem,8vw,8rem);
+    .tools-scatter-section {
+      padding: 0 clamp(1.5rem, 4vw, 4rem) clamp(4rem, 6vw, 6rem);
     }
-    .work-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: clamp(3rem,5vw,5rem);
-      opacity: 0;
-      transform: translateY(12px);
+    .tools-scatter-field {
+      position: relative;
+      min-height: clamp(340px, 40vw, 500px);
+      border: 1px dashed rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
     }
+    .scatter-item {
+      position: absolute;
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      cursor: none;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+    }
+    .scatter-item img {
+      width: clamp(32px, 4vw, 48px); height: clamp(32px, 4vw, 48px);
+      object-fit: contain; display: block;
+      filter: saturate(0.5) brightness(0.9);
+      transition: filter 0.3s ease, transform 0.3s ease;
+      max-width: clamp(32px, 4vw, 48px); max-height: clamp(32px, 4vw, 48px); width: auto; height: auto;
+    }
+    .scatter-item:hover img { filter: saturate(1) brightness(1); transform: scale(1.15); }
+    .scatter-item span {
+      font-family: var(--font-body); font-size: 0.46rem; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-dim);
+      white-space: nowrap; opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .scatter-item:hover span { opacity: 1; }
+
+    /* SHOWREEL */
+    .showreel-section { position: relative; width: 100%; height: 100svh; overflow: hidden; background: #060403; }
+    .showreel-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.55) saturate(0.85); transition: filter 0.9s ease; }
+    .showreel-section.has-sound .showreel-video { filter: brightness(0.72) saturate(1.05); }
+    .showreel-ui { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+    .showreel-ring {
+      width: clamp(96px, 11vw, 148px); height: clamp(96px, 11vw, 148px); border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 0.3rem; backdrop-filter: blur(8px); background: rgba(255,255,255,0.05); cursor: none;
+      transition: transform 0.45s cubic-bezier(0.16,1,0.3,1), background 0.4s ease, border-color 0.3s ease;
+    }
+    .showreel-section:hover .showreel-ring { transform: scale(1.12); background: rgba(255,255,255,0.11); border-color: rgba(255,255,255,0.65); }
+    .showreel-ring svg { fill: white; width: 18px; height: 18px; }
+    .showreel-ring-label {
+      font-family: var(--font-body); font-size: 0.44rem; font-weight: 700;
+      letter-spacing: 0.28em; color: rgba(255,255,255,0.75); text-align: center; text-transform: uppercase; line-height: 1.5;
+    }
+    .showreel-corner {
+      position: absolute; font-family: var(--font-body); font-size: 0.5rem;
+      font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.38);
+    }
+    .showreel-tl { top: clamp(1.2rem,2.5vw,2rem); left: clamp(1.5rem,4vw,4rem); }
+    .showreel-tr {
+      top: clamp(1.2rem,2.5vw,2rem); right: clamp(1.5rem,4vw,4rem); cursor: none;
+      padding: 0.45em 0.9em; border: 1px solid rgba(255,255,255,0.18); border-radius: 2rem;
+      transition: color 0.25s, border-color 0.25s;
+    }
+    .showreel-tr:hover { color: rgba(255,255,255,0.75); border-color: rgba(255,255,255,0.45); }
+    .showreel-bl { bottom: clamp(1.5rem,3vw,2.5rem); left: clamp(1.5rem,4vw,4rem); }
+    .showreel-br { bottom: clamp(1.5rem,3vw,2.5rem); right: clamp(1.5rem,4vw,4rem); }
+    .showreel-section.has-sound .showreel-tr { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.4); }
+
+    /* =============================================
+       WORK — enhanced typography
+    ============================================= */
+    #work { padding: clamp(5rem,8vw,8rem) clamp(1.5rem,4vw,4rem) clamp(5rem,8vw,8rem); }
+
+    .work-header { margin-bottom: clamp(3rem,5vw,5rem); opacity: 0; transform: translateY(12px); }
+    .work-header-top {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+    .work-title-group { display: flex; align-items: baseline; gap: clamp(0.8rem, 2vw, 1.5rem); }
     .work-title {
-      font-family: var(--font-hero);
-      font-size: clamp(2.5rem,6vw,5.5rem);
-      font-weight: 900;
-      line-height: 1;
-      letter-spacing: -0.02em;
-      color: var(--ink);
+      font-family: var(--font-display); font-size: clamp(2.5rem,6vw,5.5rem);
+      font-weight: 700; line-height: 1; letter-spacing: -0.02em; color: var(--ink);
     }
     .work-count {
-      font-family: var(--font-body);
-      font-size: 0.65rem;
-      font-weight: 600;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--ink-dim);
+      font-family: var(--font-body); font-size: 0.65rem; font-weight: 600;
+      letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-dim);
     }
-
-    /* Asymmetric 12-col grid */
-    .work-grid {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: clamp(0.8rem,2vw,2rem);
-      /* perspective handled per-card by GSAP transformPerspective */
+    .work-descriptor {
+      font-family: var(--font-editorial); font-size: clamp(0.85rem, 1.5vw, 1.05rem);
+      font-weight: 400; color: var(--ink-mid); max-width: 560px; line-height: 1.65;
     }
-    /* 8-card grid — showreel lives in its own section now */
-    .card:nth-child(1)  { grid-column: 1 / 6; }
-    .card:nth-child(2)  { grid-column: 6 / 13; }
-    .card:nth-child(3)  { grid-column: 1 / 8; }
-    .card:nth-child(4)  { grid-column: 8 / 13; }
-    .card:nth-child(5)  { grid-column: 2 / 9; }
-    .card:nth-child(6)  { grid-column: 9 / 13; }
-    .card:nth-child(7)  { grid-column: 1 / 6; }
-    .card:nth-child(8)  { grid-column: 6 / 13; }
+    @media (max-width: 768px) { .work-header-top { flex-direction: column; gap: 0.5rem; } }
 
-    /* Per-card accent colors */
+    /* CARDS — horizontal cinematic scroll */
+    .work-scroll-wrap {
+      overflow: hidden; cursor: grab; padding: 0.5rem 0 2rem;
+      mask-image: linear-gradient(90deg, transparent 0%, black 4%, black 96%, transparent 100%);
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 4%, black 96%, transparent 100%);
+    }
+    .work-scroll-wrap:active { cursor: grabbing; }
+    .work-track {
+      display: flex; gap: clamp(1rem, 2vw, 1.5rem);
+      width: max-content; will-change: transform;
+      padding: 0.5rem clamp(1.5rem, 4vw, 4rem);
+    }
     .card:nth-child(1)  { --ca: var(--grad-b); }
     .card:nth-child(2)  { --ca: var(--grad-d); }
     .card:nth-child(3)  { --ca: var(--grad-a); }
@@ -521,684 +594,292 @@
     .card:nth-child(7)  { --ca: var(--grad-d); }
     .card:nth-child(8)  { --ca: var(--grad-b); }
 
-    /* ---- CARD ---- */
     .card {
-      opacity: 0;
-      transform: translateY(36px);
+      flex-shrink: 0;
+      width: clamp(260px, 72vw, 440px);
+      opacity: 0; transform: translateY(20px);
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease;
     }
-    .card-inner {
-      border-radius: 3px;
+    /* peek on long press */
+    .card.peeking {
+      transform: scale(1.05) translateY(-6px) !important;
+      z-index: 10;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.22);
     }
-
-    .card-media {
-      overflow: hidden;
-      position: relative;
-      background: var(--bg-2);
-      border-radius: 3px;
-    }
+    .card.peeking .card-overlay { clip-path: inset(0% 0 0 0) !important; }
+    .card.peeking .card-media::before { transform: scaleX(1) !important; }
+    .card-inner { border-radius: 3px; }
+    .card-media { overflow: hidden; position: relative; background: var(--bg-2); border-radius: 3px; }
     .card[data-type="video"]                         .card-media { aspect-ratio: 16/9; }
     .card[data-type="video"][data-ratio="portrait"]  .card-media { aspect-ratio: 9/16; }
     .card[data-type="image"]                         .card-media { aspect-ratio: 3/4; }
     .card[data-type="image"][data-ratio="landscape"] .card-media { aspect-ratio: 16/10; }
 
-    /* Color bar slides in on hover */
     .card-media::before {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 3px;
-      background: var(--ca);
-      z-index: 3;
-      transform: scaleX(0);
-      transform-origin: left;
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+      background: var(--ca); z-index: 3; transform: scaleX(0); transform-origin: left;
       transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
     }
     .card:hover .card-media::before { transform: scaleX(1); }
-
-    /* Glint sweep — diagonal light streak on hover */
     .card-media::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      background: linear-gradient(
-        108deg,
-        transparent 30%,
-        rgba(255,255,255,0.38) 48%,
-        rgba(255,255,255,0.12) 52%,
-        transparent 68%
-      );
-      transform: translateX(-120%);
-      pointer-events: none;
+      content: ''; position: absolute; inset: 0; z-index: 2;
+      background: linear-gradient(108deg, transparent 30%, rgba(255,255,255,0.38) 48%, rgba(255,255,255,0.12) 52%, transparent 68%);
+      transform: translateX(-120%); pointer-events: none;
     }
-    .card:hover .card-media::after {
-      transform: translateX(120%);
-      transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+    .card:hover .card-media::after { transform: translateX(120%); transition: transform 0.65s cubic-bezier(0.4,0,0.2,1); }
+    .card-media img, .card-media video {
+      transform: scale(1.04); filter: saturate(0.4) brightness(0.88);
+      transition: transform 0.65s cubic-bezier(0.16,1,0.3,1), filter 0.65s ease; will-change: transform;
     }
-
-    .card-media img,
-    .card-media video {
-      transform: scale(1.04);
-      filter: saturate(0.4) brightness(0.88);
-      transition: transform 0.65s cubic-bezier(0.16,1,0.3,1), filter 0.65s ease;
-      will-change: transform;
-    }
-    .card:hover .card-media img,
-    .card:hover .card-media video {
-      transform: scale(1.0);
-      filter: saturate(1.05) brightness(0.95);
-    }
+    .card:hover .card-media img, .card:hover .card-media video { transform: scale(1.0); filter: saturate(1.05) brightness(0.95); }
 
     .card-info {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.7rem 0 0;
-      border-top: 1px solid rgba(0,0,0,0.07);
-      margin-top: 0.1rem;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.7rem 0 0; border-top: 1px solid rgba(0,0,0,0.07); margin-top: 0.1rem;
     }
     .card-title {
-      font-family: var(--font-body);
-      font-size: clamp(0.75rem,1.3vw,0.95rem);
-      font-weight: 500;
-      color: var(--ink);
+      font-family: var(--font-editorial); font-size: clamp(0.75rem,1.3vw,0.95rem); font-weight: 600; color: var(--ink);
     }
     .card-tag {
-      font-family: var(--font-body);
-      font-size: 0.55rem;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--ca);
+      font-family: var(--font-body); font-size: 0.55rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--ca);
     }
+    .card-overlay {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: clamp(0.9rem,1.8vw,1.4rem); background: linear-gradient(to top, rgba(8,5,3,0.82) 0%, transparent 100%);
+      z-index: 4; clip-path: inset(100% 0 0 0); transition: clip-path 0.55s cubic-bezier(0.16,1,0.3,1); border-radius: 0 0 3px 3px;
+    }
+    .card-overlay-cat {
+      display: block; font-family: var(--font-body); font-size: 0.48rem; font-weight: 700;
+      letter-spacing: 0.32em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 0.3rem;
+    }
+    .card-overlay-title {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: clamp(1rem, 2.2vw, 1.65rem); font-weight: 300; color: #fff; line-height: 1.1;
+    }
+    .card:hover .card-overlay { clip-path: inset(0% 0 0 0); }
+    @media (pointer: coarse) { .card-overlay { clip-path: inset(0% 0 0 0); padding-bottom: clamp(0.7rem,1.5vw,1rem); } }
+    .card-video-badge {
+      display: none; position: absolute; top: 0.75rem; right: 0.75rem; z-index: 5;
+      font-size: 0.5rem; font-weight: 700; letter-spacing: 0.2em; color: white;
+      background: rgba(0,0,0,0.45); backdrop-filter: blur(4px); border-radius: 2rem; padding: 0.3em 0.7em;
+    }
+    @media (pointer: coarse) { .card[data-type="video"] .card-video-badge { display: block; } }
+
+
+    .card-play-btn {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      z-index: 5; pointer-events: none; transition: opacity 0.35s ease;
+    }
+    .card-play-btn-ring {
+      width: clamp(56px,6vw,80px); height: clamp(56px,6vw,80px); border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.65); backdrop-filter: blur(8px);
+      background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;
+      transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), background 0.35s ease;
+    }
+    .card-play-btn-ring svg { width: 20px; height: 20px; fill: white; margin-left: 3px; }
+    .card--featured:hover .card-play-btn-ring { transform: scale(1.12); background: rgba(255,255,255,0.2); }
+    .card--featured.is-playing .card-play-btn  { opacity: 0; }
+    .card--featured:hover.is-playing .card-play-btn { opacity: 1; }
+
 
     /* =============================================
-       FOOTER
+       FOOTER CTA
     ============================================= */
-    footer {
-      border-top: 1px solid rgba(0,0,0,0.08);
-      padding: clamp(2rem,4vw,3.5rem) clamp(1.5rem,4vw,4rem);
-      opacity: 1;
+    .footer-cta-wrap {
+      padding: clamp(3.5rem, 7vw, 6rem) clamp(1.5rem,4vw,4rem) 0;
+      border-top: 1px solid rgba(0,0,0,0.08); opacity: 0; transform: translateY(20px);
     }
+    .footer-cta {
+      font-family: var(--font-display); font-size: clamp(2.8rem, 9vw, 8.5rem);
+      font-weight: 700; color: var(--ink); letter-spacing: -0.03em; line-height: 0.92;
+    }
+    .footer-cta em {
+      font-style: italic; font-family: var(--font-serif); font-weight: 300; color: var(--grad-a); font-size: 1.05em;
+    }
+    .footer-cta-sub {
+      margin-top: clamp(1rem,2vw,1.5rem); font-family: var(--font-body);
+      font-size: clamp(0.7rem,1.2vw,0.9rem); font-weight: 500;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-dim);
+    }
+
+    /* FOOTER */
+    footer { border-top: 1px solid rgba(0,0,0,0.08); padding: clamp(2rem,4vw,3.5rem) clamp(1.5rem,4vw,4rem); }
     .footer-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
+      display: flex; justify-content: space-between; align-items: baseline;
+      flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;
     }
     .footer-name {
-      font-family: var(--font-hero);
-      font-size: clamp(1.5rem,3vw,2.5rem);
-      font-weight: 900;
-      color: var(--ink);
-      letter-spacing: 0.02em;
+      font-family: var(--font-display); font-size: clamp(1.5rem,3vw,2.5rem);
+      font-weight: 700; color: var(--ink); letter-spacing: 0.02em;
     }
     .footer-since {
-      font-family: var(--font-body);
-      font-size: 0.65rem;
-      font-weight: 500;
-      letter-spacing: 0.2em;
-      color: var(--ink-dim);
-      text-transform: uppercase;
+      font-family: var(--font-body); font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.2em; color: var(--ink-dim); text-transform: uppercase;
     }
     .footer-contact {
-      display: flex;
-      gap: clamp(1.5rem,4vw,4rem);
-      flex-wrap: wrap;
-      margin-bottom: 2.5rem;
-      padding-bottom: 2rem;
-      border-bottom: 1px solid rgba(0,0,0,0.08);
+      display: flex; gap: clamp(1.5rem,4vw,4rem); flex-wrap: wrap;
+      margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid rgba(0,0,0,0.08);
     }
     .footer-link {
-      font-family: var(--font-body);
-      font-size: clamp(0.8rem,1.4vw,1rem);
-      font-weight: 500;
-      color: var(--ink-mid);
-      text-decoration: none;
-      letter-spacing: 0.02em;
-      transition: color .2s ease;
-      position: relative;
+      font-family: var(--font-editorial); font-size: clamp(0.8rem,1.4vw,1rem);
+      font-weight: 500; color: var(--ink-mid); text-decoration: none;
+      letter-spacing: 0.02em; transition: color .2s ease; position: relative;
     }
     .footer-link::after {
-      content: '';
-      position: absolute;
-      bottom: -2px; left: 0;
-      width: 0; height: 1px;
-      background: var(--grad-a);
-      transition: width .3s cubic-bezier(0.16,1,0.3,1);
+      content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 1px;
+      background: var(--grad-a); transition: width .3s cubic-bezier(0.16,1,0.3,1);
     }
     .footer-link:hover { color: var(--ink); }
     .footer-link:hover::after { width: 100%; }
-    .footer-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
     .footer-copy {
-      font-family: var(--font-body);
-      font-size: 0.6rem;
-      font-weight: 500;
-      letter-spacing: 0.2em;
-      color: var(--ink-dim);
-      text-transform: uppercase;
+      font-family: var(--font-body); font-size: 0.6rem; font-weight: 500;
+      letter-spacing: 0.2em; color: var(--ink-dim); text-transform: uppercase;
     }
     .footer-top-btn {
-      font-family: var(--font-body);
-      font-size: 0.6rem;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--ink-mid);
-      cursor: none;
-      transition: color .2s ease;
+      font-family: var(--font-body); font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-mid);
+      cursor: none; transition: color .2s ease;
     }
     .footer-top-btn:hover { color: var(--grad-a); }
+    .footer-bar { height: 3px; background: linear-gradient(90deg, var(--grad-a), var(--grad-b), var(--grad-c), var(--grad-d)); }
 
-    .footer-bar {
-      height: 3px;
-      background: linear-gradient(90deg, var(--grad-a), var(--grad-b), var(--grad-c), var(--grad-d));
+    .footer-tools {
+      padding: 2rem 0 2.5rem;
+      border-top: 1px solid rgba(0,0,0,0.08);
+      margin-top: 0.5rem;
+    }
+    .footer-tools-label {
+      font-family: var(--font-body); font-size: 0.52rem; font-weight: 600;
+      letter-spacing: 0.28em; text-transform: uppercase; color: var(--ink-dim);
+      margin-bottom: 1.2rem;
     }
 
-    /* =============================================
-       MOBILE
-    ============================================= */
+    /* STANDALONE TOOLS SECTION */
+    .standalone-tools {
+      padding: clamp(3rem,5vw,5rem) clamp(1.5rem,4vw,4rem) clamp(2.5rem,4vw,4rem);
+      border-top: 1px solid rgba(0,0,0,0.08);
+    }
+    .standalone-tools .footer-tools-label { margin-bottom: 1.5rem; }
+
+    /* PIXEL AVATAR */
+    @keyframes pa-wave {
+      0%,100% { transform: rotate(0deg); }
+      20%     { transform: rotate(-18deg) translateY(-4px); }
+      40%     { transform: rotate(14deg) translateY(-6px); }
+      60%     { transform: rotate(-12deg) translateY(-4px); }
+      80%     { transform: rotate(8deg) translateY(-2px); }
+    }
+    @keyframes pa-jump {
+      0%   { transform: scaleX(1.15) scaleY(0.82) translateY(0);    } /* squash */
+      8%   { transform: scaleX(0.88) scaleY(1.12) translateY(0);    } /* stretch launch */
+      30%  { transform: scaleX(0.94) scaleY(1.06) translateY(-70px);} /* near peak */
+      45%  { transform: scaleX(0.96) scaleY(1.04) translateY(-80px);} /* peak — slow */
+      65%  { transform: scaleX(0.92) scaleY(1.08) translateY(-40px);} /* falling */
+      80%  { transform: scaleX(1.1)  scaleY(0.88) translateY(0);    } /* land squash */
+      90%  { transform: scaleX(0.96) scaleY(1.05) translateY(-10px);} /* small bounce */
+      100% { transform: scaleX(1)    scaleY(1)    translateY(0);    } /* settle */
+    }
+    #pixel-avatar-inner.jumping {
+      animation: pa-jump 0.65s cubic-bezier(0.33,0,0.66,1) forwards !important;
+    }
+    @keyframes pa-float {
+      0%,100% { transform: translateY(0px) rotate(0deg); }
+      30%      { transform: translateY(-6px) rotate(-0.8deg); }
+      60%      { transform: translateY(-3px) rotate(0.5deg); }
+    }
+    @keyframes pa-sway {
+      0%,100% { transform: rotate(0deg); }
+      25%     { transform: rotate(1.2deg); }
+      75%     { transform: rotate(-1.2deg); }
+    }
+    @keyframes pa-shadow-pulse {
+      0%,100% { transform: scaleX(1); opacity: 0.35; }
+      50%      { transform: scaleX(0.78); opacity: 0.18; }
+    }
+    @keyframes pa-sparkle-pop {
+      0%   { transform: scale(0) rotate(0deg); opacity: 1; }
+      60%  { transform: scale(1.2) rotate(180deg); opacity: 1; }
+      100% { transform: scale(0) rotate(360deg); opacity: 0; }
+    }
+    @keyframes pa-speech-in {
+      0%   { opacity: 0; transform: translateY(6px) scale(0.92); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    #pixel-avatar-wrap {
+      position: fixed; bottom: 2.5rem; right: 1.5rem; z-index: 500;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      cursor: pointer; user-select: none;
+      /* GPU layer — prevents iOS Safari from dropping it during scroll */
+      -webkit-transform: translate3d(0,0,0);
+      transform: translate3d(0,0,0);
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      will-change: transform;
+      isolation: isolate;
+    }
+    #pixel-avatar-inner {
+      position: relative;
+      animation: pa-float 4s ease-in-out infinite, pa-sway 7s ease-in-out infinite;
+      transition: filter 0.3s ease, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    #pixel-avatar-wrap:hover #pixel-avatar-inner {
+      transform: scale(1.12) translateY(-4px);
+      filter: drop-shadow(0 0 10px rgba(180,160,255,0.65)) drop-shadow(0 0 22px rgba(160,140,240,0.3));
+      animation: none;
+    }
+    #pixel-avatar {
+      image-rendering: pixelated; image-rendering: crisp-edges;
+      width: clamp(110px, 14vw, 160px); height: auto;
+      display: block;
+    }
+    .pa-shadow {
+      width: 40px; height: 8px;
+      background: radial-gradient(ellipse, rgba(0,0,0,0.28) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: pa-shadow-pulse 4s ease-in-out infinite;
+      margin-top: -2px;
+    }
+    /* speech bubble — anchored to right so it never overflows */
+    .pixel-speech {
+      position: absolute; bottom: calc(100% + 10px); right: 0;
+      background: #fff; color: #1a1a1a;
+      font-family: var(--font-body); font-size: 0.62rem; font-weight: 700;
+      letter-spacing: 0.03em; padding: 0.5em 0.9em; border-radius: 10px;
+      white-space: nowrap; box-shadow: 0 4px 18px rgba(0,0,0,0.13);
+      pointer-events: none; display: none;
+      border: 1.5px solid rgba(0,0,0,0.06);
+      max-width: min(220px, 80vw); white-space: normal; text-align: center;
+    }
+    .pixel-speech.visible {
+      display: block;
+      animation: pa-speech-in 0.25s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    }
+    .pixel-speech::after {
+      content: ''; position: absolute; top: 100%; right: 24px;
+      border: 6px solid transparent; border-top-color: #fff;
+    }
+    /* sparkles */
+    .pa-sparkle {
+      position: absolute; pointer-events: none;
+      font-size: 12px; line-height: 1;
+      animation: pa-sparkle-pop 0.8s ease-out forwards;
+    }
+    @media (max-width: 768px) {
+      #pixel-avatar-wrap { bottom: 0.75rem; right: 0.75rem; }
+      #pixel-avatar { width: 80px; }
+      .pa-shadow { width: 30px; }
+    }
+    @media (pointer: coarse) { #pixel-avatar-wrap { bottom: 0.75rem; right: 0.75rem; } }
+
+    /* MOBILE */
     @media (max-width: 768px) {
       .cursor, #spotlight { display: none; }
-      .work-grid { grid-template-columns: 1fr; gap: 1.2rem; }
-      .card:nth-child(n) { grid-column: 1 / -1; }
       .card[data-type="video"] .card-media { aspect-ratio: 16/9; }
       .card[data-type="image"] .card-media { aspect-ratio: 4/5; }
-      .work-header { flex-direction: column; gap: 0.5rem; }
     }
-
-    /* =============================================
-       FILMSTRIP
-    ============================================= */
-    .filmstrip-section {
-      padding: clamp(2.5rem, 4vw, 4rem) 0;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      gap: clamp(0.5rem, 1vw, 0.9rem);
-      border-top: 1px solid rgba(0,0,0,0.06);
-      border-bottom: 1px solid rgba(0,0,0,0.06);
-      background: var(--bg-2);
-      /* Edge fade vignette */
-      mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
-      -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
-    }
-    .filmstrip-row { overflow: hidden; }
-    .filmstrip-track {
-      display: flex;
-      gap: clamp(0.4rem, 0.8vw, 0.8rem);
-      width: max-content;
-    }
-    .filmstrip-track--a { animation: fs-left 32s linear infinite; }
-    .filmstrip-track--b { animation: fs-right 24s linear infinite; }
-    @keyframes fs-left  { from { transform: translateX(0);    } to { transform: translateX(-50%); } }
-    @keyframes fs-right { from { transform: translateX(-50%); } to { transform: translateX(0);    } }
-    .fs-img {
-      width: clamp(200px, 24vw, 360px);
-      aspect-ratio: 16 / 10;
-      object-fit: cover;
-      border-radius: 3px;
-      flex-shrink: 0;
-      filter: saturate(0.65) brightness(0.9);
-      transition: filter 0.4s ease;
-    }
-    .fs-img:hover { filter: saturate(1) brightness(1); }
-    @media (prefers-reduced-motion: reduce) {
-      .filmstrip-track--a, .filmstrip-track--b { animation: none; }
-    }
-
-    /* =============================================
-       POLAROID CAMERA SECTION
-    ============================================= */
-    /* Fixed-based scroll section —
-       pol-section provides scroll height (entry + 5 ejects + buffer)
-       pol-scene is fixed and only shown while section is in view */
-    .pol-section {
-      position: relative;
-      width: 100%;
-      height: calc(100svh + 3800px);
-    }
-    .pol-scene {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100svh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      visibility: hidden;    /* hidden until section enters view */
-      pointer-events: none;
-      z-index: 5;
-    }
-    .pol-scene.pol-active {
-      visibility: visible;
-      pointer-events: auto;
-    }
-
-    /* =============================================
-       CAMERA WRAP — perspective 3D container + float
-    ============================================= */
-    .pol-camera-wrap {
-      position: relative;
-      z-index: 10;
-      flex-shrink: 0;
-      transform: perspective(1100px) rotateX(6deg) rotateY(-4deg);
-      transform-style: preserve-3d;
-      animation: cam-float 5s ease-in-out infinite;
-      will-change: transform;
-    }
-    @keyframes cam-float {
-      0%,100% { transform: perspective(1100px) rotateX(6deg) rotateY(-4deg) translateY(0px);   }
-      50%      { transform: perspective(1100px) rotateX(6deg) rotateY(-4deg) translateY(-10px); }
-    }
-    .cam-svg {
-      width: clamp(180px, 22vw, 280px);
-      display: block;
-      /* Entry animation overrides float via GSAP — float continues underneath */
-    }
-    /* Legacy camera class kept empty for mobile CSS */
-    .pol-camera {
-      width: clamp(160px, 18vw, 215px);
-      position: relative;
-      z-index: 10;
-      flex-shrink: 0;
-      /* Multi-layer drop shadow for depth */
-      filter:
-        drop-shadow(0 2px 0 #c8c4bc)
-        drop-shadow(0 4px 0 #b8b4ac)
-        drop-shadow(0 6px 0 #a8a49c)
-        drop-shadow(0 20px 40px rgba(0,0,0,0.35))
-        drop-shadow(0 8px 16px rgba(0,0,0,0.2));
-    }
-    /* Outer body — white plastic with sheen */
-    .pol-cam-top {
-      background: linear-gradient(170deg, #2c2c2e 0%, #1e1e20 50%, #141416 100%);
-      border-radius: clamp(14px,2vw,18px) clamp(14px,2vw,18px) 0 0;
-      height: clamp(44px, 5.5vw, 56px);
-      display: flex;
-      align-items: center;
-      padding: 0 clamp(10px,1.4vw,16px);
-      gap: 7px;
-      position: relative;
-      /* Highlight line across top edge */
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,0.3);
-    }
-    .pol-cam-flash {
-      width: clamp(16px,2vw,22px); height: clamp(16px,2vw,22px);
-      border-radius: 5px;
-      background: linear-gradient(135deg, #e0e0e0 0%, #a8a8a8 60%, #888 100%);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.5);
-      flex-shrink: 0;
-    }
-    .pol-cam-selfie-led {
-      width: 5px; height: 5px;
-      border-radius: 50%;
-      background: #22c55e;
-      box-shadow: 0 0 5px 2px rgba(34,197,94,0.6);
-      flex-shrink: 0;
-      animation: blink 2.5s ease-in-out infinite;
-    }
-    .pol-cam-viewfinder {
-      width: clamp(28px,3.5vw,38px); height: clamp(16px,2vw,22px);
-      border-radius: 3px;
-      background: linear-gradient(135deg, #1a3a5c 0%, #0d2540 100%);
-      border: 1.5px solid #444;
-      margin-left: auto;
-      flex-shrink: 0;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.08);
-    }
-    .pol-cam-btn {
-      width: clamp(11px,1.4vw,15px); height: clamp(11px,1.4vw,15px);
-      border-radius: 50%;
-      background: linear-gradient(145deg, #d44 60%, #922 100%);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.25);
-      flex-shrink: 0;
-    }
-    /* White plastic body */
-    .pol-cam-body {
-      background: linear-gradient(160deg,
-        #ffffff 0%,
-        #f8f6f2 30%,
-        #f2ede6 65%,
-        #e9e3da 100%
-      );
-      /* Inset highlights = plastic sheen */
-      box-shadow:
-        inset 3px 0 8px rgba(255,255,255,0.6),
-        inset -2px 0 6px rgba(0,0,0,0.06),
-        inset 0 3px 8px rgba(255,255,255,0.7),
-        inset 0 -2px 4px rgba(0,0,0,0.06);
-      padding: clamp(16px, 2.2vw, 24px) clamp(16px, 2.2vw, 24px) clamp(10px, 1.2vw, 14px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    /* Multi-ring glass lens */
-    .pol-cam-lens {
-      width: clamp(72px, 8.5vw, 102px);
-      height: clamp(72px, 8.5vw, 102px);
-      border-radius: 50%;
-      position: relative;
-      /* Outer chrome ring */
-      background: conic-gradient(
-        from 0deg,
-        #b0aca4 0%, #e8e4de 20%, #b0aca4 40%,
-        #e8e4de 60%, #b0aca4 80%, #e8e4de 100%
-      );
-      box-shadow:
-        0 2px 8px rgba(0,0,0,0.4),
-        inset 0 1px 3px rgba(255,255,255,0.5),
-        inset 0 -1px 2px rgba(0,0,0,0.3);
-      padding: 5px;
-    }
-    /* Inner chrome ring */
-    .pol-cam-lens-ring {
-      position: absolute;
-      inset: 5px;
-      border-radius: 50%;
-      background: conic-gradient(
-        from 45deg,
-        #888480 0%, #c4c0b8 25%, #888480 50%,
-        #c4c0b8 75%, #888480 100%
-      );
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
-      padding: 4px;
-    }
-    /* Glass element */
-    .pol-cam-lens-ring::before {
-      content: '';
-      position: absolute;
-      inset: 4px;
-      border-radius: 50%;
-      background: radial-gradient(
-        circle at 38% 32%,
-        #4a5068 0%,
-        #1e2235 35%,
-        #0c0e18 65%,
-        #060810 100%
-      );
-      box-shadow: inset 0 3px 12px rgba(0,0,0,0.9);
-    }
-    /* Glass shine */
-    .pol-cam-lens-shine {
-      position: absolute;
-      top: 14px; left: 16px;
-      width: 28%; height: 18%;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.18);
-      transform: rotate(-30deg);
-      z-index: 2;
-    }
-    /* Small secondary shine */
-    .pol-cam-lens-shine::after {
-      content: '';
-      position: absolute;
-      bottom: -8px; right: -4px;
-      width: 40%; height: 35%;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.08);
-    }
-    /* Rainbow stripe */
-    .pol-cam-stripe {
-      background: linear-gradient(160deg, #f2ede6 0%, #eae4dc 100%);
-      padding: 0 clamp(10px,1.4vw,14px) clamp(8px,1vw,12px);
-      display: flex;
-      gap: 2.5px;
-    }
-    .pol-cam-stripe span {
-      flex: 1;
-      height: clamp(7px,0.9vw,10px);
-      border-radius: 2.5px;
-      /* Each stripe has a subtle gloss */
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.1);
-    }
-    /* Ejection slot */
-    .pol-cam-bottom {
-      background: linear-gradient(170deg, #222224 0%, #18181a 100%);
-      border-radius: 0 0 clamp(14px,2vw,18px) clamp(14px,2vw,18px);
-      height: clamp(34px, 4.2vw, 46px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
-    }
-    .pol-cam-slot {
-      width: 54%;
-      height: 5px;
-      background: linear-gradient(to bottom, #030303, #0a0a0a);
-      border-radius: 3px;
-      box-shadow:
-        0 2px 6px rgba(0,0,0,0.9),
-        inset 0 1px 2px rgba(0,0,0,1),
-        0 -1px 0 rgba(80,80,80,0.2);
-    }
-
-    /* =============================================
-       3D POLAROID CARDS
-    ============================================= */
-    .pol-card {
-      position: absolute;
-      top: 50%; left: 50%;
-      /* White photo border — thicker at bottom like real polaroids */
-      background: linear-gradient(
-        145deg,
-        #ffffff 0%,
-        #faf9f7 50%,
-        #f5f3ef 100%
-      );
-      padding: clamp(7px, 0.9vw, 11px) clamp(7px, 0.9vw, 11px) clamp(28px, 3.6vw, 44px);
-      /* 3D layered shadows */
-      box-shadow:
-        0 1px 0 rgba(0,0,0,0.04),
-        0 2px 0 rgba(0,0,0,0.05),
-        0 4px 0 rgba(0,0,0,0.04),
-        0 8px 16px rgba(0,0,0,0.14),
-        0 20px 48px rgba(0,0,0,0.10),
-        inset 0 0 0 0.5px rgba(0,0,0,0.05);
-      border-radius: 2px;
-      width: clamp(130px, 14vw, 175px);
-      will-change: transform;
-      transform-origin: center center;
-    }
-    .pol-card-img {
-      width: 100%;
-      aspect-ratio: 1;
-      object-fit: cover;
-      display: block;
-      filter: saturate(0.85) contrast(1.05);
-      /* Inner shadow gives slight depth to photo */
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
-    }
-    .pol-card-caption {
-      position: absolute;
-      bottom: clamp(6px, 1vw, 11px);
-      left: 0; right: 0;
-      text-align: center;
-      font-family: var(--font-serif);
-      font-style: italic;
-      font-size: clamp(0.55rem, 0.75vw, 0.7rem);
-      font-weight: 300;
-      color: #b0aba4;
-      letter-spacing: 0.02em;
-    }
-
-    /* Mobile — natural height, visible, simple stacked layout */
-    @media (max-width: 768px) {
-      .pol-section { height: auto !important; padding: 3rem 1.5rem 4rem; }
-      .pol-scene {
-        position: relative !important;
-        visibility: visible !important;
-        height: auto !important;
-        flex-direction: column;
-        gap: 2.5rem;
-        overflow: visible;
-      }
-      .pol-camera-wrap {
-        position: relative !important;
-        width: clamp(150px, 55vw, 210px);
-        animation: none; /* no float on mobile */
-        transform: perspective(800px) rotateX(4deg) rotateY(-2deg) !important;
-      }
-      .pol-card {
-        position: relative !important;
-        top: auto !important; left: auto !important;
-        transform: none !important;
-        opacity: 1 !important;
-        width: clamp(120px, 36vw, 160px);
-      }
-      .pol-cards-mobile {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.8rem;
-        justify-content: center;
-      }
-    }
-
-    /* =============================================
-       TOOLS SECTION
-    ============================================= */
-    .tools-section {
-      padding: clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 4vw, 4rem);
-      border-top: 1px solid rgba(0,0,0,0.07);
-    }
-    .tools-label {
-      font-family: var(--font-body);
-      font-size: 0.52rem;
-      font-weight: 600;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--ink-dim);
-      margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
-    }
-    .tools-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: clamp(1.5rem, 3vw, 3rem) clamp(2rem, 4vw, 4rem);
-      align-items: flex-start;
-    }
-    .tool-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.55rem;
-      opacity: 0.4;
-      transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.16,1,0.3,1);
-      cursor: default;
-    }
-    .tool-item:hover {
-      opacity: 1;
-      transform: translateY(-3px);
-    }
-    .tool-item img {
-      width: clamp(28px, 3vw, 40px);
-      height: clamp(28px, 3vw, 40px);
-      object-fit: contain;
-      display: block;
-    }
-    .tool-item span {
-      font-family: var(--font-body);
-      font-size: 0.5rem;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--ink-dim);
-      white-space: nowrap;
-    }
-
-
-    /* =============================================
-       SHOWREEL SECTION
-    ============================================= */
-    .showreel-section {
-      position: relative;
-      width: 100%;
-      height: 100svh;
-      overflow: hidden;
-      background: #060403;
-    }
-    .showreel-video {
-      position: absolute;
-      inset: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      filter: brightness(0.55) saturate(0.85);
-      transition: filter 0.9s ease;
-    }
-    .showreel-section.has-sound .showreel-video {
-      filter: brightness(0.72) saturate(1.05);
-    }
-    .showreel-ui {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .showreel-ring {
-      width: clamp(96px, 11vw, 148px);
-      height: clamp(96px, 11vw, 148px);
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 0.3rem;
-      backdrop-filter: blur(8px);
-      background: rgba(255,255,255,0.05);
-      cursor: none;
-      transition: transform 0.45s cubic-bezier(0.16,1,0.3,1),
-                  background 0.4s ease,
-                  border-color 0.3s ease;
-    }
-    .showreel-section:hover .showreel-ring {
-      transform: scale(1.12);
-      background: rgba(255,255,255,0.11);
-      border-color: rgba(255,255,255,0.65);
-    }
-    .showreel-ring svg { fill: white; width: 18px; height: 18px; }
-    .showreel-ring-label {
-      font-family: var(--font-body);
-      font-size: 0.44rem;
-      font-weight: 700;
-      letter-spacing: 0.28em;
-      color: rgba(255,255,255,0.75);
-      text-align: center;
-      text-transform: uppercase;
-      line-height: 1.5;
-    }
-    .showreel-corner {
-      position: absolute;
-      font-family: var(--font-body);
-      font-size: 0.5rem;
-      font-weight: 600;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.38);
-    }
-    .showreel-tl { top: clamp(1.2rem,2.5vw,2rem); left: clamp(1.5rem,4vw,4rem); }
-    .showreel-tr {
-      top: clamp(1.2rem,2.5vw,2rem); right: clamp(1.5rem,4vw,4rem);
-      cursor: none;
-      padding: 0.45em 0.9em;
-      border: 1px solid rgba(255,255,255,0.18);
-      border-radius: 2rem;
-      transition: color 0.25s, border-color 0.25s;
-    }
-    .showreel-tr:hover { color: rgba(255,255,255,0.75); border-color: rgba(255,255,255,0.45); }
-    .showreel-bl { bottom: clamp(1.5rem,3vw,2.5rem); left: clamp(1.5rem,4vw,4rem); }
-    .showreel-br { bottom: clamp(1.5rem,3vw,2.5rem); right: clamp(1.5rem,4vw,4rem); }
-    /* sound-on state label changes */
-    .showreel-section.has-sound .showreel-tr { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.4); }
 
     @media (prefers-reduced-motion: reduce) {
       .hero-blob, .marquee-track, .hero-scroll-arrow, .nav-dot { animation: none; }
@@ -1206,199 +887,38 @@
       #spotlight { display: none; }
     }
 
-    /* =============================================
-       BLOB MORPHING — organic light-leak feel
-    ============================================= */
-    .hero-blob-1 { animation: float 20s ease-in-out infinite alternate, blob-morph-a 14s ease-in-out infinite; }
-    .hero-blob-2 { animation: float 17s ease-in-out infinite alternate-reverse, blob-morph-b 18s ease-in-out infinite; }
-    .hero-blob-3 { animation: float 14s ease-in-out infinite alternate, blob-morph-a 10s ease-in-out infinite reverse; }
-
-    @keyframes blob-morph-a {
-      0%   { border-radius: 50%; }
-      25%  { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
-      50%  { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
-      75%  { border-radius: 40% 60% 50% 30% / 70% 30% 50% 60%; }
-      100% { border-radius: 50%; }
-    }
-    @keyframes blob-morph-b {
-      0%   { border-radius: 50%; }
-      33%  { border-radius: 70% 30% 40% 60% / 40% 70% 30% 60%; }
-      66%  { border-radius: 40% 70% 60% 30% / 60% 40% 70% 30%; }
-      100% { border-radius: 50%; }
-    }
-
-    /* =============================================
-       FEATURED CARD (card 1 — hero reel)
-    ============================================= */
-    .card--featured {
-      grid-column: 1 / -1 !important;
-    }
-    .card--featured .card-media { aspect-ratio: 21 / 9; }
-
-    /* Big circle play button */
-    .card-play-btn {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 5;
-      pointer-events: none;
-      transition: opacity 0.35s ease;
-    }
-    .card-play-btn-ring {
-      width: clamp(56px, 6vw, 80px);
-      height: clamp(56px, 6vw, 80px);
-      border-radius: 50%;
-      border: 1.5px solid rgba(255,255,255,0.65);
-      backdrop-filter: blur(8px);
-      background: rgba(255,255,255,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.35s cubic-bezier(0.16,1,0.3,1),
-                  background 0.35s ease;
-    }
-    .card-play-btn-ring svg {
-      width: 20px; height: 20px;
-      fill: white;
-      margin-left: 3px; /* optical align for triangle */
-    }
-    .card--featured:hover .card-play-btn-ring { transform: scale(1.12); background: rgba(255,255,255,0.2); }
-    .card--featured.is-playing .card-play-btn  { opacity: 0; }
-    .card--featured:hover.is-playing .card-play-btn { opacity: 1; }
-
-    /* Mobile featured ratio */
-    @media (max-width: 768px) {
-      .card--featured .card-media { aspect-ratio: 16 / 9; }
-    }
-
-    /* =============================================
-       FILM-TITLE OVERLAY — all cards
-    ============================================= */
-    .card-overlay {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      padding: clamp(0.9rem,1.8vw,1.4rem) clamp(0.9rem,1.8vw,1.4rem);
-      background: linear-gradient(to top, rgba(8,5,3,0.82) 0%, transparent 100%);
-      z-index: 4;
-      clip-path: inset(100% 0 0 0);
-      transition: clip-path 0.55s cubic-bezier(0.16,1,0.3,1);
-      border-radius: 0 0 3px 3px;
-    }
-    .card-overlay-cat {
-      display: block;
-      font-family: var(--font-body);
-      font-size: 0.48rem;
-      font-weight: 700;
-      letter-spacing: 0.32em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.5);
-      margin-bottom: 0.3rem;
-    }
-    .card-overlay-title {
-      font-family: var(--font-serif);
-      font-style: italic;
-      font-size: clamp(1rem, 2.2vw, 1.65rem);
-      font-weight: 300;
-      color: #fff;
-      line-height: 1.1;
-    }
-    /* Desktop hover — clip-path wipes up like a curtain */
-    .card:hover .card-overlay { clip-path: inset(0% 0 0 0); }
-
-    /* Mobile — always visible */
-    @media (pointer: coarse) {
-      .card-overlay {
-        clip-path: inset(0% 0 0 0);
-        padding-bottom: clamp(0.7rem,1.5vw,1rem);
-      }
-    }
-
-    /* Mobile video badge — small ▶ so users know it's tappable */
-    .card-video-badge {
-      display: none;
-      position: absolute;
-      top: 0.75rem; right: 0.75rem;
-      z-index: 5;
-      font-size: 0.5rem;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      color: white;
-      background: rgba(0,0,0,0.45);
-      backdrop-filter: blur(4px);
-      border-radius: 2rem;
-      padding: 0.3em 0.7em;
-    }
-    @media (pointer: coarse) {
-      .card[data-type="video"] .card-video-badge { display: block; }
-    }
-
-    /* =============================================
-       FOOTER CTA
-    ============================================= */
-    .footer-cta-wrap {
-      padding: clamp(3.5rem, 7vw, 6rem) clamp(1.5rem,4vw,4rem) 0;
-      border-top: 1px solid rgba(0,0,0,0.08);
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    .footer-cta {
-      font-family: var(--font-hero);
-      font-size: clamp(2.8rem, 9vw, 8.5rem);
-      font-weight: 900;
-      color: var(--ink);
-      letter-spacing: -0.03em;
-      line-height: 0.92;
-    }
-    .footer-cta em {
-      font-style: italic;
-      font-family: var(--font-serif);
-      font-weight: 300;
-      color: var(--grad-a);
-      font-size: 1.05em;
-    }
-    .footer-cta-sub {
-      margin-top: clamp(1rem,2vw,1.5rem);
-      font-family: var(--font-body);
-      font-size: clamp(0.7rem,1.2vw,0.9rem);
-      font-weight: 500;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--ink-dim);
-    }
   </style>
 </head>
 <body>
 
-  <!-- Scroll progress -->
+  <!-- SVG FILTER DEFS — ripple + hero distort -->
+  <svg id="fx-defs" xmlns="http://www.w3.org/2000/svg"
+       style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+    <defs>
+    </defs>
+  </svg>
+
   <div id="progress-bar" aria-hidden="true"></div>
-
-  <!-- Grain canvas (drawn by JS) -->
   <canvas id="grain-canvas" aria-hidden="true"></canvas>
-
-  <!-- Spotlight (hero only) -->
   <div id="spotlight" aria-hidden="true"></div>
-
-  <!-- Custom cursor -->
   <div class="cursor" id="cursor" aria-hidden="true">
     <span class="cursor-text" id="cursor-text"></span>
   </div>
 
-  <!-- Loader -->
+  <!-- LOADER -->
   <div id="loader" aria-hidden="true">
     <p class="loader-name-bg" id="loader-name-bg">Anirudh Yadav</p>
+    <div id="loader-avatar-wrap">
+      <img id="loader-avatar-gray"  src="images/pixel-avatar.png" alt="" draggable="false" />
+      <img id="loader-avatar-color" src="images/pixel-avatar.png" alt="" draggable="false" />
+    </div>
     <div class="loader-counter" id="loader-counter">0</div>
+    <div class="loader-dots"><span></span><span></span><span></span></div>
   </div>
 
-  <!-- =============================================
-       NAV
-  ============================================= -->
+  <!-- NAV -->
   <nav aria-label="Site navigation">
-    <button class="nav-logo" id="nav-logo" aria-label="Back to top">
-      <span class="nav-ay" id="nav-ay">AY</span>
-      <span class="nav-fullname" id="nav-fullname">Anirudh Yadav</span>
-    </button>
+    <button class="nav-logo" id="nav-logo" aria-label="Back to top">AY</button>
     <button class="nav-status" id="nav-status"
             onclick="document.getElementById('footer').scrollIntoView({behavior:'smooth'})"
             aria-label="Scroll to contact">
@@ -1407,9 +927,8 @@
     </button>
   </nav>
 
-  <!-- =============================================
-       HERO
-  ============================================= -->
+  <div id="scroll-wrap">
+  <!-- HERO -->
   <section id="hero">
     <div class="hero-blob hero-blob-1" aria-hidden="true"></div>
     <div class="hero-blob hero-blob-2" aria-hidden="true"></div>
@@ -1417,11 +936,8 @@
 
     <p class="hero-eyebrow">Reel edits &nbsp;·&nbsp; Procreate art &nbsp;·&nbsp; Visual storytelling</p>
 
-    <!-- Portfolio stack: big bold first, then crossfades to small label -->
     <div class="portfolio-stack" aria-hidden="true">
-      <!-- BIG: solid black, same weight as name, starts visible -->
       <p class="portfolio-big" id="portfolio-big">PORTFOLIO</p>
-      <!-- SMALL: tracked outline version, starts hidden -->
       <p class="hero-portfolio-label" id="portfolio-small"><span id="portfolio-scramble">Portfolio</span></p>
     </div>
 
@@ -1438,9 +954,7 @@
     </div>
   </section>
 
-  <!-- =============================================
-       MARQUEE
-  ============================================= -->
+  <!-- MARQUEE -->
   <div class="marquee-wrap" aria-hidden="true">
     <div class="marquee-track">
       <span class="marquee-item">Reel Edits <span>✦</span></span>
@@ -1458,305 +972,87 @@
     </div>
   </div>
 
-  <!-- =============================================
-       FILMSTRIP
-  ============================================= -->
-  <div class="filmstrip-section" aria-hidden="true">
-    <!-- Row A — scrolls left -->
-    <div class="filmstrip-row">
-      <div class="filmstrip-track filmstrip-track--a">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-a1/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-a2/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-a3/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-a4/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-a5/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-a6/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-a7/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-a8/640/360" alt="" loading="lazy">
-        <!-- duplicated for seamless loop -->
-        <img class="fs-img" src="https://picsum.photos/seed/fs-a1/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-a2/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-a3/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-a4/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-a5/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-a6/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-a7/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-a8/640/360" alt="" loading="lazy">
+  <!-- THUMBNAILS — two rows -->
+  <section class="thumbnails-section">
+    <div class="thumbnails-header">
+      <h2 class="thumbnails-title">Thumbnails</h2>
+      <p class="thumbnails-desc">stills, frames &amp; digital art</p>
+    </div>
+
+    <!-- Row 1 — scrolls left, images 1–4 -->
+    <div class="thumbnails-strip" data-dir="1">
+      <div class="thumbnails-track">
+        <div class="fs-card" data-idx="0" data-label="01 · Thumbnail"><img class="fs-img" src="images/thumbnails/1.JPG" alt="" loading="lazy"><div class="fs-label">01 · Thumbnail</div></div>
+        <div class="fs-card" data-idx="1" data-label="02 · Procreate"><img class="fs-img" src="images/thumbnails/2.png" alt="" loading="lazy"><div class="fs-label">02 · Procreate</div></div>
+        <div class="fs-card" data-idx="2" data-label="03 · Color Grading"><img class="fs-img" src="images/thumbnails/3.webp" alt="" loading="lazy"><div class="fs-label">03 · Color Grading</div></div>
+        <div class="fs-card" data-idx="3" data-label="04 · Thumbnail"><img class="fs-img" src="images/thumbnails/4.png" alt="" loading="lazy"><div class="fs-label">04 · Thumbnail</div></div>
+        <!-- duplicates for seamless loop -->
+        <div class="fs-card" data-idx="0" data-label="01 · Thumbnail"><img class="fs-img" src="images/thumbnails/1.JPG" alt="" loading="lazy"><div class="fs-label">01 · Thumbnail</div></div>
+        <div class="fs-card" data-idx="1" data-label="02 · Procreate"><img class="fs-img" src="images/thumbnails/2.png" alt="" loading="lazy"><div class="fs-label">02 · Procreate</div></div>
+        <div class="fs-card" data-idx="2" data-label="03 · Color Grading"><img class="fs-img" src="images/thumbnails/3.webp" alt="" loading="lazy"><div class="fs-label">03 · Color Grading</div></div>
+        <div class="fs-card" data-idx="3" data-label="04 · Thumbnail"><img class="fs-img" src="images/thumbnails/4.png" alt="" loading="lazy"><div class="fs-label">04 · Thumbnail</div></div>
       </div>
     </div>
-    <!-- Row B — scrolls right -->
-    <div class="filmstrip-row">
-      <div class="filmstrip-track filmstrip-track--b">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-b1/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-b2/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-b3/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-b4/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-b5/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-b6/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-b7/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-b8/640/360" alt="" loading="lazy">
-        <!-- duplicated -->
-        <img class="fs-img" src="https://picsum.photos/seed/fs-b1/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-b2/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-b3/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-b4/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-b5/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-b6/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-b7/640/360" alt="" loading="lazy">
-        <img class="fs-img" src="https://picsum.photos/seed/fs-b8/640/360" alt="" loading="lazy">
+
+    <!-- Row 2 — scrolls right, images 5–8 -->
+    <div class="thumbnails-strip" data-dir="-1">
+      <div class="thumbnails-track">
+        <div class="fs-card" data-idx="4" data-label="05 · Thumbnail"><img class="fs-img" src="images/thumbnails/5.jpg" alt="" loading="lazy"><div class="fs-label">05 · Thumbnail</div></div>
+        <div class="fs-card" data-idx="5" data-label="06 · Thumbnail"><img class="fs-img" src="images/thumbnails/6.JPG" alt="" loading="lazy"><div class="fs-label">06 · Thumbnail</div></div>
+        <div class="fs-card" data-idx="6" data-label="07 · Thumbnail"><img class="fs-img" src="images/thumbnails/7.jpg" alt="" loading="lazy"><div class="fs-label">07 · Thumbnail</div></div>
+        <div class="fs-card" data-idx="7" data-label="08 · Procreate"><img class="fs-img" src="images/thumbnails/8.png" alt="" loading="lazy"><div class="fs-label">08 · Procreate</div></div>
+        <!-- duplicates -->
+        <div class="fs-card" data-idx="4" data-label="05 · Thumbnail"><img class="fs-img" src="images/thumbnails/5.jpg" alt="" loading="lazy"><div class="fs-label">05 · Thumbnail</div></div>
+        <div class="fs-card" data-idx="5" data-label="06 · Thumbnail"><img class="fs-img" src="images/thumbnails/6.JPG" alt="" loading="lazy"><div class="fs-label">06 · Thumbnail</div></div>
+        <div class="fs-card" data-idx="6" data-label="07 · Thumbnail"><img class="fs-img" src="images/thumbnails/7.jpg" alt="" loading="lazy"><div class="fs-label">07 · Thumbnail</div></div>
+        <div class="fs-card" data-idx="7" data-label="08 · Procreate"><img class="fs-img" src="images/thumbnails/8.png" alt="" loading="lazy"><div class="fs-label">08 · Procreate</div></div>
       </div>
     </div>
-  </div>
 
-  <!-- =============================================
-       POLAROID CAMERA
-  ============================================= -->
-  <div class="pol-section" id="pol-section">
-    <div class="pol-scene" id="pol-scene">
+    <p class="drag-hint" id="drag-hint"><span>drag to explore</span><span class="drag-hint-arrow">→</span></p>
+  </section>
 
-      <!-- SVG Polaroid Go Gen 2 camera — inline for full CSS control -->
-      <div class="pol-camera-wrap" id="pol-camera-wrap">
-        <svg class="cam-svg" viewBox="0 0 200 215" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <defs>
-            <!-- Body: warm white with subtle depth gradient -->
-            <linearGradient id="gBody" x1="20" y1="0" x2="180" y2="215" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#ffffff"/>
-              <stop offset="40%" stop-color="#f5f2ed"/>
-              <stop offset="100%" stop-color="#e6e0d4"/>
-            </linearGradient>
-            <!-- Top dark strip -->
-            <linearGradient id="gTop" x1="0" y1="0" x2="0" y2="50" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#2d2d2f"/>
-              <stop offset="100%" stop-color="#141416"/>
-            </linearGradient>
-            <!-- Bottom dark strip -->
-            <linearGradient id="gBot" x1="0" y1="192" x2="0" y2="215" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#1c1c1e"/>
-              <stop offset="100%" stop-color="#0e0e10"/>
-            </linearGradient>
-            <!-- Flash: silver metallic -->
-            <radialGradient id="gFlash" cx="32%" cy="32%" r="68%">
-              <stop offset="0%" stop-color="#e2e2e2"/>
-              <stop offset="55%" stop-color="#a8a8a8"/>
-              <stop offset="100%" stop-color="#707070"/>
-            </radialGradient>
-            <!-- Lens chrome ring A (lighter) -->
-            <linearGradient id="gChA" x1="55" y1="70" x2="145" y2="168" gradientUnits="userSpaceOnUse">
-              <stop offset="0%"   stop-color="#d8d4cc"/>
-              <stop offset="22%"  stop-color="#f2ece4"/>
-              <stop offset="48%"  stop-color="#b4b0a8"/>
-              <stop offset="72%"  stop-color="#e8e4dc"/>
-              <stop offset="100%" stop-color="#9e9a94"/>
-            </linearGradient>
-            <!-- Lens chrome ring B (darker inner) -->
-            <linearGradient id="gChB" x1="62" y1="78" x2="138" y2="158" gradientUnits="userSpaceOnUse">
-              <stop offset="0%"   stop-color="#ccc8c0"/>
-              <stop offset="30%"  stop-color="#e4e0d8"/>
-              <stop offset="65%"  stop-color="#a0a098"/>
-              <stop offset="100%" stop-color="#d0ccc4"/>
-            </linearGradient>
-            <!-- Lens glass: deep blue-black -->
-            <radialGradient id="gGlass" cx="37%" cy="33%" r="72%">
-              <stop offset="0%"   stop-color="#3c4264"/>
-              <stop offset="22%"  stop-color="#1e2238"/>
-              <stop offset="52%"  stop-color="#0d0f1e"/>
-              <stop offset="100%" stop-color="#040408"/>
-            </radialGradient>
-            <!-- Viewfinder glass -->
-            <radialGradient id="gVF" cx="38%" cy="38%" r="70%">
-              <stop offset="0%"  stop-color="#1a2840"/>
-              <stop offset="100%" stop-color="#070e18"/>
-            </radialGradient>
-            <!-- Multi-layer drop shadow for 3D lift -->
-            <filter id="fShadow" x="-25%" y="-15%" width="150%" height="145%">
-              <feDropShadow dx="0" dy="3"  stdDeviation="2"  flood-color="#000" flood-opacity="0.22"/>
-              <feDropShadow dx="0" dy="10" stdDeviation="8"  flood-color="#000" flood-opacity="0.16"/>
-              <feDropShadow dx="0" dy="24" stdDeviation="16" flood-color="#000" flood-opacity="0.11"/>
-              <feDropShadow dx="3" dy="36" stdDeviation="24" flood-color="#000" flood-opacity="0.07"/>
-            </filter>
-            <!-- Clip to camera outline -->
-            <clipPath id="cpCam">
-              <rect width="200" height="215" rx="24"/>
-            </clipPath>
-          </defs>
+  <!-- TOOLS — shared heading -->
 
-          <!-- Whole camera with shadow -->
-          <g filter="url(#fShadow)">
-
-            <!-- ─── BODY ─── -->
-            <rect width="200" height="215" rx="24" fill="url(#gBody)"/>
-
-            <!-- ─── TOP + BOTTOM DARK STRIPS (clipped to body shape) ─── -->
-            <g clip-path="url(#cpCam)">
-              <rect width="200" height="50" fill="url(#gTop)"/>
-              <!-- subtle top highlight -->
-              <rect width="200" height="1" y="0" fill="rgba(255,255,255,0.18)"/>
-              <rect width="200" height="24" y="192" fill="url(#gBot)"/>
-              <rect width="200" height="215" y="192" fill="url(#gBot)"/>
-            </g>
-
-            <!-- ─── FLASH ─── -->
-            <rect x="14" y="11" width="27" height="27" rx="6" fill="url(#gFlash)"/>
-            <!-- flash inner reflection -->
-            <rect x="17" y="14" width="12" height="8"  rx="2.5" fill="rgba(255,255,255,0.28)"/>
-            <rect x="14" y="11" width="27" height="27" rx="6" fill="none" stroke="rgba(0,0,0,0.22)" stroke-width="0.6"/>
-
-            <!-- ─── LED ─── -->
-            <circle cx="55" cy="25" r="4.5" fill="#c05000"/>
-            <circle cx="55" cy="25" r="3"   fill="#ff7200"/>
-            <circle cx="53.5" cy="23.5" r="1.3" fill="rgba(255,200,80,0.75)"/>
-
-            <!-- ─── VIEWFINDER ─── -->
-            <rect x="142" y="13" width="38" height="23" rx="4" fill="url(#gVF)"/>
-            <rect x="145" y="16" width="32" height="17" rx="3" fill="url(#gVF)"/>
-            <!-- VF reflection -->
-            <rect x="146" y="17" width="9" height="4" rx="2" fill="rgba(255,255,255,0.08)"/>
-            <rect x="142" y="13" width="38" height="23" rx="4" fill="none" stroke="rgba(0,0,0,0.35)" stroke-width="0.5"/>
-
-            <!-- ─── SHUTTER BUTTON (partially visible on right edge) ─── -->
-            <circle cx="194" cy="25" r="12" fill="#252527"/>
-            <circle cx="194" cy="25" r="9"  fill="#1e1e20"/>
-            <circle cx="194" cy="25" r="7"  fill="#2a2a2c"/>
-            <circle cx="191" cy="22" r="2.5" fill="rgba(255,255,255,0.12)"/>
-
-            <!-- ─── LENS ASSEMBLY ─── -->
-            <!-- Outer chrome flange (largest ring) -->
-            <circle cx="100" cy="118" r="51" fill="url(#gChA)"/>
-            <circle cx="100" cy="118" r="51" fill="none" stroke="rgba(0,0,0,0.12)" stroke-width="0.8"/>
-
-            <!-- Gap 1 — dark -->
-            <circle cx="100" cy="118" r="47" fill="#1c1c1e"/>
-
-            <!-- Chrome ring 2 -->
-            <circle cx="100" cy="118" r="44" fill="url(#gChB)"/>
-
-            <!-- Gap 2 — dark barrel -->
-            <circle cx="100" cy="118" r="40" fill="#161618"/>
-
-            <!-- Chrome ring 3 (focusing ring) -->
-            <circle cx="100" cy="118" r="37" fill="url(#gChA)"/>
-
-            <!-- Gap 3 — innermost dark ring -->
-            <circle cx="100" cy="118" r="33" fill="#0e0e10"/>
-
-            <!-- Glass element -->
-            <circle cx="100" cy="118" r="30" fill="url(#gGlass)"/>
-
-            <!-- Inner glass ring details -->
-            <circle cx="100" cy="118" r="23" fill="none" stroke="rgba(255,255,255,0.055)" stroke-width="1.5"/>
-            <circle cx="100" cy="118" r="15" fill="none" stroke="rgba(255,255,255,0.04)"  stroke-width="1"/>
-
-            <!-- Primary lens reflection (large crescent) -->
-            <ellipse cx="88"  cy="107" rx="12" ry="7"   fill="rgba(255,255,255,0.14)" transform="rotate(-28 88 107)"/>
-            <!-- Secondary reflection (smaller) -->
-            <ellipse cx="114" cy="131" rx="6.5" ry="3.5" fill="rgba(255,255,255,0.07)" transform="rotate(-28 114 131)"/>
-            <!-- Bright specular dot -->
-            <ellipse cx="85"  cy="106" rx="5"   ry="3"   fill="rgba(255,255,255,0.26)" transform="rotate(-25 85 106)"/>
-
-            <!-- ─── RAINBOW STRIPE ─── -->
-            <rect x="10"  y="165" width="29" height="14" rx="3.5" fill="#e8002d"/>
-            <rect x="43"  y="165" width="29" height="14" rx="3.5" fill="#f5821f"/>
-            <rect x="76"  y="165" width="29" height="14" rx="3.5" fill="#f9d01c"/>
-            <rect x="109" y="165" width="29" height="14" rx="3.5" fill="#00ab44"/>
-            <rect x="142" y="165" width="24" height="14" rx="3.5" fill="#00bcd4"/>
-            <rect x="170" y="165" width="21" height="14" rx="3.5" fill="#6829c2"/>
-            <!-- rainbow gloss overlay -->
-            <rect x="10"  y="165" width="181" height="5" rx="2.5" fill="rgba(255,255,255,0.22)"/>
-
-            <!-- ─── EJECTION SLOT ─── -->
-            <rect x="50" y="199" width="100" height="7" rx="3.5" fill="#050508"/>
-            <rect x="51" y="199" width="98"  height="1.5" rx="1" fill="rgba(255,255,255,0.04)"/>
-
-            <!-- ─── BODY EDGE HIGHLIGHTS (light from top-left) ─── -->
-            <!-- Top edge -->
-            <path d="M24 0.8 Q100 0.8 176 0.8" stroke="rgba(255,255,255,0.32)" stroke-width="1.5" stroke-linecap="round"/>
-            <!-- Left edge -->
-            <path d="M0.8 24 L0.8 191" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-linecap="round"/>
-            <!-- Right + bottom shadow edges -->
-            <path d="M199.2 24 L199.2 191" stroke="rgba(0,0,0,0.07)" stroke-width="1" stroke-linecap="round"/>
-            <path d="M24 214.2 Q100 214.2 176 214.2" stroke="rgba(0,0,0,0.07)" stroke-width="1" stroke-linecap="round"/>
-
-          </g>
-        </svg>
-      </div>
-
-      <!-- Polaroid cards — start hidden at camera slot, GSAP moves them -->
-      <div class="pol-card pol-card-0" data-final-x="-310" data-final-y="-200" data-final-r="-14">
-        <img class="pol-card-img" src="https://picsum.photos/seed/pol1/400/400" alt="Studio sketch" loading="lazy">
-        <p class="pol-card-caption">studio sketch</p>
-      </div>
-      <div class="pol-card pol-card-1" data-final-x="290" data-final-y="-170" data-final-r="11">
-        <img class="pol-card-img" src="https://picsum.photos/seed/pol2/400/400" alt="Golden hour" loading="lazy">
-        <p class="pol-card-caption">golden hour</p>
-      </div>
-      <div class="pol-card pol-card-2" data-final-x="-270" data-final-y="130" data-final-r="-7">
-        <img class="pol-card-img" src="https://picsum.photos/seed/pol3/400/400" alt="Late night edit" loading="lazy">
-        <p class="pol-card-caption">late night edit</p>
-      </div>
-      <div class="pol-card pol-card-3" data-final-x="260" data-final-y="150" data-final-r="16">
-        <img class="pol-card-img" src="https://picsum.photos/seed/pol4/400/400" alt="The process" loading="lazy">
-        <p class="pol-card-caption">the process</p>
-      </div>
-      <div class="pol-card pol-card-4" data-final-x="30" data-final-y="310" data-final-r="-3">
-        <img class="pol-card-img" src="https://picsum.photos/seed/pol5/400/400" alt="In between" loading="lazy">
-        <p class="pol-card-caption">in between</p>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- =============================================
-       SHOWREEL
-  ============================================= -->
+  <!-- SHOWREEL -->
   <section class="showreel-section" id="showreel" aria-label="Showreel">
     <video class="showreel-video" id="showreel-video"
            src="https://www.w3schools.com/html/mov_bbb.mp4"
            muted loop playsinline preload="none"
            aria-label="Showreel 2024–2025"></video>
-
     <div class="showreel-ui" id="showreel-ui">
-      <!-- Top-left -->
       <span class="showreel-corner showreel-tl">Anirudh Yadav</span>
-      <!-- Top-right: sound toggle -->
-      <button class="showreel-corner showreel-tr" id="showreel-sound-btn" aria-label="Toggle sound">
-        ♪ SOUND
-      </button>
-      <!-- Centre: play ring -->
+      <button class="showreel-corner showreel-tr" id="showreel-sound-btn" aria-label="Toggle sound">♪ SOUND</button>
       <div class="showreel-ring" id="showreel-ring" aria-hidden="true">
         <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         <span class="showreel-ring-label">SHOW<br>REEL</span>
       </div>
-      <!-- Bottom-left -->
       <span class="showreel-corner showreel-bl">2024 — 2025</span>
-      <!-- Bottom-right -->
       <span class="showreel-corner showreel-br">Selected work</span>
     </div>
   </section>
 
-  <!-- =============================================
-       WORK
-  ============================================= -->
+  <!-- WORK -->
   <section id="work">
     <div class="work-header">
-      <h2 class="work-title">Work</h2>
-      <span class="work-count">08 pieces</span>
+      <div class="work-header-top">
+        <div class="work-title-group">
+          <h2 class="work-title">Work</h2>
+        </div>
+        <span class="work-count">08 pieces</span>
+      </div>
+      <p class="work-descriptor">A collection of motion, illustration &amp; visual work — crafted for brands, creators &amp; the internet.</p>
     </div>
 
-    <div class="work-grid">
-
+    <div class="work-scroll-wrap" id="work-scroll-wrap">
+      <div class="work-track" id="work-track">
       <article class="card" data-type="image" tabindex="0">
         <div class="card-inner">
           <div class="card-media">
             <img src="https://picsum.photos/seed/sketch04/600/800" alt="Sketch 004" loading="lazy" />
-            <div class="card-overlay">
-              <span class="card-overlay-cat">Procreate</span>
-              <p class="card-overlay-title">Sketch 004</p>
-            </div>
+            <div class="card-overlay"><span class="card-overlay-cat">Procreate</span><p class="card-overlay-title">Sketch 004</p></div>
           </div>
-          <div class="card-info">
-            <span class="card-title">Sketch 004</span>
-            <span class="card-tag">Procreate</span>
-          </div>
+          <div class="card-info"><span class="card-title">Sketch 004</span><span class="card-tag">Procreate</span></div>
         </div>
       </article>
 
@@ -1764,15 +1060,9 @@
         <div class="card-inner">
           <div class="card-media">
             <img src="https://picsum.photos/seed/art01/600/800" alt="Study 001" loading="lazy" />
-            <div class="card-overlay">
-              <span class="card-overlay-cat">Procreate</span>
-              <p class="card-overlay-title">Study 001</p>
-            </div>
+            <div class="card-overlay"><span class="card-overlay-cat">Procreate</span><p class="card-overlay-title">Study 001</p></div>
           </div>
-          <div class="card-info">
-            <span class="card-title">Study 001</span>
-            <span class="card-tag">Procreate</span>
-          </div>
+          <div class="card-info"><span class="card-title">Study 001</span><span class="card-tag">Procreate</span></div>
         </div>
       </article>
 
@@ -1781,15 +1071,9 @@
           <div class="card-media">
             <video src="https://www.w3schools.com/html/mov_bbb.mp4" muted loop playsinline preload="none" aria-label="Reel 002"></video>
             <span class="card-video-badge">▶ VIDEO</span>
-            <div class="card-overlay">
-              <span class="card-overlay-cat">Reel Edit</span>
-              <p class="card-overlay-title">Reel 002</p>
-            </div>
+            <div class="card-overlay"><span class="card-overlay-cat">Reel Edit</span><p class="card-overlay-title">Reel 002</p></div>
           </div>
-          <div class="card-info">
-            <span class="card-title">Reel 002</span>
-            <span class="card-tag">Edit</span>
-          </div>
+          <div class="card-info"><span class="card-title">Reel 002</span><span class="card-tag">Edit</span></div>
         </div>
       </article>
 
@@ -1797,15 +1081,9 @@
         <div class="card-inner">
           <div class="card-media">
             <img src="https://picsum.photos/seed/thumb02/600/800" alt="Thumbnail 002" loading="lazy" />
-            <div class="card-overlay">
-              <span class="card-overlay-cat">Art Direction</span>
-              <p class="card-overlay-title">Thumbnail 002</p>
-            </div>
+            <div class="card-overlay"><span class="card-overlay-cat">Art Direction</span><p class="card-overlay-title">Thumbnail 002</p></div>
           </div>
-          <div class="card-info">
-            <span class="card-title">Thumbnail 002</span>
-            <span class="card-tag">Art</span>
-          </div>
+          <div class="card-info"><span class="card-title">Thumbnail 002</span><span class="card-tag">Art</span></div>
         </div>
       </article>
 
@@ -1813,15 +1091,9 @@
         <div class="card-inner">
           <div class="card-media">
             <img src="https://picsum.photos/seed/frame03/900/560" alt="Frame 003" loading="lazy" />
-            <div class="card-overlay">
-              <span class="card-overlay-cat">Procreate</span>
-              <p class="card-overlay-title">Frame 003</p>
-            </div>
+            <div class="card-overlay"><span class="card-overlay-cat">Procreate</span><p class="card-overlay-title">Frame 003</p></div>
           </div>
-          <div class="card-info">
-            <span class="card-title">Frame 003</span>
-            <span class="card-tag">Procreate</span>
-          </div>
+          <div class="card-info"><span class="card-title">Frame 003</span><span class="card-tag">Procreate</span></div>
         </div>
       </article>
 
@@ -1830,15 +1102,9 @@
           <div class="card-media">
             <video src="https://www.w3schools.com/html/mov_bbb.mp4" muted loop playsinline preload="none" aria-label="Reel 003"></video>
             <span class="card-video-badge">▶ VIDEO</span>
-            <div class="card-overlay">
-              <span class="card-overlay-cat">Reel Edit</span>
-              <p class="card-overlay-title">Reel 003</p>
-            </div>
+            <div class="card-overlay"><span class="card-overlay-cat">Reel Edit</span><p class="card-overlay-title">Reel 003</p></div>
           </div>
-          <div class="card-info">
-            <span class="card-title">Reel 003</span>
-            <span class="card-tag">Edit</span>
-          </div>
+          <div class="card-info"><span class="card-title">Reel 003</span><span class="card-tag">Edit</span></div>
         </div>
       </article>
 
@@ -1846,15 +1112,9 @@
         <div class="card-inner">
           <div class="card-media">
             <img src="https://picsum.photos/seed/sketch07/600/800" alt="Sketch 007" loading="lazy" />
-            <div class="card-overlay">
-              <span class="card-overlay-cat">Procreate</span>
-              <p class="card-overlay-title">Sketch 007</p>
-            </div>
+            <div class="card-overlay"><span class="card-overlay-cat">Procreate</span><p class="card-overlay-title">Sketch 007</p></div>
           </div>
-          <div class="card-info">
-            <span class="card-title">Sketch 007</span>
-            <span class="card-tag">Procreate</span>
-          </div>
+          <div class="card-info"><span class="card-title">Sketch 007</span><span class="card-tag">Procreate</span></div>
         </div>
       </article>
 
@@ -1863,70 +1123,46 @@
           <div class="card-media">
             <video src="https://www.w3schools.com/html/mov_bbb.mp4" muted loop playsinline preload="none" aria-label="Reel 004"></video>
             <span class="card-video-badge">▶ VIDEO</span>
-            <div class="card-overlay">
-              <span class="card-overlay-cat">Reel Edit</span>
-              <p class="card-overlay-title">Reel 004</p>
-            </div>
+            <div class="card-overlay"><span class="card-overlay-cat">Reel Edit</span><p class="card-overlay-title">Reel 004</p></div>
           </div>
-          <div class="card-info">
-            <span class="card-title">Reel 004</span>
-            <span class="card-tag">Edit</span>
-          </div>
+          <div class="card-info"><span class="card-title">Reel 004</span><span class="card-tag">Edit</span></div>
         </div>
       </article>
-
-    </div>
+      </div><!-- /work-track -->
+    </div><!-- /work-scroll-wrap -->
   </section>
 
-  <!-- =============================================
-       FOOTER
-  ============================================= -->
+  <!-- FOOTER CTA -->
   <div class="footer-cta-wrap" id="footer-cta-wrap">
     <p class="footer-cta">Let's make<br><em>something.</em></p>
     <p class="footer-cta-sub">Open for freelance — hello@anirudhyadav.com</p>
   </div>
 
-  <!-- =============================================
-       TOOLS
-  ============================================= -->
-  <div class="tools-section" id="tools-section">
-    <p class="tools-label">Tools I work with</p>
-    <div class="tools-row">
-      <div class="tool-item">
-        <img src="https://cdn.simpleicons.org/procreate/4B5DFD" alt="Procreate" loading="lazy">
-        <span>Procreate</span>
-      </div>
-      <div class="tool-item">
-        <img src="https://cdn.simpleicons.org/finalcutpro/333333" alt="Final Cut Pro" loading="lazy">
-        <span>Final Cut Pro</span>
-      </div>
-      <div class="tool-item">
-        <img src="https://cdn.simpleicons.org/adobefresco/FF0000" alt="Adobe Fresco" loading="lazy">
-        <span>Adobe Fresco</span>
-      </div>
-      <div class="tool-item">
-        <img src="https://cdn.simpleicons.org/davinciresolve/222222" alt="DaVinci Resolve" loading="lazy">
-        <span>DaVinci Resolve</span>
-      </div>
-      <div class="tool-item">
-        <img src="https://cdn.simpleicons.org/canva/00C4CC" alt="Canva" loading="lazy">
-        <span>Canva</span>
-      </div>
-      <div class="tool-item">
-        <img src="https://cdn.simpleicons.org/capcut/222222" alt="CapCut" loading="lazy">
-        <span>CapCut</span>
-      </div>
-      <div class="tool-item">
-        <img src="https://cdn.simpleicons.org/adobeaftereffects/9999FF" alt="After Effects" loading="lazy">
-        <span>After Effects</span>
-      </div>
-      <div class="tool-item">
-        <img src="https://cdn.simpleicons.org/adobepremierepro/9999FF" alt="Premiere Pro" loading="lazy">
-        <span>Premiere Pro</span>
-      </div>
+  <!-- TOOLS SECTION -->
+  <section class="standalone-tools">
+    <p class="footer-tools-label">Crafted with</p>
+    <div class="tools-flip-grid">
+      <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front"><img src="https://cdn.simpleicons.org/procreate/4B5DFD" alt="Procreate"><span>Procreate</span></div><div class="flip-card-back"><p class="flip-card-back-text">brain → screen</p><span class="flip-card-back-tag">illustration</span></div></div></div>
+      <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front"><img src="https://cdn.simpleicons.org/finalcutpro/333333" alt="Final Cut Pro"><span>Final Cut Pro</span></div><div class="flip-card-back"><p class="flip-card-back-text">where reels are born</p><span class="flip-card-back-tag">editing</span></div></div></div>
+      <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front"><img src="https://cdn.simpleicons.org/adobefresco/FF0000" alt="Adobe Fresco"><span>Adobe Fresco</span></div><div class="flip-card-back"><p class="flip-card-back-text">the messy one</p><span class="flip-card-back-tag">illustration</span></div></div></div>
+      <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front"><img src="https://cdn.simpleicons.org/davinciresolve/222222" alt="DaVinci Resolve"><span>DaVinci Resolve</span></div><div class="flip-card-back"><p class="flip-card-back-text">4am color grades</p><span class="flip-card-back-tag">color</span></div></div></div>
+      <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front"><img src="https://cdn.simpleicons.org/canva/00C4CC" alt="Canva"><span>Canva</span></div><div class="flip-card-back"><p class="flip-card-back-text">quick & dirty</p><span class="flip-card-back-tag">design</span></div></div></div>
+      <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front"><img src="https://cdn.simpleicons.org/capcut/222222" alt="CapCut"><span>CapCut</span></div><div class="flip-card-back"><p class="flip-card-back-text">viral machine</p><span class="flip-card-back-tag">reels</span></div></div></div>
+      <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front"><img src="https://cdn.simpleicons.org/adobeaftereffects/9999FF" alt="After Effects"><span>After Effects</span></div><div class="flip-card-back"><p class="flip-card-back-text">motion sickness</p><span class="flip-card-back-tag">motion</span></div></div></div>
+      <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front"><img src="https://cdn.simpleicons.org/adobepremierepro/9999FF" alt="Premiere Pro"><span>Premiere Pro</span></div><div class="flip-card-back"><p class="flip-card-back-text">the workhorse</p><span class="flip-card-back-tag">editing</span></div></div></div>
     </div>
+  </section>
+
+  <!-- PIXEL AVATAR -->
+  <div id="pixel-avatar-wrap" aria-label="Pixel companion" role="button" tabindex="0">
+    <div class="pixel-speech" id="pixel-speech"></div>
+    <div id="pixel-avatar-inner">
+      <img id="pixel-avatar" src="images/pixel-avatar.png" alt="Pixel art avatar" draggable="false" />
+    </div>
+    <div class="pa-shadow"></div>
   </div>
 
+  <!-- FOOTER -->
   <footer id="footer">
     <div class="footer-top">
       <span class="footer-name">Anirudh Yadav</span>
@@ -1943,568 +1179,338 @@
     </div>
   </footer>
   <div class="footer-bar" aria-hidden="true"></div>
+  </div><!-- /#scroll-wrap -->
 
-  <!-- =============================================
-       JAVASCRIPT
-  ============================================= -->
+  <!-- THUMBNAIL LIGHTBOX -->
+  <div id="thumb-lightbox" role="dialog" aria-modal="true">
+    <div id="lb-bg"></div>
+    <button id="thumb-lightbox-close" aria-label="Close">✕ close</button>
+    <button class="lb-nav" id="lb-prev" aria-label="Previous">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <img id="thumb-lightbox-img" src="" alt="Full image">
+    <button class="lb-nav" id="lb-next" aria-label="Next">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+    </button>
+  </div>
+
   <script>
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const isFine  = window.matchMedia('(pointer: fine)').matches;
 
-    /* =============================================
-       LOADER COUNTER — counts 0→100, name fades in behind
-    ============================================= */
-    (function initCounter() {
-      const counterEl = document.getElementById('loader-counter');
-      const nameBgEl  = document.getElementById('loader-name-bg');
-      if (!counterEl) return;
-      let current = 0;
-      const target = 100;
-      const duration = 1100; // ms
-      const start = performance.now();
+    // Lock scroll while loader is running
+    document.documentElement.style.overflow = 'hidden';
 
+    (function initCounter() {
+      const counterEl   = document.getElementById('loader-counter');
+      const nameBgEl    = document.getElementById('loader-name-bg');
+      const colorLayer  = document.getElementById('loader-avatar-color');
+      if (!counterEl) return;
+
+      // preload all page images during counter
+      document.querySelectorAll('img[src], img[data-src]').forEach(img => {
+        const src = img.dataset.src || img.src;
+        if (src && !src.startsWith('data:')) { const i = new Image(); i.src = src; }
+      });
+
+      const duration = 1500, start = performance.now();
       function tick(now) {
-        const elapsed  = now - start;
-        const progress = Math.min(elapsed / duration, 1);
-        // Ease out quad
-        const eased = 1 - (1 - progress) * (1 - progress);
-        current = Math.floor(eased * target);
-        counterEl.textContent = current;
-        // Name fades in from halfway
-        if (nameBgEl) nameBgEl.style.opacity = Math.max(0, (progress - 0.4) / 0.6) * 0.12;
+        const progress = Math.min((now - start) / duration, 1);
+        const eased    = 1 - (1 - progress) * (1 - progress);
+        const pct      = Math.floor(eased * 100);
+        counterEl.textContent = pct;
+        if (nameBgEl)    nameBgEl.style.opacity   = Math.max(0, (progress - 0.4) / 0.6) * 0.12;
+        if (colorLayer)  colorLayer.style.clipPath = `inset(${100 - pct}% 0 0 0)`;
         if (progress < 1) {
           requestAnimationFrame(tick);
         } else {
           counterEl.textContent = '100';
+          if (colorLayer) colorLayer.style.clipPath = 'inset(0% 0 0 0)';
+          // counter is DONE — now fire the exit (no dependency on window.load timing)
+          window._loaderCounterDone = true;
+          if (window._gsapReady) window._startLoaderExit();
         }
       }
       requestAnimationFrame(tick);
     })();
 
-    /* =============================================
-       SCROLL PROGRESS BAR
-    ============================================= */
     const progressBar = document.getElementById('progress-bar');
+    const navEl = document.querySelector('nav');
     window.addEventListener('scroll', () => {
-      const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
-      progressBar.style.width = pct + '%';
+      progressBar.style.width = (window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100) + '%';
+      navEl && navEl.classList.toggle('scrolled', window.scrollY > 60);
     }, { passive: true });
 
-    /* =============================================
-       CANVAS GRAIN — animated, stronger than CSS approach
-    ============================================= */
     (function initGrain() {
       const canvas = document.getElementById('grain-canvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
       let w, h;
-      function resize() {
-        w = canvas.width  = window.innerWidth;
-        h = canvas.height = window.innerHeight;
-      }
+      function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
       resize();
       window.addEventListener('resize', resize, { passive: true });
-
+      let _gf = 0;
+      const _gi = window.matchMedia('(pointer:coarse)').matches ? 8 : 3;
       function drawGrain() {
-        const img = ctx.createImageData(w, h);
-        const d   = img.data;
-        for (let i = 0; i < d.length; i += 4) {
-          const v = Math.random() * 255 | 0;
-          d[i] = d[i+1] = d[i+2] = v;
-          d[i+3] = 28; // alpha — controls intensity
+        if (++_gf % _gi === 0) {
+          const img = ctx.createImageData(w, h), d = img.data;
+          for (let i = 0; i < d.length; i += 4) { const v = Math.random() * 255 | 0; d[i] = d[i+1] = d[i+2] = v; d[i+3] = 28; }
+          ctx.putImageData(img, 0, 0);
         }
-        ctx.putImageData(img, 0, 0);
         requestAnimationFrame(drawGrain);
       }
       drawGrain();
     })();
 
-    /* =============================================
-       SPOTLIGHT — hero only, dark vignette with
-       a clear circle punched where the cursor is
-    ============================================= */
     const spotlight = document.getElementById('spotlight');
     if (isFine && !reduced && spotlight) {
       const heroSection = document.getElementById('hero');
       document.addEventListener('mousemove', e => {
-        const rect   = heroSection.getBoundingClientRect();
+        const rect = heroSection.getBoundingClientRect();
         const inHero = e.clientY >= rect.top && e.clientY <= rect.bottom;
         spotlight.style.opacity = inHero ? '1' : '0';
-        if (inHero) {
-          spotlight.style.background = `radial-gradient(
-            circle 200px at ${e.clientX}px ${e.clientY}px,
-            transparent 0%,
-            transparent 45%,
-            rgba(244,241,236,0.6) 100%
-          )`;
-        }
+        if (inHero) spotlight.style.background = `radial-gradient(circle 200px at ${e.clientX}px ${e.clientY}px, transparent 0%, transparent 45%, rgba(244,241,236,0.6) 100%)`;
       }, { passive: true });
     }
 
-    /* =============================================
-       CURSOR
-    ============================================= */
-    const cursor     = document.getElementById('cursor');
+    const cursor = document.getElementById('cursor');
     const cursorText = document.getElementById('cursor-text');
-
     if (isFine) {
       document.addEventListener('mousemove', e => {
         cursor.style.transform = `translate(${e.clientX - cursor.offsetWidth/2}px, ${e.clientY - cursor.offsetHeight/2}px)`;
       }, { passive: true });
-
       document.querySelectorAll('.card').forEach(card => {
-        card.addEventListener('mouseenter', () => {
-          cursor.classList.add('big');
-          cursorText.textContent = card.dataset.type === 'video' ? 'PLAY' : 'VIEW';
-        });
-        card.addEventListener('mouseleave', () => {
-          cursor.classList.remove('big');
-          cursorText.textContent = '';
-        });
+        card.addEventListener('mouseenter', () => { cursor.classList.add('big'); cursorText.textContent = card.dataset.type === 'video' ? 'PLAY' : 'VIEW'; });
+        card.addEventListener('mouseleave', () => { cursor.classList.remove('big'); cursorText.textContent = ''; });
       });
     }
 
-    /* =============================================
-       VIDEO play/pause
-       Desktop: hover in/out
-       Mobile: tap to toggle (featured card tracks state)
-    ============================================= */
     document.querySelectorAll('.card[data-type="video"]').forEach(card => {
       const v = card.querySelector('video');
       if (!v) return;
       const isFeatured = card.classList.contains('card--featured');
-
       if (isFine) {
-        // Desktop hover
-        card.addEventListener('mouseenter', () => {
-          v.play().catch(() => {});
-          if (isFeatured) card.classList.add('is-playing');
-        });
-        card.addEventListener('mouseleave', () => {
-          v.pause(); v.currentTime = 0;
-          if (isFeatured) card.classList.remove('is-playing');
-        });
+        card.addEventListener('mouseenter', () => { v.play().catch(() => {}); if (isFeatured) card.classList.add('is-playing'); });
+        card.addEventListener('mouseleave', () => { v.pause(); v.currentTime = 0; if (isFeatured) card.classList.remove('is-playing'); });
         card.addEventListener('focus', () => v.play().catch(() => {}));
         card.addEventListener('blur',  () => { v.pause(); v.currentTime = 0; });
       } else {
-        // Mobile tap toggle
         card.addEventListener('click', () => {
-          if (v.paused) {
-            v.play().catch(() => {});
-            if (isFeatured) card.classList.add('is-playing');
-          } else {
-            v.pause();
-            if (isFeatured) { v.currentTime = 0; card.classList.remove('is-playing'); }
-          }
+          if (v.paused) { v.play().catch(() => {}); if (isFeatured) card.classList.add('is-playing'); }
+          else { v.pause(); if (isFeatured) { v.currentTime = 0; card.classList.remove('is-playing'); } }
         });
       }
     });
 
-    /* 3D card tilt removed — cylinder scroll handles all depth */
-
-    /* =============================================
-       TEXT SCRAMBLE
-    ============================================= */
     const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-    // Track active scramble intervals so we can cancel on replay
-    let scrambleIntervals = [];
-
     function scramble(el, finalText, duration = 1100) {
       el._scrambleInterval && clearInterval(el._scrambleInterval);
       let frame = 0;
       const totalFrames = Math.round(duration / 16);
-      // Start with all chars randomised, resolve left-to-right over duration
       el._scrambleInterval = setInterval(() => {
         const progress = frame / totalFrames;
         let out = '';
         for (let i = 0; i < finalText.length; i++) {
           if (finalText[i] === ' ') { out += ' '; continue; }
-          // Each char resolves when progress passes its position threshold
-          out += progress >= i / finalText.length
-            ? finalText[i]
-            : CHARS[Math.floor(Math.random() * CHARS.length)];
+          /* shift lock-in so char 0 settles at ~7% and last char at ~93%
+             — every character visibly scrambles across the full duration */
+          const lockAt = (i + 0.5) / finalText.length;
+          out += progress > lockAt ? finalText[i] : CHARS[Math.floor(Math.random() * CHARS.length)];
         }
         el.textContent = out;
-        if (++frame > totalFrames) {
-          clearInterval(el._scrambleInterval);
-          el.textContent = finalText;
-        }
+        if (++frame > totalFrames) { clearInterval(el._scrambleInterval); el.textContent = finalText; }
       }, 16);
     }
 
-    /* Portfolio crossfade: big → small
-       BIG scales down + fades out while SMALL fades in.
-       Both run simultaneously as the name sweeps up. */
     function showPortfolio(gsapInstance) {
-      const bigEl    = document.getElementById('portfolio-big');
-      const smallEl  = document.querySelector('.hero-portfolio-label');
+      const bigEl   = document.getElementById('portfolio-big');
+      const smallEl = document.querySelector('.hero-portfolio-label');
       const portText = document.getElementById('portfolio-scramble');
       if (!bigEl || !smallEl) return gsapInstance.timeline();
-
       smallEl.classList.add('port-small');
-
       const tl = gsapInstance.timeline();
-
-      // Big: scale down to 0 + fade out
-      tl.to(bigEl, {
-        scale: 0.15,
-        opacity: 0,
-        duration: 0.75,
-        ease: 'power3.in',
-        transformOrigin: 'center center'
-      });
-
-      // Small: fade in + letter-spacing expand (starts at same time)
-      tl.fromTo(smallEl,
-        { opacity: 0, letterSpacing: '0.05em' },
-        { opacity: 1, letterSpacing: '0.6em', duration: 0.7, ease: 'power3.out' },
-        '-=0.4'  // overlap with big fading out
-      );
-
-      // Scramble the small text — after fade-in completes
-      tl.call(() => {
-        if (portText && !reduced) scramble(portText, 'Portfolio', 1000);
-      }, [], '+=0.05');
-
+      tl.to(bigEl, { scale: 0.15, opacity: 0, duration: 0.75, ease: 'power3.in', transformOrigin: 'center center' });
+      tl.fromTo(smallEl, { opacity: 0, letterSpacing: '0.05em' }, { opacity: 1, letterSpacing: '0.6em', duration: 0.7, ease: 'power3.out' }, '-=0.4');
+      tl.call(() => { if (portText && !reduced) scramble(portText, 'Portfolio', 1000); }, [], '+=0.05');
       return tl;
     }
 
-    /* =============================================
-       GSAP INIT
-    ============================================= */
     window.addEventListener('load', () => {
       if (typeof gsap === 'undefined') return;
       gsap.registerPlugin(ScrollTrigger);
 
+      const cornerWrap = document.getElementById('pixel-avatar-wrap');
+      const loaderWrap = document.getElementById('loader-avatar-wrap');
+      const cornerRect = cornerWrap ? cornerWrap.getBoundingClientRect() : null;
+      const loaderRect = loaderWrap ? loaderWrap.getBoundingClientRect() : null;
+      const dx = cornerRect && loaderRect ? (cornerRect.left + cornerRect.width  / 2) - (loaderRect.left + loaderRect.width  / 2) : 0;
+      const dy = cornerRect && loaderRect ? (cornerRect.top  + cornerRect.height / 2) - (loaderRect.top  + loaderRect.height / 2) : 0;
+      const el = document.querySelector('#loader-avatar-wrap');
 
-      /* ---- Loader — counter fades out, screen wipes up ---- */
-      const tl = gsap.timeline();
-
-      tl.to('#loader-counter', { opacity: 0, scale: 1.08, duration: 0.35, ease: 'power2.in', delay: 1.15 })
-        .to('#loader', {
-          yPercent: -100, duration: 0.65, ease: 'power4.inOut',
-          onComplete: () => { document.getElementById('loader').style.display = 'none'; }
-        }, '+=0.05')
+      function runExitTimeline() {
+        const tl = gsap.timeline();
+        tl.to('#loader-counter', { opacity: 0, scale: 1.05, duration: 0.2, ease: 'power2.in' })
+          .to('.loader-dots', { opacity: 0, duration: 0.15 }, '<')
+          .to(el, {
+            x: dx, y: dy, duration: 0.5, ease: 'power3.inOut',
+            onComplete: () => {
+              if (cornerWrap) { cornerWrap.style.cssText += ';opacity:1!important'; cornerWrap.style.opacity = '1'; }
+              if (el) el.style.opacity = '0';
+            }
+          }, '+=0.05')
+          .to('#loader', { yPercent: -100, duration: 0.5, ease: 'power4.inOut',
+                           onComplete: () => {
+                             document.getElementById('loader').style.display = 'none';
+                             document.documentElement.style.overflow = ''; // unlock scroll
+                           } })
         .to('nav', { opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.1')
+          .to('nav', { opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.1')
+          .to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '-=0.2')
+          .to({}, { duration: 0.45 })
+          .call(() => {
+            const w1 = document.getElementById('scramble-word');
+            const w2 = document.getElementById('scramble-word-2');
+            if (!reduced && w1) w1.textContent = Array.from({length:7},()=>CHARS[Math.floor(Math.random()*CHARS.length)]).join('');
+            if (!reduced && w2) w2.textContent = Array.from({length:5},()=>CHARS[Math.floor(Math.random()*CHARS.length)]).join('');
+          })
+          .to('.hero-name .word', { y: '0%', duration: 1.1, ease: 'power4.out', stagger: 0.1 })
+          .add(showPortfolio(gsap), '<')
+          .call(() => {
+            if (!reduced) {
+              scramble(document.getElementById('scramble-word'),  'Anirudh', 1100);
+              scramble(document.getElementById('scramble-word-2'), 'Yadav',  1100);
+            }
+          }, [], '+=0.05')
+          .to('.hero-tagline', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.4')
+          .to('.hero-scroll',  { opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.4');
+      }
 
-        /* Eyebrow fades in */
-        .to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '-=0.2')
+      // handshake: fire exit only after BOTH load + counter are done
+      window._gsapReady = true;
+      window._startLoaderExit = runExitTimeline;
+      if (window._loaderCounterDone) runExitTimeline();
 
-        /* BIG Portfolio is already visible — hold for a beat so viewer reads it */
-        .to({}, { duration: 0.45 })
+      // hard fallback — avatar always visible after 4s
+      setTimeout(() => {
+        const w = document.getElementById('pixel-avatar-wrap');
+        if (w) w.style.opacity = '1';
+        const l = document.getElementById('loader');
+        if (l) l.style.display = 'none';
+      }, 4000);
 
-        /* Pre-scramble both words BEFORE the slide so they come up already scrambled */
-        .call(() => {
-          const w1 = document.getElementById('scramble-word');
-          const w2 = document.getElementById('scramble-word-2');
-          if (!reduced && w1) w1.textContent = Array.from({length:7},()=>CHARS[Math.floor(Math.random()*CHARS.length)]).join('');
-          if (!reduced && w2) w2.textContent = Array.from({length:5},()=>CHARS[Math.floor(Math.random()*CHARS.length)]).join('');
-        })
-
-        /* Name sweeps up — both words arrive scrambled */
-        .to('.hero-name .word', { y: '0%', duration: 1.1, ease: 'power4.out', stagger: 0.1 })
-        .add(showPortfolio(gsap), '<')
-
-        /* Both words unscramble once fully in view */
-        .call(() => {
-          if (!reduced) {
-            scramble(document.getElementById('scramble-word'),  'Anirudh', 1100);
-            scramble(document.getElementById('scramble-word-2'), 'Yadav',  1100);
-          }
-        }, [], '+=0.05')
-
-        /* Tagline */
-        .to('.hero-tagline', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.4')
-
-        /* Scroll hint */
-        .to('.hero-scroll', { opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.4');
-
-      /* ---- Marquee ---- */
-      ScrollTrigger.create({
-        trigger: '.marquee-wrap', start: 'top 90%',
-        onEnter: () => gsap.to('.marquee-wrap', { opacity: 1, duration: 0.6 })
-      });
-
-      /* ---- Work header ---- */
-      gsap.to('.work-header', {
-        opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
-        scrollTrigger: { trigger: '#work', start: 'top 82%' }
-      });
-
-      /* ---- Cards — IntersectionObserver (works with html filter) ---- */
-      const cardObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry, _) => {
-          if (entry.isIntersecting) {
-            const card = entry.target;
-            const i    = [...document.querySelectorAll('.card')].indexOf(card);
-            gsap.to(card, {
-              opacity: 1, y: 0,
-              duration: 0.65, ease: 'power3.out',
-              delay: (i % 3) * 0.06
-            });
-            cardObserver.unobserve(card);
-          }
-        });
-      }, { threshold: 0.08 });
-
-      document.querySelectorAll('.card').forEach(c => cardObserver.observe(c));
-
-      /* ---- Work header — IntersectionObserver ---- */
-      const headerObs = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            gsap.to('.work-header', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' });
-            headerObs.disconnect();
-          }
-        });
-      }, { threshold: 0.1 });
-      headerObs.observe(document.querySelector('.work-header'));
-
-      /* ---- Marquee ---- */
-      const marqObs = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            gsap.to('.marquee-wrap', { opacity: 1, duration: 0.6 });
-            marqObs.disconnect();
-          }
-        });
+      const marqObs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { gsap.to('.marquee-wrap', { opacity: 1, duration: 0.6 }); marqObs.disconnect(); } });
       }, { threshold: 0.1 });
       marqObs.observe(document.querySelector('.marquee-wrap'));
 
-      /* ---- Footer ---- */
+      const headerObs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { gsap.to('.work-header', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }); headerObs.disconnect(); } });
+      }, { threshold: 0.1 });
+      headerObs.observe(document.querySelector('.work-header'));
+
+      // Cards cascade in when work section enters view
+      const cardObs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            gsap.to('.card', { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out', stagger: 0.07 });
+            cardObs.disconnect();
+          }
+        });
+      }, { threshold: 0.1 });
+      const workSec = document.getElementById('work');
+      if (workSec) cardObs.observe(workSec);
+
+      ScrollTrigger.create({
+        trigger: '#footer-cta-wrap', start: 'top 85%',
+        onEnter: () => gsap.to('#footer-cta-wrap', { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' })
+      });
       ScrollTrigger.create({
         trigger: 'footer', start: 'top 90%',
         onEnter: () => gsap.to('footer', { opacity: 1, duration: 0.7 })
       });
 
-      /* ---- Footer CTA reveal ---- */
-      ScrollTrigger.create({
-        trigger: '#footer-cta-wrap', start: 'top 85%',
-        onEnter: () => gsap.to('#footer-cta-wrap', { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' })
-      });
-
-      /* =============================================
-         POLAROID CAMERA — scroll-scrubbed ejection
-         Desktop: pinned section, polaroids scatter as you scroll
-         Mobile: handled via CSS (static layout)
-      ============================================= */
-      const polSection    = document.getElementById('pol-section');
-      const polScene      = document.getElementById('pol-scene');
-      const polCameraWrap = document.getElementById('pol-camera-wrap');
-      const polCards      = document.querySelectorAll('.pol-card');
-
-      const isMobile = window.matchMedia('(max-width: 768px)').matches;
-
-      if (polSection && polCards.length && !reduced && !isMobile) {
-
-        // Wrap cards in a container for mobile fallback (desktop keeps absolute)
-        // Set all cards to start at camera slot — center of scene, bottom of camera
-        // Camera is ~240px wide, bottom slot is roughly at y=+50px from camera center
-        // ── Camera slot offset: slot is near camera bottom (~43% of cam height below center)
-        const slotY = polCameraWrap ? Math.round(polCameraWrap.offsetHeight * 0.44) : 120;
-
-        // Initial polaroid state: invisible, at camera slot position
-        gsap.set(polCards, {
-          xPercent: -50, yPercent: -50,   // pivot from card centre
-          x: 0, y: slotY,
-          scale: 0.08, opacity: 0,
-          rotation: 0,
-          transformOrigin: 'center center',
-        });
-
-        // ─────────────────────────────────────────────
-        // PHASE 0: Visibility gate — camera visible while section is in flow
-        // ─────────────────────────────────────────────
-        ScrollTrigger.create({
-          trigger: polSection,
-          start: 'top bottom',     // show as soon as section bottom enters viewport
-          end:   'bottom top',
-          onEnter:     () => polScene.classList.add('pol-active'),
-          onLeave:     () => polScene.classList.remove('pol-active'),
-          onEnterBack: () => polScene.classList.add('pol-active'),
-          onLeaveBack: () => polScene.classList.remove('pol-active'),
-        });
-
-        // ─────────────────────────────────────────────
-        // PHASE 1: Camera entry — rises from below as section approaches
-        // section top: viewport bottom → viewport 8%
-        // ─────────────────────────────────────────────
-        const entryTl = gsap.timeline();
-        entryTl
-          .fromTo(polCameraWrap,
-            { y: 360, scale: 0.55, opacity: 0, filter: 'blur(14px)' },
-            { y: 0,   scale: 1,    opacity: 1, filter: 'blur(0px)',
-              ease: 'power2.out', duration: 1 }
-          );
-
-        ScrollTrigger.create({
-          trigger: polSection,
-          start: 'top bottom',
-          end:   'top 8%',
-          scrub: 1.8,
-          animation: entryTl,
-        });
-
-        // ─────────────────────────────────────────────
-        // PHASE 2: Polaroid ejection — camera pinned, photos fly out
-        // section top: 8% → section bottom: viewport bottom
-        // ─────────────────────────────────────────────
-        const ejectTl = gsap.timeline();
-
-        const positions = [
-          { x: -310, y: -210, r: -15, dur: 1   },
-          { x:  290, y: -180, r:  12, dur: 1   },
-          { x: -270, y:  120, r:  -8, dur: 1   },
-          { x:  265, y:  140, r:  17, dur: 1   },
-          { x:   30, y:  310, r:  -4, dur: 1   },
-        ];
-
-        polCards.forEach((card, i) => {
-          const p = positions[i] || {};
-          ejectTl.to(card, {
-            x: p.x, y: p.y, rotation: p.r,
-            opacity: 1, scale: 1,
-            ease: 'back.out(1.5)',
-            duration: p.dur,
-          }, i * 0.58);   // stagger each eject
-        });
-
-        ScrollTrigger.create({
-          trigger: polSection,
-          start: 'top 8%',
-          end:   'bottom bottom',
-          scrub: 1.6,
-          animation: ejectTl,
-        });
-
-      } else if (polCards.length) {
-        // Mobile: clear all GSAP transforms, show cards in CSS flex layout
-        gsap.set(polCards, { clearProps: 'all' });
-        const scene = document.getElementById('pol-scene');
-        if (scene) {
-          const wrap = document.createElement('div');
-          wrap.className = 'pol-cards-mobile';
-          polCards.forEach(c => wrap.appendChild(c));
-          scene.appendChild(wrap);
-        }
-      }
-
-      /* =============================================
-         SHOWREEL — autoplay muted on enter, click toggles sound
-      ============================================= */
-      const showreelSection = document.getElementById('showreel');
-      const showreelVideo   = document.getElementById('showreel-video');
+      const showreelSection  = document.getElementById('showreel');
+      const showreelVideo    = document.getElementById('showreel-video');
       const showreelSoundBtn = document.getElementById('showreel-sound-btn');
-
       if (showreelSection && showreelVideo) {
-        // Autoplay when scrolled into view
         const reelObs = new IntersectionObserver(entries => {
-          entries.forEach(e => {
-            if (e.isIntersecting) {
-              showreelVideo.play().catch(() => {});
-            } else {
-              showreelVideo.pause();
-            }
-          });
+          entries.forEach(e => { if (e.isIntersecting) showreelVideo.play().catch(() => {}); else showreelVideo.pause(); });
         }, { threshold: 0.25 });
         reelObs.observe(showreelSection);
-
-        // Click anywhere on section to toggle sound
         let hasSoundOn = false;
-        function toggleShowreelSound() {
+        showreelSection.addEventListener('click', () => {
           hasSoundOn = !hasSoundOn;
           showreelVideo.muted = !hasSoundOn;
           showreelSection.classList.toggle('has-sound', hasSoundOn);
-          if (showreelSoundBtn) {
-            showreelSoundBtn.textContent = hasSoundOn ? '✕ MUTE' : '♪ SOUND';
-          }
-        }
-        showreelSection.addEventListener('click', toggleShowreelSound);
-      }
-
-
-      /* =============================================
-         GLOBE / CYLINDER SCROLL
-         Cards in viewport centre face flat; cards above/below
-         tilt away on rotateX — applied to .card-inner so GSAP's
-         opacity/y on .card doesn't stomp the transform.
-      ============================================= */
-      if (!reduced) {
-        const allCards  = document.querySelectorAll('.card');
-        const MAX_ROT   = 38; // degrees — crank this up so it's visible
-
-        (function cylinderLoop() {
-          const vh  = window.innerHeight;
-          const mid = vh / 2;
-          allCards.forEach(card => {
-            const inner = card.querySelector('.card-inner');
-            if (!inner) return;
-            const rect    = card.getBoundingClientRect();
-            const cardMid = rect.top + rect.height / 2;
-            // Normalise: 0 = card centre at viewport centre, ±1 = at edge
-            const dist = Math.max(-1, Math.min(1, (cardMid - mid) / (vh * 0.55)));
-            const rot  = dist * MAX_ROT;
-            gsap.set(inner, { rotateX: rot, transformPerspective: 1100 });
-          });
-          requestAnimationFrame(cylinderLoop);
-        })();
-      }
-
-      /* =============================================
-         KINETIC TAGLINE — cycles through phrases every 3.5 s
-      ============================================= */
-      const TAGLINE_PHRASES = [
-        'Freelancing Pro Max',
-        'Motion artist',
-        'Visual chaos',
-        'Available now',
-        'Reel editor'
-      ];
-      let taglineIdx = 0;
-      const taglineEl = document.getElementById('tagline-word');
-
-      if (taglineEl && !reduced) {
-        setInterval(() => {
-          taglineIdx = (taglineIdx + 1) % TAGLINE_PHRASES.length;
-          // Slide current out upward
-          taglineEl.classList.add('exit-up');
-          setTimeout(() => {
-            // Instantly jump to below, then slide up into place
-            taglineEl.classList.remove('exit-up');
-            taglineEl.classList.add('enter-below');
-            taglineEl.textContent = TAGLINE_PHRASES[taglineIdx];
-            // Force reflow so the no-transition class sticks
-            void taglineEl.offsetWidth;
-            taglineEl.classList.remove('enter-below');
-          }, 460);
-        }, 1800);
-      }
-
-      /* =============================================
-         NAV NAME SCROLL — "AY" crossfades to "Anirudh Yadav"
-         once hero scrolls out of view
-      ============================================= */
-      const navAy       = document.getElementById('nav-ay');
-      const navFullname = document.getElementById('nav-fullname');
-
-      if (navAy && navFullname) {
-        ScrollTrigger.create({
-          trigger: '#hero',
-          start: 'bottom 80%',
-          onEnter: () => {
-            gsap.to(navAy,       { opacity: 0, y: -6, duration: 0.35, ease: 'power2.in' });
-            gsap.to(navFullname, { opacity: 1, y: 0,  duration: 0.45, ease: 'power2.out', delay: 0.15, pointerEvents: 'auto' });
-          },
-          onLeaveBack: () => {
-            gsap.to(navAy,       { opacity: 1, y: 0,  duration: 0.35, ease: 'power2.out' });
-            gsap.to(navFullname, { opacity: 0, y: 6,  duration: 0.3,  ease: 'power2.in', pointerEvents: 'none' });
-          }
+          if (showreelSoundBtn) showreelSoundBtn.textContent = hasSoundOn ? '✕ MUTE' : '♪ SOUND';
         });
       }
 
+      /* cylinder tilt removed — replaced by liquid float effect below */
+
       /* =============================================
-         AY CLICK — scroll to top + replay scramble + portfolio shrink
+         MAGNETIC SCATTER
       ============================================= */
+      const scatterField = document.getElementById('scatter-field');
+      if (scatterField) {
+        const scatterItems = scatterField.querySelectorAll('.scatter-item');
+        scatterItems.forEach(item => {
+          item.style.left = item.dataset.sx + '%';
+          item.style.top  = item.dataset.sy + '%';
+          item._tx = 0; item._ty = 0;
+        });
+        const RADIUS = 160, STRENGTH = 0.45;
+        scatterField.addEventListener('mousemove', e => {
+          const rect = scatterField.getBoundingClientRect();
+          const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+          scatterItems.forEach(item => {
+            const ir = item.getBoundingClientRect();
+            const ix = ir.left - rect.left + ir.width / 2;
+            const iy = ir.top  - rect.top  + ir.height / 2;
+            const dx = mx - ix, dy = my - iy;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < RADIUS) {
+              const force = 1 - dist / RADIUS;
+              item._tx = dx * force * STRENGTH;
+              item._ty = dy * force * STRENGTH;
+            } else {
+              item._tx *= 0.85; item._ty *= 0.85;
+            }
+            item.style.transform = `translate(${item._tx}px,${item._ty}px)`;
+          });
+        });
+        scatterField.addEventListener('mouseleave', () => {
+          scatterItems.forEach(item => {
+            item._tx = 0; item._ty = 0;
+            item.style.transform = 'translate(0,0)';
+          });
+        });
+      }
+
+      /* ── typewriter for hero tagline ── */
+      const TW_PHRASES = ['Freelancing Pro Max', 'Motion artist', 'Visual chaos', 'Available now', 'Reel editor'];
+      const taglineEl  = document.getElementById('tagline-word');
+      if (taglineEl && !reduced) {
+        const cursor = document.createElement('span');
+        cursor.className = 'tw-cursor'; cursor.setAttribute('aria-hidden','true');
+        taglineEl.after(cursor);
+        let ti=0, ci=0, deleting=false;
+        function twTick() {
+          const phrase = TW_PHRASES[ti];
+          if (!deleting) {
+            ci++; taglineEl.textContent = phrase.slice(0,ci);
+            if (ci >= phrase.length) { deleting=true; setTimeout(twTick,1800); return; }
+            setTimeout(twTick, 65 + Math.random()*25);
+          } else {
+            ci--; taglineEl.textContent = phrase.slice(0,ci);
+            if (ci <= 0) { deleting=false; ti=(ti+1)%TW_PHRASES.length; setTimeout(twTick,320); return; }
+            setTimeout(twTick, 32);
+          }
+        }
+        setTimeout(twTick, 1200);
+      }
+
+
       document.getElementById('nav-logo').addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         setTimeout(() => {
@@ -2515,9 +1521,6 @@
         }, 350);
       });
 
-      /* =============================================
-         MOUSE PARALLAX
-      ============================================= */
       if (!reduced && isFine) {
         const hero      = document.getElementById('hero');
         const heroName  = document.getElementById('hero-name');
@@ -2526,46 +1529,570 @@
         const tagline   = document.querySelector('.hero-tagline');
         const blobs     = document.querySelectorAll('.hero-blob');
         let mx = 0, my = 0, tx = 0, ty = 0;
-
         document.addEventListener('mousemove', e => {
           const rect = hero.getBoundingClientRect();
           if (e.clientY > rect.bottom + 100) return;
           tx = (e.clientX / window.innerWidth)  - 0.5;
           ty = (e.clientY / window.innerHeight) - 0.5;
         }, { passive: true });
-
         (function parallaxLoop() {
-          mx += (tx - mx) * 0.06;
-          my += (ty - my) * 0.06;
-          gsap.set(heroName,            { x: mx * -36, y: my * -18 });
-          gsap.set([eyebrow, portLabel],{ x: mx *  24, y: my *  14 });
-          gsap.set(tagline,             { x: mx *  18, y: my *  10 });
-          blobs.forEach((b, i) => {
-            const d = (i + 1) * 50, dir = i % 2 === 0 ? 1 : -1;
-            gsap.set(b, { x: mx * d * dir, y: my * d * 0.7 * dir });
-          });
+          mx += (tx - mx) * 0.06; my += (ty - my) * 0.06;
+          gsap.set(heroName,             { x: mx * -36, y: my * -18 });
+          gsap.set([eyebrow, portLabel], { x: mx *  24, y: my *  14 });
+          gsap.set(tagline,              { x: mx *  18, y: my *  10 });
+          blobs.forEach((b, i) => { const d = (i+1)*50, dir = i%2===0?1:-1; gsap.set(b, { x: mx*d*dir, y: my*d*0.7*dir }); });
           requestAnimationFrame(parallaxLoop);
         })();
       }
 
-
     }); // end load
+
+    (function initThumbnailStrips() {
+      const TOTAL   = 8; /* total unique images across both strips */
+      const allCards = [...document.querySelectorAll('.fs-card')];
+      /* first card per unique idx (data-idx) gives us the src + gc */
+      const byIdx = {};
+      allCards.forEach(c => { const i=+c.dataset.idx; if(!(i in byIdx)) byIdx[i]=c; });
+      const srcs = Array.from({length:TOTAL}, (_,i) => byIdx[i]?.querySelector('.fs-img')?.src || '');
+
+      /* ── colour sampling (shared) ── */
+      function sample(img, card) {
+        try {
+          const c=document.createElement('canvas'); c.width=16; c.height=16;
+          const ctx=c.getContext('2d'); ctx.drawImage(img,0,0,16,16);
+          const d=ctx.getImageData(0,0,16,16).data;
+          let r=0,g=0,b=0,n=d.length/4;
+          for(let i=0;i<d.length;i+=4){r+=d[i];g+=d[i+1];b+=d[i+2];}
+          card.style.setProperty('--gc',`${Math.round(r/n)},${Math.round(g/n)},${Math.round(b/n)}`);
+        } catch(e){}
+      }
+      allCards.forEach(card => {
+        const img=card.querySelector('.fs-img'); if(!img) return;
+        const run=()=>sample(img,card);
+        img.complete && img.naturalWidth ? run() : img.addEventListener('load',run);
+      });
+
+      /* ── drag hint ── */
+      const dragHint = document.getElementById('drag-hint');
+      let hintGone = false;
+      function hideHint() { if(hintGone) return; hintGone=true; dragHint?.classList.add('gone'); }
+
+      /* ── per-strip scrolling ── */
+      document.querySelectorAll('.thumbnails-strip').forEach(strip => {
+        const track = strip.querySelector('.thumbnails-track');
+        if (!track) return;
+        const dir = +(strip.dataset.dir || 1); /* 1=left, -1=right */
+        let offset = 0, momentum = 0, dragging = false;
+        let dragStartX=0, offsetAtDrag=0, prevX=0, prevT=0, dragVel=0;
+        const SPEED = 0.48;
+
+        function half() { return track.scrollWidth / 2; }
+        function norm(o) { const h=half(); return ((o%h)+h)%h; }
+
+        function startDrag(x) {
+          dragging=true; momentum=0; dragStartX=x; offsetAtDrag=offset;
+          prevX=x; prevT=performance.now(); dragVel=0; hideHint();
+        }
+        function moveDrag(x) {
+          if(!dragging) return;
+          /* drag is always natural: swipe left = content moves left, regardless of strip direction */
+          offset = norm(offsetAtDrag + (dragStartX - x));
+          const now=performance.now(), dt=now-prevT;
+          if(dt>0) dragVel=(prevX-x)/dt;
+          prevX=x; prevT=now;
+        }
+        function endDrag() {
+          if(!dragging) return;
+          dragging=false;
+          momentum = dragVel * 13; /* natural momentum, no dir flip */
+        }
+
+        strip.addEventListener('mousedown', e=>{ startDrag(e.clientX); e.preventDefault(); });
+        window.addEventListener('mousemove', e=>{ if(dragging) moveDrag(e.clientX); });
+        window.addEventListener('mouseup', endDrag);
+        strip.addEventListener('touchstart', e=>startDrag(e.touches[0].clientX), {passive:true});
+        strip.addEventListener('touchmove',  e=>{ if(dragging) moveDrag(e.touches[0].clientX); }, {passive:true});
+        strip.addEventListener('touchend',   endDrag, {passive:true});
+        strip.addEventListener('wheel', e=>{
+          const ax=Math.abs(e.deltaX), ay=Math.abs(e.deltaY);
+          if(ax>ay||ax>6){ e.preventDefault(); momentum=e.deltaX*0.5; offset=norm(offset+e.deltaX*0.35); hideHint(); }
+        }, {passive:false});
+
+        function loop() {
+          if(!dragging) {
+            if(Math.abs(momentum)>0.08){ offset=norm(offset+momentum); momentum*=0.93; }
+            else { momentum=0; offset=norm(offset+SPEED*dir); }
+          }
+          track.style.transform=`translateX(${-offset}px)`;
+          requestAnimationFrame(loop);
+        }
+        requestAnimationFrame(loop);
+
+        /* tap to show label on mobile */
+        strip.querySelectorAll('.fs-card').forEach(card => {
+          card.addEventListener('touchend', ()=>{
+            if(Math.abs(dragVel)>0.3) return;
+            allCards.forEach(c=>{ if(c!==card) c.classList.remove('tapped'); });
+            card.classList.toggle('tapped');
+          }, {passive:true});
+        });
+      });
+
+      /* ── lightbox ── */
+      const lb      = document.getElementById('thumb-lightbox');
+      const lbImg   = document.getElementById('thumb-lightbox-img');
+      const lbClose = document.getElementById('thumb-lightbox-close');
+      const lbPrev  = document.getElementById('lb-prev');
+      const lbNext  = document.getElementById('lb-next');
+      let lbIdx = 0, lbWheelLock = false;
+
+      const lbBg = document.getElementById('lb-bg');
+      function openLb(idx) {
+        lbIdx = ((idx%TOTAL)+TOTAL)%TOTAL;
+        const src = srcs[lbIdx];
+        lbImg.src = src;
+        if (lbBg) lbBg.style.backgroundImage = `url(${src})`;
+        const gc = byIdx[lbIdx]?.style.getPropertyValue('--gc') || '180,140,200';
+        lb.style.setProperty('--lb-gc', gc);
+        lb.classList.add('open');
+      }
+      function closeLb() { lb.classList.remove('open'); lbImg.src=''; }
+      function nav(dir) { openLb(lbIdx+dir); }
+
+      allCards.forEach(card => {
+        card.addEventListener('click', e=>{
+          const idx = +card.dataset.idx;
+          openLb(isNaN(idx) ? 0 : idx);
+        });
+      });
+
+      lb.addEventListener('click', e=>{ if(e.target===lb) closeLb(); });
+      lbClose?.addEventListener('click', closeLb);
+      lbPrev?.addEventListener('click', ()=>nav(-1));
+      lbNext?.addEventListener('click', ()=>nav(1));
+
+      document.addEventListener('keydown', e=>{
+        if(!lb.classList.contains('open')) return;
+        if(e.key==='Escape')     closeLb();
+        if(e.key==='ArrowRight') nav(1);
+        if(e.key==='ArrowLeft')  nav(-1);
+      });
+
+      /* swipe inside lightbox — mobile */
+      let lbTx=0;
+      lbImg.addEventListener('touchstart', e=>{ lbTx=e.touches[0].clientX; }, {passive:true});
+      lbImg.addEventListener('touchend',   e=>{
+        const dx=lbTx-e.changedTouches[0].clientX;
+        if(Math.abs(dx)>45) nav(dx>0?1:-1);
+      }, {passive:true});
+
+      /* 2-finger trackpad in lightbox — debounced, one step at a time */
+      lb.addEventListener('wheel', e=>{
+        e.preventDefault();
+        if(lbWheelLock) return;
+        const ax=Math.abs(e.deltaX), ay=Math.abs(e.deltaY);
+        if(ax>ay && ax>20){ nav(e.deltaX>0?1:-1); lbWheelLock=true; setTimeout(()=>lbWheelLock=false, 500); }
+      }, {passive:false});
+    })();
+
+    // ── PIXEL AVATAR ──────────────────────────────────────────
+    (() => {
+      const wrap   = document.getElementById('pixel-avatar-wrap');
+      if (wrap) wrap.style.opacity = '0'; // hide until loader exits
+      const bubble = document.getElementById('pixel-speech');
+      const inner  = document.getElementById('pixel-avatar-inner');
+      const img    = document.getElementById('pixel-avatar');
+      if (!wrap) return;
+
+      // ── section-aware messages ──
+      const sectionMsgs = {
+        'hero':        ['Welcome to my portfolio!'],
+        'thumbnails':  ['Ooh, look at those thumbnails 👀', "Yes, that's my work! 🔥", 'Turn up the volume! 🔊'],
+        'showreel':    ["This one's my fav 🎬", 'Turn up the volume! 🔊'],
+        'work':        ['Pretty cool right? 😄'],
+        'footer':      ['Wanna work together? 📩', "Let's make something sick 🎨"],
+      };
+      const idleAfterClick = ['Let me edit bruh 😤'];
+      let currentSection = 'hero';
+      let bubbleTimer    = null;
+      let clickCount     = 0;
+
+      function showBubble(text, duration = 3200) {
+        if (bubbleTimer) clearTimeout(bubbleTimer);
+        bubble.textContent = text;
+        bubble.classList.remove('visible');
+        void bubble.offsetWidth; // reflow to restart animation
+        bubble.classList.add('visible');
+        bubbleTimer = setTimeout(() => bubble.classList.remove('visible'), duration);
+      }
+
+      function randomFrom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+      // ── click / tap ──
+      wrap.addEventListener('click', () => {
+        clickCount++;
+        // realistic jump via keyframe
+        inner.classList.remove('jumping');
+        void inner.offsetWidth; // reflow to restart animation
+        inner.classList.add('jumping');
+        setTimeout(() => inner.classList.remove('jumping'), 680);
+
+        showBubble(randomFrom(idleAfterClick));
+
+        // burst sparkles on click
+        for (let i = 0; i < 4; i++) setTimeout(spawnSparkle, i * 80);
+      });
+      wrap.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') wrap.click(); });
+
+      // ── section observer ──
+      const sections = [
+        { el: document.getElementById('hero'),            key: 'hero' },
+        { el: document.querySelector('.thumbnails-section'), key: 'thumbnails' },
+        { el: document.getElementById('showreel'),        key: 'showreel' },
+        { el: document.getElementById('work'),            key: 'work' },
+        { el: document.getElementById('footer'),          key: 'footer' },
+      ].filter(s => s.el);
+
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const key = sections.find(s => s.el === entry.target)?.key;
+            if (key && key !== currentSection) {
+              currentSection = key;
+              // show section message after a short pause (feels natural)
+              setTimeout(() => showBubble(randomFrom(sectionMsgs[key] || idleAfterClick)), 600);
+            }
+          }
+        });
+      }, { threshold: 0.4 });
+
+      sections.forEach(s => observer.observe(s.el));
+
+      // ── sparkles ──
+      const sparkleChars = ['✦', '✧', '⋆', '★', '·'];
+      function spawnSparkle() {
+        const s = document.createElement('span');
+        s.className = 'pa-sparkle';
+        s.textContent = sparkleChars[Math.floor(Math.random() * sparkleChars.length)];
+        s.style.left  = (Math.random() * 80 - 10) + 'px';
+        s.style.top   = (Math.random() * 60 - 30) + 'px';
+        s.style.color = `hsl(${260 + Math.random() * 60},80%,75%)`;
+        inner.appendChild(s);
+        setTimeout(() => s.remove(), 820);
+      }
+      setInterval(spawnSparkle, 3000);
+
+      // expose for external triggers (pull-to-refresh, etc.)
+      window._avatarBubble  = showBubble;
+      window._avatarWrap    = wrap;
+
+      // ── greet on load ──
+      setTimeout(() => showBubble('Welcome to my portfolio! 👋', 4000), 1800);
+
+      // ── IDLE ESCALATION — wave after 30s inactivity ──────────
+      /* (note: pixel avatar idle code follows below — new effects added at end of script) */
+      let idleTimer = null;
+      const idleMsgs = ['psst… still here 👀', 'hello?? 🥺', 'tap me, I dare you 👇', "I'm bored too ngl 😴"];
+      function resetIdle() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(doIdleWave, 30000);
+      }
+      function doIdleWave() {
+        img.style.transformOrigin = 'bottom center';
+        img.style.animation = 'pa-wave 0.6s ease-in-out 3';
+        showBubble(idleMsgs[Math.floor(Math.random() * idleMsgs.length)], 3500);
+        setTimeout(() => { img.style.animation = ''; }, 2000);
+        resetIdle();
+      }
+      ['click','keydown','mousemove','touchstart'].forEach(ev =>
+        window.addEventListener(ev, resetIdle, { passive: true })
+      );
+      resetIdle();
+    })();
+
+    // ═══════════════════════════════════════════════════════
+    // ═══════════════════════════════════════════════════════
+    //  CARD FLOAT — liquid bob/sway as cards scroll past
+    // ═══════════════════════════════════════════════════════
+    (function initCardFloat() {
+      if (reduced) return;
+      const cards = [...document.querySelectorAll('.card')];
+      if (!cards.length) return;
+      (function fl() {
+        const vh = window.innerHeight, mid = vh * 0.5;
+        cards.forEach(card => {
+          const inner = card.querySelector('.card-inner');
+          if (!inner) return;
+          const r   = card.getBoundingClientRect();
+          const prog = (r.top + r.height * 0.5 - mid) / (vh * 0.65); // −1…1
+          const bob  = Math.sin(prog * Math.PI) * 9;                   // ±9 px
+          inner.style.transform = `translateY(${bob.toFixed(2)}px)`;
+        });
+        requestAnimationFrame(fl);
+      })();
+    })();
+
+    // ═══════════════════════════════════════════════════════
+    //  COLOR SHIFT — bg + accent colours morph per section
+    // ═══════════════════════════════════════════════════════
+    (function initColorShift() {
+      if (reduced) return;
+      const root = document.documentElement;
+
+      function h2r(hex) { return [1,3,5].map(i => parseInt(hex.slice(i,i+2),16)); }
+      function r2h(rgb)  { return '#'+rgb.map(v=>Math.round(v).toString(16).padStart(2,'0')).join(''); }
+
+      // palette per section — picked from visual content of each section
+      const P = {
+        hero:       { a:'#ff3cac', b:'#7b61ff', bg:'#f4f1ec', bg2:'#edeae3' },
+        thumbnails: { a:'#ff8c42', b:'#ff3cac', bg:'#f2ede0', bg2:'#ece8d8' }, // warm orange from thumbnail imagery
+        showreel:   { a:'#c2ff4d', b:'#3cb4ff', bg:'#f4f1ec', bg2:'#edeae3' }, // lime + cool blue — cinematic
+        work:       { a:'#7b61ff', b:'#ff3cac', bg:'#edeae3', bg2:'#e6e3da' }, // purple-led
+        footer:     { a:'#ff8c42', b:'#c2ff4d', bg:'#f4f1ec', bg2:'#edeae3' }, // warm send-off
+      };
+
+      // pre-convert to RGB arrays
+      const RP = {};
+      Object.entries(P).forEach(([k,v]) => {
+        RP[k] = { a:h2r(v.a), b:h2r(v.b), bg:h2r(v.bg), bg2:h2r(v.bg2) };
+      });
+
+      let tgt = RP.hero;
+      let curA=[...tgt.a], curB=[...tgt.b], curBg=[...tgt.bg], curBg2=[...tgt.bg2];
+
+      // section → palette map
+      const sections = [
+        { id:'hero',               key:'hero'       },
+        { sel:'.thumbnails-section', key:'thumbnails' },
+        { id:'showreel',           key:'showreel'   },
+        { id:'work',               key:'work'       },
+        { id:'footer',             key:'footer'     },
+      ];
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (!e.isIntersecting) return;
+          const s = sections.find(x => x.el === e.target);
+          if (s) tgt = RP[s.key];
+        });
+      }, { threshold: 0.35 });
+      sections.forEach(s => {
+        const el = s.id ? document.getElementById(s.id) : document.querySelector(s.sel);
+        if (el) { s.el = el; obs.observe(el); }
+      });
+
+      const SPD = 0.022; // smoothing speed
+      let _cf = 0;
+      (function loop() {
+        _cf++;
+        if (_cf % 3 === 0) {
+          function sl(cur, t) { return cur.map((v,i) => v + (t[i]-v)*SPD); }
+          curA   = sl(curA,   tgt.a);
+          curB   = sl(curB,   tgt.b);
+          curBg  = sl(curBg,  tgt.bg);
+          curBg2 = sl(curBg2, tgt.bg2);
+          const changed = curA.some((v,i) => Math.abs(v - curA[i]) > 0.4) ||
+                          curBg.some((v,i) => Math.abs(v - tgt.bg[i]) > 0.4);
+          root.style.setProperty('--grad-a', r2h(curA));
+          root.style.setProperty('--grad-b', r2h(curB));
+          root.style.setProperty('--bg',     r2h(curBg));
+          root.style.setProperty('--bg-2',   r2h(curBg2));
+        }
+        requestAnimationFrame(loop);
+      })();
+    })();
+
+    // ═══════════════════════════════════════════════════════
+    //  BLOBS FOLLOW SCROLL — drift upward as you scroll down
+    // ═══════════════════════════════════════════════════════
+    (function initBlobParallax() {
+      if (reduced) return;
+      // Each blob gets a different parallax speed
+      // Uses CSS individual `translate` property so it composes with the
+      // existing CSS animation `transform` without conflict
+      const blobs = [
+        { el: document.querySelector('.hero-blob-1'), speed: 0.28 },
+        { el: document.querySelector('.hero-blob-2'), speed: 0.38 },
+        { el: document.querySelector('.hero-blob-3'), speed: 0.16 },
+      ].filter(b => b.el);
+
+      window.addEventListener('scroll', () => {
+        const y = window.scrollY;
+        blobs.forEach(({ el, speed }) => {
+          el.style.translate = `0 ${(y * speed).toFixed(1)}px`;
+        });
+      }, { passive: true });
+    })();
+
+    // ═══════════════════════════════════════════════════════
+    //  WORK HORIZONTAL DRAG SCROLL
+    // ═══════════════════════════════════════════════════════
+    (function initWorkScroll() {
+      const wrap  = document.getElementById('work-scroll-wrap');
+      const track = document.getElementById('work-track');
+      if (!wrap || !track) return;
+
+      let offset = 0, momentum = 0, dragging = false;
+      let dragStartX = 0, offsetAtDrag = 0, prevX = 0, prevT = 0, dragVel = 0;
+      let didDrag = false;
+
+      const maxOffset = () => Math.max(0, track.scrollWidth - wrap.clientWidth);
+
+      function clamp(o) { return Math.max(0, Math.min(maxOffset(), o)); }
+
+      function startDrag(x) {
+        dragging = true; didDrag = false; momentum = 0;
+        dragStartX = x; offsetAtDrag = offset; prevX = x; prevT = performance.now(); dragVel = 0;
+      }
+      function moveDrag(x) {
+        if (!dragging) return;
+        const delta = dragStartX - x;
+        if (Math.abs(delta) > 6) didDrag = true;
+        offset = clamp(offsetAtDrag + delta);
+        const now = performance.now(), dt = Math.max(now - prevT, 1);
+        dragVel = (prevX - x) / dt;
+        prevX = x; prevT = now;
+      }
+      function endDrag() {
+        if (!dragging) return;
+        dragging = false;
+        momentum = dragVel * 14;
+      }
+
+      wrap.addEventListener('mousedown',  e => { startDrag(e.clientX); e.preventDefault(); });
+      window.addEventListener('mousemove', e => { if (dragging) moveDrag(e.clientX); });
+      window.addEventListener('mouseup',   endDrag);
+      wrap.addEventListener('touchstart',  e => startDrag(e.touches[0].clientX), { passive: true });
+      wrap.addEventListener('touchmove',   e => { if (dragging) moveDrag(e.touches[0].clientX); }, { passive: true });
+      wrap.addEventListener('touchend',    endDrag, { passive: true });
+      wrap.addEventListener('wheel', e => {
+        const ax = Math.abs(e.deltaX), ay = Math.abs(e.deltaY);
+        if (ax > ay || ax > 6) { e.preventDefault(); offset = clamp(offset + e.deltaX * 0.6); momentum = e.deltaX * 0.4; }
+      }, { passive: false });
+
+      // block card clicks if drag happened
+      wrap.addEventListener('click', e => { if (didDrag) { e.stopPropagation(); e.preventDefault(); didDrag = false; } }, true);
+
+      (function loop() {
+        if (!dragging) {
+          if (Math.abs(momentum) > 0.15) { offset = clamp(offset + momentum); momentum *= 0.92; }
+          else momentum = 0;
+        }
+        track.style.transform = `translateX(${-offset.toFixed(2)}px)`;
+        requestAnimationFrame(loop);
+      })();
+    })();
+
+    // ═══════════════════════════════════════════════════════
+    //  CARD LONG-PRESS PEEK (mobile)
+    // ═══════════════════════════════════════════════════════
+    (function initCardPeek() {
+      document.querySelectorAll('.card').forEach(card => {
+        let timer = null, startX = 0, startY = 0;
+
+        card.addEventListener('touchstart', e => {
+          startX = e.touches[0].clientX;
+          startY = e.touches[0].clientY;
+          timer = setTimeout(() => {
+            card.classList.add('peeking');
+            if (navigator.vibrate) navigator.vibrate(18);
+          }, 380);
+        }, { passive: true });
+
+        card.addEventListener('touchmove', e => {
+          const dx = Math.abs(e.touches[0].clientX - startX);
+          const dy = Math.abs(e.touches[0].clientY - startY);
+          if (dx > 10 || dy > 10) { clearTimeout(timer); card.classList.remove('peeking'); }
+        }, { passive: true });
+
+        const cancel = () => { clearTimeout(timer); card.classList.remove('peeking'); };
+        card.addEventListener('touchend',    cancel, { passive: true });
+        card.addEventListener('touchcancel', cancel, { passive: true });
+      });
+    })();
+
+    // ═══════════════════════════════════════════════════════
+    //  PULL-TO-REFRESH EASTER EGG — overscroll at top
+    // ═══════════════════════════════════════════════════════
+    (function initPullEgg() {
+      let touchStartY = 0, triggered = false;
+
+      document.addEventListener('touchstart', e => {
+        if (window.scrollY === 0) touchStartY = e.touches[0].clientY;
+      }, { passive: true });
+
+      document.addEventListener('touchmove', e => {
+        if (triggered || window.scrollY > 0) return;
+        const dy = e.touches[0].clientY - touchStartY;
+        if (dy > 90) {
+          triggered = true;
+          const wrap = window._avatarWrap;
+          const bubble = window._avatarBubble;
+          if (!wrap || !bubble) return;
+
+          // fly to centre
+          wrap.style.transition = 'all 0.55s cubic-bezier(0.34,1.56,0.64,1)';
+          wrap.style.bottom     = '42%';
+          wrap.style.right      = '50%';
+          wrap.style.transform  = 'translateX(50%) scale(1.35)';
+          bubble('brb loading vibes… 🔄', 2200);
+
+          setTimeout(() => {
+            wrap.style.transition = 'all 0.45s cubic-bezier(0.16,1,0.3,1)';
+            wrap.style.bottom     = '';
+            wrap.style.right      = '';
+            wrap.style.transform  = '';
+            setTimeout(() => { wrap.style.transition = ''; triggered = false; }, 500);
+          }, 2000);
+        }
+      }, { passive: true });
+    })();
+
+    // ═══════════════════════════════════════════════════════
+    //  AVATAR TILT — gyroscope slides avatar left/right
+    // ═══════════════════════════════════════════════════════
+    (function initAvatarTilt() {
+      // desktop skip — this is a phone-only effect
+      if (window.matchMedia('(pointer:fine)').matches) return;
+
+      const wrap = window._avatarWrap || document.getElementById('pixel-avatar-wrap');
+      if (!wrap) return;
+
+      let posX = null; // null = not started yet, will init from actual position
+      const DEAD = 6;  // degrees dead-zone (phone roughly vertical = no move)
+      const SPD  = 0.55;
+
+      function startTilt() {
+        window.addEventListener('deviceorientation', e => {
+          const gamma = e.gamma || 0; // left(-90)…right(+90)
+          if (posX === null) {
+            // init from current rendered right offset
+            posX = window.innerWidth - wrap.offsetWidth - 12;
+            wrap.style.right = 'auto';
+            wrap.style.left  = posX + 'px';
+          }
+          if (Math.abs(gamma) > DEAD) {
+            posX += gamma * SPD * 0.04;
+            posX = Math.max(8, Math.min(window.innerWidth - wrap.offsetWidth - 8, posX));
+            wrap.style.left = posX.toFixed(1) + 'px';
+          }
+          // within dead-zone → no move → stays at last position ✓
+        }, { passive: true });
+      }
+
+      // iOS 13+ requires explicit permission from a user gesture
+      if (typeof DeviceOrientationEvent !== 'undefined' &&
+          typeof DeviceOrientationEvent.requestPermission === 'function') {
+        document.addEventListener('touchstart', function askPerm() {
+          DeviceOrientationEvent.requestPermission()
+            .then(r => { if (r === 'granted') startTilt(); })
+            .catch(() => {});
+          document.removeEventListener('touchstart', askPerm);
+        }, { once: true });
+      } else {
+        startTilt();
+      }
+    })();
+
   </script>
-
-  <!--
-  ═══════════════════════════════════════════════════════
-  GITHUB PAGES — DEPLOY IN 3 STEPS
-
-  1. github.com → New repo → e.g. "portfolio"
-  2. Upload: index.html + fonts/ folder + assets/ folder
-  3. Settings → Pages → Branch: main → / (root) → Save
-
-  Live at: https://YOUR-USERNAME.github.io/portfolio/
-
-  TO ADD YOUR MEDIA:
-  Put files in assets/ (e.g. assets/reel-001.mp4, assets/sketch-004.jpg)
-  Tell me the filenames → I update all src="" in seconds.
-  ═══════════════════════════════════════════════════════
-  -->
 </body>
 </html>

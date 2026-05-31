@@ -3064,7 +3064,12 @@
 
         function toggleSound() {
           hasSoundOn = !hasSoundOn;
-          showreelVideo.muted = !hasSoundOn;
+          if (hasSoundOn) {
+            showreelVideo.removeAttribute('muted');
+            showreelVideo.muted = false;
+          } else {
+            showreelVideo.muted = true;
+          }
           showreelVideo.play().catch(() => {});
 
           showreelSection.classList.toggle('has-sound', hasSoundOn);
@@ -3123,7 +3128,7 @@
       }
 
       /* ── typewriter for hero tagline ── */
-      const TW_PHRASES = ['Freelancing Pro Max', 'Motion artist', 'Visual chaos', 'Available now', 'Reel editor'];
+      const TW_PHRASES = ['Freelancing Pro Max', 'Editor', 'Visual chaos', 'Illustrator', 'Learning cinematography'];
       const taglineEl  = document.getElementById('tagline-word');
       if (taglineEl && !reduced) {
         const cursor = document.createElement('span');
@@ -3134,7 +3139,7 @@
           const phrase = TW_PHRASES[ti];
           if (!deleting) {
             ci++; taglineEl.textContent = phrase.slice(0,ci);
-            if (ci >= phrase.length) { deleting=true; setTimeout(twTick,1800); return; }
+            if (ci >= phrase.length) { deleting=true; setTimeout(twTick,800); return; }
             setTimeout(twTick, 65 + Math.random()*25);
           } else {
             ci--; taglineEl.textContent = phrase.slice(0,ci);
@@ -3245,12 +3250,17 @@
         strip.addEventListener('mousedown', e=>{ startDrag(e.clientX); e.preventDefault(); });
         window.addEventListener('mousemove', e=>{ if(dragging) moveDrag(e.clientX); });
         window.addEventListener('mouseup', endDrag);
-        strip.addEventListener('touchstart', e=>startDrag(e.touches[0].clientX), {passive:true});
-        strip.addEventListener('touchmove',  e=>{ if(dragging){ e.preventDefault(); moveDrag(e.touches[0].clientX); } }, {passive:false});
-        strip.addEventListener('touchend',   endDrag, {passive:true});
+        let touchStartX=0, touchStartY=0, touchDecided=false;
+        strip.addEventListener('touchstart', e=>{ touchStartX=e.touches[0].clientX; touchStartY=e.touches[0].clientY; touchDecided=false; }, {passive:true});
+        strip.addEventListener('touchmove', e=>{
+          const dx=Math.abs(e.touches[0].clientX-touchStartX), dy=Math.abs(e.touches[0].clientY-touchStartY);
+          if(!touchDecided){ if(dx<5&&dy<5) return; touchDecided=true; if(dy>dx) return; startDrag(touchStartX); }
+          if(dragging){ e.preventDefault(); moveDrag(e.touches[0].clientX); }
+        }, {passive:false});
+        strip.addEventListener('touchend', endDrag, {passive:true});
         strip.addEventListener('wheel', e=>{
           const ax=Math.abs(e.deltaX), ay=Math.abs(e.deltaY);
-          if(ax>ay||ax>6){ e.preventDefault(); momentum=e.deltaX*0.5; offset=norm(offset+e.deltaX*0.35); hideHint(); }
+          if(ax>ay && ax>6){ e.preventDefault(); momentum=e.deltaX*0.5; offset=norm(offset+e.deltaX*0.35); hideHint(); }
         }, {passive:false});
 
         function loop() {
@@ -3599,16 +3609,19 @@
       window.addEventListener('mousemove', e => { if (dragging) moveDrag(e.clientX); });
       window.addEventListener('mouseup', endDrag);
 
-      // touch — lock vertical scroll while dragging
-      wrap.addEventListener('touchstart', e => startDrag(e.touches[0].clientX), { passive: true });
+      // touch — only lock vertical scroll when gesture is clearly horizontal
+      let wTouchStartX=0, wTouchStartY=0, wTouchDecided=false;
+      wrap.addEventListener('touchstart', e => { wTouchStartX=e.touches[0].clientX; wTouchStartY=e.touches[0].clientY; wTouchDecided=false; }, { passive: true });
       wrap.addEventListener('touchmove', e => {
-        if (dragging) { e.preventDefault(); moveDrag(e.touches[0].clientX); }
+        const dx=Math.abs(e.touches[0].clientX-wTouchStartX), dy=Math.abs(e.touches[0].clientY-wTouchStartY);
+        if(!wTouchDecided){ if(dx<5&&dy<5) return; wTouchDecided=true; if(dy>dx) return; startDrag(wTouchStartX); }
+        if(dragging){ e.preventDefault(); moveDrag(e.touches[0].clientX); }
       }, { passive: false });
       wrap.addEventListener('touchend', endDrag, { passive: true });
 
       wrap.addEventListener('wheel', e => {
         const ax = Math.abs(e.deltaX), ay = Math.abs(e.deltaY);
-        if (ax > ay || ax > 6) { e.preventDefault(); momentum = e.deltaX * 0.5; offset = norm(offset + e.deltaX * 0.35); }
+        if (ax > ay && ax > 6) { e.preventDefault(); momentum = e.deltaX * 0.5; offset = norm(offset + e.deltaX * 0.35); }
       }, { passive: false });
 
       wrap.addEventListener('click', e => { if (didDrag) { e.stopPropagation(); e.preventDefault(); didDrag = false; } }, true);
@@ -3867,14 +3880,17 @@
       wrap.addEventListener('mousedown', e => { startDrag(e.clientX); e.preventDefault(); });
       window.addEventListener('mousemove', e => { if (dragging) moveDrag(e.clientX); });
       window.addEventListener('mouseup', endDrag);
-      wrap.addEventListener('touchstart', e => startDrag(e.touches[0].clientX), { passive: true });
+      let w2TouchStartX=0, w2TouchStartY=0, w2TouchDecided=false;
+      wrap.addEventListener('touchstart', e => { w2TouchStartX=e.touches[0].clientX; w2TouchStartY=e.touches[0].clientY; w2TouchDecided=false; }, { passive: true });
       wrap.addEventListener('touchmove', e => {
-        if (dragging) { e.preventDefault(); moveDrag(e.touches[0].clientX); }
+        const dx=Math.abs(e.touches[0].clientX-w2TouchStartX), dy=Math.abs(e.touches[0].clientY-w2TouchStartY);
+        if(!w2TouchDecided){ if(dx<5&&dy<5) return; w2TouchDecided=true; if(dy>dx) return; startDrag(w2TouchStartX); }
+        if(dragging){ e.preventDefault(); moveDrag(e.touches[0].clientX); }
       }, { passive: false });
       wrap.addEventListener('touchend', endDrag, { passive: true });
       wrap.addEventListener('wheel', e => {
         const ax = Math.abs(e.deltaX), ay = Math.abs(e.deltaY);
-        if (ax > ay || ax > 6) { e.preventDefault(); momentum = e.deltaX * 0.5; offset = norm(offset + e.deltaX * 0.35); }
+        if (ax > ay && ax > 6) { e.preventDefault(); momentum = e.deltaX * 0.5; offset = norm(offset + e.deltaX * 0.35); }
       }, { passive: false });
       wrap.addEventListener('click', e => { if (didDrag) { e.stopPropagation(); e.preventDefault(); didDrag = false; } }, true);
 

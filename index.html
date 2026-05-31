@@ -356,8 +356,6 @@
 
     .thumbnails-strip {
       padding: 0;
-      mask-image: linear-gradient(90deg, transparent 0%, black 5%, black 95%, transparent 100%);
-      -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 5%, black 95%, transparent 100%);
       cursor: grab;
     }
     .thumbnails-strip:first-of-type { padding-top: 2rem; }
@@ -712,8 +710,8 @@
     /* CARDS — horizontal cinematic scroll */
     .work-scroll-wrap {
       overflow: hidden; cursor: grab; padding: 0;
-      mask-image: linear-gradient(90deg, transparent 0%, black 4%, black 96%, transparent 100%);
-      -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 4%, black 96%, transparent 100%);
+      margin-left: calc(-1 * clamp(1.5rem,4vw,4rem));
+      margin-right: calc(-1 * clamp(1.5rem,4vw,4rem));
     }
     .work-scroll-wrap:active { cursor: grabbing; }
     .work-track {
@@ -3265,7 +3263,7 @@
 
         function loop() {
           if(!dragging) {
-            if(Math.abs(momentum)>0.08){ offset=norm(offset+momentum); momentum*=0.93; }
+            if(Math.abs(momentum)>0.08){ offset=norm(offset+momentum); momentum*=0.96; }
             else { momentum=0; offset=norm(offset+SPEED*dir); }
           }
           track.style.transform=`translateX(${-offset}px)`;
@@ -3849,7 +3847,7 @@
       const track = document.getElementById('work-track2');
       if (!wrap || !track) return;
 
-      const SPEED = 1.2; // auto-scroll px/frame, reverse
+      const SPEED = 2.4; // auto-scroll px/frame, reverse
       let offset = 0, momentum = 0, dragging = false;
       let dragStartX = 0, offsetAtDrag = 0, prevX = 0, prevT = 0, dragVel = 0;
       let didDrag = false;

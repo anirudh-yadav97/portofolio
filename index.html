@@ -118,6 +118,12 @@
     }
     .loader-dots span:nth-child(2) { animation-delay: 0.2s; }
     .loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+    .loader-stuck-msg {
+      font-family: var(--font-body); font-size: 0.62rem; font-weight: 500;
+      letter-spacing: 0.12em; color: var(--ink-dim); opacity: 0;
+      transition: opacity 0.6s ease; pointer-events: none; margin-top: 0.5rem;
+    }
+    .loader-stuck-msg.visible { opacity: 1; pointer-events: auto; }
     @keyframes dot-blink {
       0%,100% { opacity: 0.2; transform: scale(0.8); }
       50%      { opacity: 0.8; transform: scale(1.2); }
@@ -366,16 +372,18 @@
     #thumb-lightbox {
       position: fixed; inset: 0; z-index: 6000;
       display: none; align-items: center; justify-content: center;
-      cursor: none; overflow: hidden;
+      cursor: none;
+      background: #0a0812;
     }
     #thumb-lightbox.open { display: flex; }
 
     /* blurred image fill — no grey bars */
     #lb-bg {
-      position: absolute; inset: -5%; z-index: 0;
+      position: fixed;
+      top: -200px; left: -200px; right: -200px; bottom: -200px;
+      z-index: 0;
       background-size: cover; background-position: center;
-      filter: blur(36px) brightness(0.45) saturate(1.3);
-      transform: scale(1.08);
+      filter: blur(50px) brightness(0.45) saturate(1.3);
       transition: background-image 0.3s ease;
     }
     #lb-bg::after {
@@ -394,12 +402,14 @@
     @keyframes lb-in { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
 
     #thumb-lightbox-close {
-      position: absolute; top: 1.4rem; right: 1.4rem; z-index: 3;
-      font-family: var(--font-body); font-size: 0.55rem; font-weight: 700;
-      letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.45);
-      cursor: none; transition: color 0.2s;
+      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 3;
+      font-family: var(--font-body); font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.7);
+      cursor: none; transition: color 0.2s, background 0.2s;
+      padding: 0.6em 1.5em; border: 1px solid rgba(255,255,255,0.25); border-radius: 2rem;
+      backdrop-filter: blur(8px); background: rgba(255,255,255,0.08); white-space: nowrap;
     }
-    #thumb-lightbox-close:hover { color: white; }
+    #thumb-lightbox-close:hover { color: white; background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.55); }
 
     .lb-nav {
       position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
@@ -589,11 +599,11 @@
     @keyframes sr-left  { from { transform: translateX(0);    } to { transform: translateX(-50%); } }
     @keyframes sr-right { from { transform: translateX(-50%); } to { transform: translateX(0);    } }
 
-    /* video — natural 9:16 ratio, centered, 10px padding all sides */
+    /* video — natural 9:16 ratio, centered, 20px padding all sides */
     .showreel-video {
       position: absolute;
-      top: 10px; left: 50%; transform: translateX(-50%);
-      height: calc(100% - 20px); width: auto;
+      top: 20px; left: 50%; transform: translateX(-50%);
+      height: calc(100% - 40px); width: auto;
       z-index: 2;
       border-radius: 4px;
     }
@@ -628,9 +638,10 @@
     /* =============================================
        WORK — enhanced typography
     ============================================= */
-    #work { padding: clamp(5rem,8vw,8rem) clamp(1.5rem,4vw,4rem) clamp(5rem,8vw,8rem); }
+    #work { padding: clamp(5rem,8vw,8rem) clamp(1.5rem,4vw,4rem) 0; }
+    #work2 { padding: 0; }
 
-    .work-header { margin-bottom: clamp(3rem,5vw,5rem); opacity: 0; transform: translateY(12px); }
+    .work-header { margin-bottom: 0; opacity: 0; transform: translateY(12px); }
     .work-header-top {
       display: flex; justify-content: space-between; align-items: baseline;
       padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 1px solid rgba(0,0,0,0.08);
@@ -652,7 +663,7 @@
 
     /* CARDS — horizontal cinematic scroll */
     .work-scroll-wrap {
-      overflow: hidden; cursor: grab; padding: 0.5rem 0 2rem;
+      overflow: hidden; cursor: grab; padding: 0;
       mask-image: linear-gradient(90deg, transparent 0%, black 4%, black 96%, transparent 100%);
       -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 4%, black 96%, transparent 100%);
     }
@@ -660,21 +671,67 @@
     .work-track {
       display: flex; gap: 0;
       width: max-content; will-change: transform;
-      padding: 0.5rem clamp(1.5rem, 4vw, 4rem);
+      padding: 0;
     }
-    .card:nth-child(1)  { --ca: var(--grad-b); }
-    .card:nth-child(2)  { --ca: var(--grad-d); }
-    .card:nth-child(3)  { --ca: var(--grad-a); }
-    .card:nth-child(4)  { --ca: var(--grad-b); }
-    .card:nth-child(5)  { --ca: var(--grad-c); }
-    .card:nth-child(6)  { --ca: var(--grad-a); }
-    .card:nth-child(7)  { --ca: var(--grad-d); }
-    .card:nth-child(8)  { --ca: var(--grad-b); }
+
+    /* ── STRIP 1: uniform card height ── */
+    #work-track {
+      align-items: stretch;
+      height: clamp(420px, 56vw, 680px);
+    }
+    #work-track .card,
+    #work-track .card-poster-p {
+      height: 100%;
+    }
+    #work-track .card-inner,
+    #work-track .card-media {
+      height: 100%;
+      aspect-ratio: unset !important;
+    }
+
+    /* ── QUOTE / TYPOGRAPHY POSTER CARDS ── */
+    .card-quote {
+      flex-shrink: 0; border-radius: 3px; overflow: hidden; position: relative;
+      cursor: none; display: flex;
+      width: clamp(200px, 24vw, 280px);
+      aspect-ratio: 3/4;
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .card-quote:hover { transform: translateY(-6px); }
+
+    /* Yellow — "i love taking a break" */
+    .cq-yellow { background: #FFB800; padding: clamp(1.2rem,2.5vw,2rem); align-items: center; }
+    .cq-yellow .cq-text { font-family: var(--font-hero); font-size: clamp(1.5rem,3.2vw,2.3rem); line-height: 1.05; color: #111; font-weight: 900; letter-spacing: -0.03em; }
+    .cq-yellow .cq-text em { font-family: var(--font-serif); font-style: italic; font-weight: 300; display: block; color: #333; }
+
+    /* Blue — "If you changed the font" */
+    .cq-blue { background: #1930F5; padding: clamp(1.2rem,2.5vw,2rem); align-items: flex-end; }
+    .cq-blue .cq-text { font-family: var(--font-display); font-size: clamp(1rem,2.2vw,1.55rem); line-height: 1.22; color: #fff; font-weight: 600; }
+
+    /* Orange — "GRAPHIC DESIGNERS WILL TELL..." */
+    .cq-orange { background: #E8421A; padding: clamp(1rem,2vw,1.6rem); align-items: center; justify-content: center; }
+    .cq-orange .cq-text { font-family: var(--font-accent); font-size: clamp(0.8rem,1.6vw,1.2rem); line-height: 1.3; color: #fff; font-weight: 700; text-transform: uppercase; text-align: center; }
+
+    /* White multicolor — "TAXES?" */
+    .cq-white { background: #fafafa; padding: clamp(1.2rem,2.5vw,2rem); flex-direction: column; justify-content: center; gap: 0.15rem; border: 1px solid rgba(0,0,0,0.06); }
+    .cq-white .cq-line { display: block; font-family: var(--font-hero); font-weight: 900; font-size: clamp(1.2rem,2.6vw,1.9rem); line-height: 1; text-transform: uppercase; letter-spacing: -0.03em; }
+
+    /* Dark — "I DON'T HAVE A DEGREE" */
+    .cq-dark { background: #0d0d0d; padding: clamp(1.2rem,2.5vw,2rem); flex-direction: column; justify-content: flex-end; gap: 0.7rem; }
+    .cq-pill { display: inline-block; font-family: var(--font-accent); font-size: clamp(0.85rem,1.7vw,1.25rem); font-weight: 700; padding: 0.45em 0.9em; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.01em; align-self: flex-start; line-height: 1.25; }
+    .cq-pill-pink  { background: #FF3CAC; color: #fff; }
+    .cq-pill-yellow{ background: #FFB800; color: #111; }
+    .card:nth-child(4n+1) { --ca: var(--grad-b); }
+    .card:nth-child(4n+2) { --ca: var(--grad-d); }
+    .card:nth-child(4n+3) { --ca: var(--grad-a); }
+    .card:nth-child(4n+4) { --ca: var(--grad-c); }
 
     .card {
       flex-shrink: 0;
-      width: clamp(260px, 72vw, 440px);
-      opacity: 0; transform: translateY(20px);
+      width: clamp(380px, 44vw, 580px);
+      opacity: 1;
+      overflow: hidden;
+      background: var(--bg);
       transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease;
     }
     .card-inner { border-radius: 3px; }
@@ -697,10 +754,11 @@
     }
     .card:hover .card-media::after { transform: translateX(120%); transition: transform 0.65s cubic-bezier(0.4,0,0.2,1); }
     .card-media img, .card-media video {
-      transform: scale(1.04); filter: saturate(0.4) brightness(0.88);
-      transition: transform 0.65s cubic-bezier(0.16,1,0.3,1), filter 0.65s ease; will-change: transform;
+      transform: scale(1.04); filter: saturate(1) brightness(1);
+      transition: transform 0.65s cubic-bezier(0.16,1,0.3,1); will-change: transform;
     }
-    .card:hover .card-media img, .card:hover .card-media video { transform: scale(1.0); filter: saturate(1.05) brightness(0.95); }
+    .card:hover .card-media img, .card:hover .card-media video { transform: scale(1.0); }
+    .card-overlay { display: none; }
 
     .card-info {
       display: flex; justify-content: space-between; align-items: center;
@@ -956,6 +1014,44 @@
       #spotlight { display: none; }
     }
 
+    /* ── ALERT MARQUEE ── */
+    .alert-marquee-wrap {
+      position: relative;
+      overflow: hidden;
+      display: block;
+      line-height: 0;
+    }
+    /* top caution stripe */
+    .alert-marquee-wrap::before,
+    .alert-marquee-wrap::after {
+      content: '';
+      display: block;
+      height: 18px;
+      background: repeating-linear-gradient(
+        -45deg,
+        #111 0px, #111 14px,
+        #FFB800 14px, #FFB800 28px
+      );
+    }
+    /* text row */
+    .alert-marquee-mid {
+      background: #FFB800;
+      overflow: hidden;
+      padding: 0.55rem 0;
+      line-height: normal;
+    }
+    .alert-marquee-track {
+      display: flex; width: max-content; white-space: nowrap;
+      animation: alert-scroll 16s linear infinite;
+    }
+    @keyframes alert-scroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+    .alert-marquee-item {
+      font-family: var(--font-accent); font-size: clamp(0.85rem, 1.6vw, 1.1rem);
+      font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+      color: #111; padding: 0 2.5rem; flex-shrink: 0;
+    }
+    .alert-sep { color: #111; opacity: 0.5; margin-left: 2.5rem; }
+
     /* ── TRAVELING AUTO-SCROLL TEXT ── */
     .travel-strip {
       overflow: hidden; height: clamp(5.5rem, 14vw, 14rem);
@@ -1080,6 +1176,122 @@
       -webkit-background-clip: text; background-clip: text; color: transparent;
     }
 
+    /* ── INVOICE FOOTER ── */
+    .invoice-section {
+      padding: clamp(4rem,8vw,8rem) clamp(1.5rem,4vw,4rem);
+      border-top: 1px solid rgba(0,0,0,0.08);
+      display: flex; flex-direction: column; align-items: center; gap: clamp(3rem,5vw,5rem);
+      background: var(--bg);
+    }
+    .invoice-cta {
+      width: 100%; max-width: 760px;
+      display: flex; justify-content: space-between; align-items: flex-end;
+      flex-wrap: wrap; gap: 2rem;
+    }
+    .invoice-headline {
+      font-family: var(--font-display); font-size: clamp(2.8rem,7vw,6rem);
+      font-weight: 700; line-height: 0.92; letter-spacing: -0.03em; color: var(--ink);
+    }
+    .invoice-headline em {
+      font-style: normal; font-family: var(--font-hero); font-weight: 900;
+      color: #FF3CAC; font-size: 2.8em; letter-spacing: -0.03em;
+      text-transform: uppercase; display: block; line-height: 0.85;
+    }
+    .invoice-contact { display: flex; flex-direction: column; align-items: flex-end; gap: 0.9rem; }
+    .invoice-email {
+      font-family: var(--font-display); font-size: clamp(0.85rem,1.8vw,1.2rem);
+      font-weight: 600; color: var(--ink); text-decoration: none;
+      border-bottom: 1.5px solid var(--ink); padding-bottom: 0.15em;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .invoice-email:hover { color: var(--grad-a); border-color: var(--grad-a); }
+    .invoice-handles { display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: flex-end; }
+    .invoice-handle {
+      font-family: var(--font-body); font-size: 0.58rem; font-weight: 700;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mid);
+      padding: 0.45em 1em; border: 1px solid rgba(0,0,0,0.14); border-radius: 2rem;
+      text-decoration: none; transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .invoice-handle:hover { color: var(--ink); border-color: var(--ink); background: rgba(0,0,0,0.04); }
+
+    .invoice-wrap {
+      width: 100%; max-width: 760px;
+      border: 1px solid rgba(0,0,0,0.12); border-radius: 6px; overflow: hidden;
+    }
+    .invoice-header {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 1.1rem 1.8rem; border-bottom: 1px dashed rgba(0,0,0,0.12);
+      background: var(--bg-2);
+    }
+    .invoice-title {
+      font-family: var(--font-accent); font-size: 0.55rem; font-weight: 700;
+      letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink);
+    }
+    .invoice-num {
+      font-family: var(--font-accent); font-size: 0.45rem; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-dim);
+    }
+    .invoice-col-heads {
+      display: grid; grid-template-columns: 2fr 1fr 2fr;
+      padding: 0.55rem 1.8rem; border-bottom: 1px solid rgba(0,0,0,0.08);
+      background: var(--bg-2);
+    }
+    .invoice-col-heads span {
+      font-family: var(--font-body); font-size: 0.38rem; font-weight: 700;
+      letter-spacing: 0.28em; text-transform: uppercase; color: var(--ink-dim);
+    }
+    .invoice-row {
+      display: grid; grid-template-columns: 2fr 1fr 2fr;
+      padding: 0.85rem 1.8rem; border-bottom: 1px dashed rgba(0,0,0,0.06);
+      align-items: center; transition: background 0.2s;
+    }
+    .invoice-row:hover { background: rgba(0,0,0,0.02); }
+    .invoice-tool {
+      font-family: var(--font-editorial); font-size: clamp(0.8rem,1.4vw,0.95rem);
+      font-weight: 600; color: var(--ink);
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .tool-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;
+      font-family: var(--font-accent); font-size: 0.38rem; font-weight: 700;
+      letter-spacing: 0.05em; color: #fff; text-transform: uppercase;
+    }
+    .invoice-cat {
+      font-family: var(--font-body); font-size: 0.46rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-mid);
+    }
+    .invoice-note {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: clamp(0.78rem,1.3vw,0.92rem); font-weight: 300; color: var(--ink-dim);
+    }
+    .invoice-total {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.2rem 1.8rem; border-top: 2px solid rgba(0,0,0,0.1);
+      background: var(--bg-2);
+    }
+    .invoice-total-label {
+      font-family: var(--font-display); font-size: clamp(1.1rem,2.5vw,1.6rem);
+      font-weight: 700; color: var(--ink);
+    }
+    .invoice-total-val {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: clamp(0.85rem,1.5vw,1.05rem); color: var(--ink-mid);
+    }
+    .invoice-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: clamp(1.2rem,2.5vw,2rem) clamp(1.5rem,4vw,4rem);
+      border-top: 1px solid rgba(0,0,0,0.08); flex-wrap: wrap; gap: 0.5rem;
+      flex-direction: row-reverse;
+    }
+    @media (max-width: 640px) {
+      .invoice-cta { flex-direction: column; align-items: flex-start; }
+      .invoice-contact { align-items: flex-start; }
+      .invoice-handles { justify-content: flex-start; }
+      .invoice-col-heads, .invoice-row { grid-template-columns: 1fr 1fr; }
+      .invoice-col-heads span:last-child, .invoice-row .invoice-note { display: none; }
+    }
+
     /* ── DARK FOOTER ZONE ── */
     .footer-dark-zone {
       background: linear-gradient(160deg, #0e0b16 0%, #0a0e16 45%, #140c10 100%);
@@ -1102,6 +1314,533 @@
     .footer-dark-zone .flip-card-front span { color: rgba(240,236,228,0.45); }
     .footer-dark-zone .standalone-tools { border-top-color: rgba(255,255,255,0.07); }
     .footer-dark-zone .footer-bar { opacity: 0.7; }
+
+    /* ── PORTRAIT POSTER CARDS ── */
+    .card-poster-p {
+      flex-shrink: 0;
+      width: clamp(380px, 44vw, 580px); /* matches doubled .card */
+      align-self: stretch; /* same height as image cards in the flex row */
+      position: relative; overflow: hidden; border-radius: 3px; cursor: none;
+      display: flex; flex-direction: column;
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .card-poster-p:hover { transform: translateY(-6px); }
+
+    /* Shared elements */
+    .cpp-topbar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: clamp(0.55rem,1.3vw,1.1rem) clamp(0.8rem,1.8vw,1.5rem);
+      border-bottom: 1px solid rgba(0,0,0,0.15); flex-shrink: 0;
+    }
+    .cpp-label {
+      font-family: var(--font-accent); font-size: clamp(0.4rem,0.75vw,0.6rem);
+      font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: #111;
+    }
+    .cpp-caption {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: clamp(0.32rem,0.6vw,0.5rem); color: rgba(0,0,0,0.4);
+    }
+    .cpp-footer {
+      display: flex; justify-content: space-between; flex-shrink: 0;
+      padding: clamp(0.4rem,0.9vw,0.75rem) clamp(0.8rem,1.8vw,1.5rem);
+      border-top: 1px solid rgba(0,0,0,0.1);
+      font-family: var(--font-accent); font-size: clamp(0.26rem,0.48vw,0.4rem);
+      font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+      color: rgba(0,0,0,0.28);
+    }
+
+    /* ── POSTER 1: BUSY (cream) ── */
+    .cpp-busy { background: #f4f0e8; }
+
+    .cpp-hero {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: clamp(0.3rem,0.7vw,0.6rem) clamp(0.8rem,1.8vw,1.5rem) 0;
+      flex-shrink: 0;
+    }
+    .cpp-busy-word {
+      font-family: var(--font-hero); font-weight: 900;
+      font-size: clamp(3.2rem,9vw,8rem);
+      line-height: 0.82; letter-spacing: -0.04em; color: #111; text-transform: uppercase;
+    }
+    .cpp-but-still {
+      font-family: var(--font-serif); font-style: italic; font-weight: 300;
+      font-size: clamp(0.9rem,2.2vw,1.9rem); color: #111; line-height: 1.15;
+      text-align: right; padding-top: 0.1em; flex-shrink: 0;
+    }
+    .cpp-arrow { font-style: normal; display: block; font-family: var(--font-body); margin-top: 0.15em; }
+
+    .cpp-mid {
+      flex: 1; display: flex; min-height: 0;
+      padding: clamp(0.3rem,0.7vw,0.6rem) clamp(0.8rem,1.8vw,1.5rem);
+      gap: clamp(0.5rem,1.1vw,0.9rem);
+    }
+    .cpp-mid-left {
+      display: flex; flex-direction: column; justify-content: space-between;
+      width: clamp(52px,8vw,76px); flex-shrink: 0;
+    }
+    .cpp-num24 {
+      font-family: var(--font-hero); font-weight: 900;
+      font-size: clamp(1.7rem,4.4vw,4rem);
+      line-height: 0.8; letter-spacing: -0.04em;
+      color: transparent; -webkit-text-stroke: 1.8px #111;
+    }
+    .cpp-barcode {
+      display: flex; gap: 1.5px; align-items: flex-end;
+      height: clamp(20px,3.2vw,30px); width: 100%;
+    }
+    .cpp-barcode span { display: block; background: #111; flex: 1; }
+    .cpp-pill-sm {
+      display: inline-flex; align-items: center;
+      border: 1.5px solid #111; border-radius: 100px;
+      padding: 0.28em 0.6em;
+      font-family: var(--font-accent); font-size: clamp(0.22rem,0.42vw,0.36rem);
+      font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #111;
+    }
+
+    .cpp-arch-wrap {
+      flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0;
+    }
+    .cpp-arch {
+      width: 82%; aspect-ratio: 3/4;
+      border-radius: 50% 50% 0 0 / 28% 28% 0 0;
+      overflow: hidden; flex-shrink: 0;
+      background:
+        radial-gradient(ellipse at 42% 68%, #ff5200 0%, transparent 38%),
+        radial-gradient(ellipse at 72% 32%, #00b4ff 0%, transparent 42%),
+        radial-gradient(ellipse at 52% 48%, #ff1a8c 0%, transparent 34%),
+        radial-gradient(ellipse at 22% 28%, #b8ff00 0%, transparent 30%),
+        radial-gradient(ellipse at 80% 78%, #ffaa00 0%, transparent 34%),
+        radial-gradient(ellipse at 55% 82%, #7b61ff 0%, transparent 38%),
+        #0d0d1a;
+    }
+
+    .cpp-mid-right {
+      display: flex; flex-direction: column; justify-content: space-between;
+      width: clamp(52px,8vw,76px); flex-shrink: 0; align-items: flex-end;
+    }
+    .cpp-focus-v {
+      font-family: var(--font-hero); font-weight: 900;
+      font-size: clamp(1.1rem,2.7vw,2.4rem);
+      line-height: 0.88; letter-spacing: -0.03em; color: #111; text-transform: uppercase;
+      text-align: right;
+    }
+    .cpp-focus-ast { color: #ff3cac; }
+    .cpp-toggle-row {
+      display: flex; align-items: center; gap: 0.25rem;
+      font-family: var(--font-accent); font-size: clamp(0.24rem,0.46vw,0.38rem);
+      font-weight: 700; letter-spacing: 0.18em; color: #111;
+    }
+    .cpp-knob {
+      width: clamp(9px,1.3vw,13px); height: clamp(9px,1.3vw,13px);
+      background: #111; border-radius: 50%; flex-shrink: 0;
+    }
+    .cpp-not-perf {
+      font-family: var(--font-serif); font-style: italic; font-weight: 300;
+      font-size: clamp(0.34rem,0.65vw,0.56rem);
+      color: rgba(0,0,0,0.5); line-height: 1.4; text-align: right;
+    }
+
+    .cpp-bottom {
+      display: flex; border-top: 1px solid rgba(0,0,0,0.15); flex-shrink: 0;
+    }
+    .cpp-bc {
+      display: flex; align-items: center; justify-content: center; flex: 1;
+      padding: clamp(0.5rem,1.1vw,0.95rem) clamp(0.4rem,0.9vw,0.75rem);
+      border-right: 1px solid rgba(0,0,0,0.15);
+    }
+    .cpp-bc:last-child { border-right: none; }
+    .cpp-doing {
+      font-family: var(--font-hero); font-weight: 900;
+      font-size: clamp(0.7rem,1.6vw,1.4rem);
+      letter-spacing: -0.02em; color: #111; text-transform: uppercase; line-height: 1;
+    }
+    .cpp-grow-xs {
+      font-family: var(--font-accent); font-size: clamp(0.28rem,0.52vw,0.44rem);
+      font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(0,0,0,0.55); text-align: center; line-height: 1.5;
+    }
+    .cpp-good-pill {
+      border: 1.5px solid #c2ff4d; border-radius: 100px;
+      padding: 0.3em 0.55em;
+      font-family: var(--font-accent); font-size: clamp(0.26rem,0.48vw,0.4rem);
+      font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: #111; text-align: center; line-height: 1.45;
+    }
+
+    /* ── POSTER 2: GROW THROUGH (blue + cream) ── */
+    .cpp-grow { background: #1930f5; }
+
+    .cpp-grow-topbar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: clamp(0.55rem,1.3vw,1.1rem) clamp(0.8rem,1.8vw,1.5rem);
+      background: #f4f0e8; flex-shrink: 0;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    .cpp-grow-main {
+      flex: 1; display: flex; flex-direction: column; min-height: 0;
+      padding: clamp(0.5rem,1.2vw,1rem) clamp(0.8rem,1.8vw,1.5rem);
+      gap: clamp(0.3rem,0.7vw,0.6rem);
+    }
+    .cpp-grow-head-row {
+      display: flex; gap: clamp(0.4rem,0.9vw,0.8rem); align-items: flex-start;
+      flex-shrink: 0;
+    }
+    .cpp-grow-headline {
+      font-family: var(--font-hero); font-weight: 900;
+      font-size: clamp(1.7rem,4.4vw,4rem);
+      line-height: 0.88; letter-spacing: -0.04em; color: #fff; text-transform: uppercase;
+      flex: 1;
+    }
+    .cpp-grow-ast { color: #c2ff4d; }
+    .cpp-grow-right-col {
+      display: flex; flex-direction: column; gap: clamp(0.3rem,0.6vw,0.5rem);
+      align-items: flex-end; flex-shrink: 0; width: clamp(80px,12vw,110px);
+    }
+    .cpp-copy-sm {
+      font-family: var(--font-body); font-size: clamp(0.28rem,0.52vw,0.44rem);
+      font-weight: 500; color: rgba(255,255,255,0.65); line-height: 1.5;
+      text-align: right; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .cpp-trust-oval {
+      border: 1.5px solid #c2ff4d; border-radius: 100px;
+      padding: 0.3em 0.65em;
+      font-family: var(--font-accent); font-size: clamp(0.26rem,0.48vw,0.4rem);
+      font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #c2ff4d;
+      text-align: center; line-height: 1.4;
+    }
+    .cpp-grow-mid {
+      flex: 1; display: flex; align-items: flex-end; gap: clamp(0.4rem,0.9vw,0.8rem);
+      min-height: 0;
+    }
+    .cpp-progress-bracket {
+      font-family: var(--font-body); font-size: clamp(0.3rem,0.56vw,0.48rem);
+      font-weight: 600; letter-spacing: 0.06em; color: rgba(255,255,255,0.7);
+      line-height: 1.45; flex-shrink: 0;
+    }
+    .cpp-flower-arch {
+      flex: 1; min-height: 0;
+      border-radius: 50% 50% 0 0 / 30% 30% 0 0;
+      background:
+        radial-gradient(ellipse at 65% 22%, #ff4500 0%, transparent 22%),
+        radial-gradient(ellipse at 42% 18%, #e85d04 0%, transparent 18%),
+        radial-gradient(ellipse at 30% 42%, #228b22 0%, transparent 25%),
+        radial-gradient(ellipse at 72% 58%, #1a6b3a 0%, transparent 22%),
+        radial-gradient(ellipse at 50% 72%, #2d6a9f 0%, transparent 30%),
+        radial-gradient(ellipse at 80% 35%, #ffd700 0%, transparent 18%),
+        #b8d4e8;
+      min-height: clamp(60px,10vw,100px);
+    }
+    .cpp-grow-num-col {
+      display: flex; flex-direction: column; align-items: flex-end;
+      justify-content: flex-end; flex-shrink: 0;
+    }
+    .cpp-big365 {
+      font-family: var(--font-hero); font-weight: 900;
+      font-size: clamp(1.5rem,3.8vw,3.4rem);
+      line-height: 0.84; letter-spacing: -0.04em; color: #fff; text-align: right;
+    }
+    .cpp-of-lbl {
+      display: block; font-family: var(--font-accent);
+      font-size: clamp(0.28rem,0.52vw,0.44rem);
+      font-weight: 700; letter-spacing: 0.28em; color: #c2ff4d;
+    }
+    .cpp-globe-row {
+      font-size: clamp(0.55rem,1.1vw,0.95rem); color: rgba(255,255,255,0.3);
+      margin-top: 0.3em;
+    }
+    .cpp-grow-footer {
+      display: flex; justify-content: space-between; flex-shrink: 0;
+      padding: clamp(0.4rem,0.9vw,0.75rem) clamp(0.8rem,1.8vw,1.5rem);
+      background: #f4f0e8;
+      border-top: 1px solid rgba(0,0,0,0.1);
+      font-family: var(--font-accent); font-size: clamp(0.26rem,0.48vw,0.4rem);
+      font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+      color: rgba(0,0,0,0.28);
+    }
+
+    /* ── GEN Z LANDSCAPE POSTER CARDS ── */
+    .card-poster {
+      flex-shrink: 0;
+      width: clamp(480px, 58vw, 700px);
+      aspect-ratio: 16/9;
+      position: relative; overflow: hidden; border-radius: 3px; cursor: none;
+      display: flex; flex-direction: column;
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .card-poster:hover { transform: translateY(-6px); }
+
+    /* shared sub-elements */
+    .cp-topbar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: clamp(0.35rem,0.8vw,0.65rem) clamp(0.6rem,1.4vw,1rem);
+      border-bottom: 1px solid rgba(0,0,0,0.13); flex-shrink: 0;
+    }
+    .cp-label {
+      font-family: var(--font-accent); font-size: clamp(0.26rem,0.5vw,0.42rem);
+      font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: #111;
+    }
+    .cp-caption {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: clamp(0.24rem,0.45vw,0.38rem); color: rgba(0,0,0,0.4); letter-spacing: 0.02em;
+    }
+    .cp-main {
+      flex: 1; display: grid; grid-template-columns: 1fr auto 1fr;
+      padding: clamp(0.4rem,0.9vw,0.75rem) clamp(0.6rem,1.4vw,1rem);
+      gap: clamp(0.3rem,0.7vw,0.6rem); overflow: hidden; min-height: 0;
+    }
+    .cp-left, .cp-right {
+      display: flex; flex-direction: column; justify-content: space-between;
+      overflow: hidden; min-width: 0;
+    }
+    .cp-reel-wrap { display: flex; align-items: center; justify-content: center; }
+    .cp-reel {
+      width: clamp(42px, 6.5vw, 72px); aspect-ratio: 9/16;
+      border-radius: clamp(4px,0.6vw,8px); background: #0d0d0d;
+      position: relative; overflow: hidden; flex-shrink: 0;
+    }
+    .cp-reel::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(160deg, #ff3cac 0%, #7b61ff 40%, #4facfe 70%, #c2ff4d 100%);
+      opacity: 0.75;
+    }
+    .cp-reel::after {
+      content: '▶'; position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.9); font-size: clamp(0.55rem,1vw,0.9rem);
+    }
+    .cp-reel-blue::before {
+      background: linear-gradient(160deg, #1930f5 0%, #4facfe 55%, #c2ff4d 100%);
+    }
+    .cp-bottombar {
+      display: flex; align-items: center;
+      border-top: 1px solid rgba(0,0,0,0.13);
+      padding: clamp(0.28rem,0.6vw,0.5rem) clamp(0.6rem,1.4vw,1rem);
+      flex-shrink: 0; gap: 0;
+    }
+    .cp-bottom-cell {
+      display: flex; align-items: center;
+      padding: 0 clamp(0.35rem,0.8vw,0.7rem);
+      border-right: 1px solid rgba(0,0,0,0.13);
+    }
+    .cp-bottom-cell:first-child { padding-left: 0; }
+    .cp-bottom-cell:last-child { border-right: none; margin-left: auto; padding-right: 0; }
+    .cp-bottom-big {
+      font-family: var(--font-hero); font-weight: 900;
+      font-size: clamp(0.48rem,1.1vw,0.98rem);
+      letter-spacing: -0.02em; color: #111; text-transform: uppercase;
+    }
+    .cp-bottom-xs {
+      font-family: var(--font-accent); font-size: clamp(0.22rem,0.42vw,0.36rem);
+      font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(0,0,0,0.55);
+    }
+    .cp-pill-outline {
+      display: inline-flex; align-items: center;
+      border: 1.5px solid #111; border-radius: 100px;
+      padding: 0.22em 0.65em;
+      font-family: var(--font-accent); font-size: clamp(0.24rem,0.44vw,0.37rem);
+      font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #111;
+    }
+    .cp-pill-lime { border-color: #c2ff4d; }
+    .cp-footer {
+      display: flex; justify-content: space-between; flex-shrink: 0;
+      padding: clamp(0.18rem,0.4vw,0.34rem) clamp(0.6rem,1.4vw,1rem);
+      border-top: 1px solid rgba(0,0,0,0.08);
+      font-family: var(--font-accent); font-size: clamp(0.2rem,0.38vw,0.32rem);
+      font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(0,0,0,0.3);
+    }
+
+    /* Poster 1 — BUSY ICONIC (warm cream) */
+    .cp-busy { background: #f4f0e8; }
+    .cp-busy-big {
+      font-family: var(--font-hero); font-weight: 900;
+      font-size: clamp(1.7rem,4.4vw,4rem);
+      line-height: 0.84; letter-spacing: -0.04em; color: #111; text-transform: uppercase;
+    }
+    .cp-num-big {
+      font-family: var(--font-hero); font-weight: 900;
+      font-size: clamp(1.6rem,4.2vw,3.8rem);
+      line-height: 0.8; letter-spacing: -0.04em;
+      color: transparent; -webkit-text-stroke: 1.5px #111;
+    }
+    .cp-focus-word {
+      font-family: var(--font-hero); font-weight: 900;
+      font-size: clamp(0.85rem,2.1vw,1.9rem);
+      line-height: 0.88; letter-spacing: -0.03em; color: #111; text-transform: uppercase;
+    }
+    .cp-toggle-row {
+      display: flex; align-items: center; gap: 0.3rem;
+      font-family: var(--font-accent); font-size: clamp(0.24rem,0.46vw,0.38rem);
+      font-weight: 700; letter-spacing: 0.2em; color: #111;
+    }
+    .cp-toggle-knob {
+      width: clamp(7px,1.1vw,11px); height: clamp(7px,1.1vw,11px);
+      background: #111; border-radius: 50%; flex-shrink: 0;
+    }
+    .cp-italic-sm {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: clamp(0.28rem,0.55vw,0.48rem); color: rgba(0,0,0,0.5); line-height: 1.4;
+    }
+    .cp-italic-big {
+      font-family: var(--font-hero); font-weight: 900;
+      font-size: clamp(0.75rem,1.8vw,1.6rem);
+      color: transparent; -webkit-text-stroke: 1px #111;
+      letter-spacing: -0.03em; line-height: 1.05;
+    }
+
+    /* Poster 2 — GROW THROUGH (white + electric blue) */
+    .cp-grow { background: #fff; }
+    .cp-grow-headline {
+      font-family: var(--font-hero); font-weight: 900;
+      font-size: clamp(0.88rem,2.5vw,2.2rem);
+      line-height: 0.88; letter-spacing: -0.04em; color: #1930f5; text-transform: uppercase;
+    }
+    .cp-bracket-text {
+      font-family: var(--font-body); font-weight: 600;
+      font-size: clamp(0.26rem,0.48vw,0.4rem);
+      letter-spacing: 0.06em; color: #1930f5; line-height: 1.45;
+    }
+    .cp-body-copy {
+      font-family: var(--font-body); font-size: clamp(0.24rem,0.45vw,0.38rem);
+      font-weight: 400; color: rgba(0,0,0,0.5); line-height: 1.5;
+    }
+    .cp-trust-pill {
+      display: inline-flex; align-items: center; justify-content: center;
+      border: 1.5px solid #c2ff4d; border-radius: 100px;
+      padding: 0.28em 0.75em;
+      font-family: var(--font-accent); font-size: clamp(0.24rem,0.44vw,0.37rem);
+      font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #111;
+      text-align: center; line-height: 1.35;
+    }
+    .cp-big-num {
+      font-family: var(--font-hero); font-weight: 900;
+      font-size: clamp(1.1rem,2.8vw,2.5rem);
+      line-height: 0.84; letter-spacing: -0.04em; color: #1930f5;
+    }
+    .cp-of-label {
+      font-family: var(--font-accent); font-size: clamp(0.28rem,0.52vw,0.44rem);
+      font-weight: 700; letter-spacing: 0.28em; color: #c2ff4d; display: block;
+    }
+
+    /* ── REEL LIGHTBOX ── */
+    #reel-lightbox {
+      position: fixed; inset: 0; z-index: 6000;
+      display: none; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.94); cursor: none;
+    }
+    #reel-lightbox.open { display: flex; }
+    #reel-lb-video {
+      position: relative; z-index: 1;
+      height: 88vh; width: auto; max-width: 94vw;
+      object-fit: contain; border-radius: 6px;
+      box-shadow: 0 0 80px rgba(0,0,0,0.7);
+      animation: lb-in 0.38s cubic-bezier(0.16,1,0.3,1);
+      display: block;
+    }
+    #reel-lb-close {
+      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 3;
+      font-family: var(--font-body); font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.7);
+      cursor: none; transition: color 0.2s, background 0.2s;
+      padding: 0.6em 1.5em; border: 1px solid rgba(255,255,255,0.25); border-radius: 2rem;
+      backdrop-filter: blur(8px); background: rgba(255,255,255,0.08); white-space: nowrap;
+    }
+    #reel-lb-close:hover { color: white; background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.55); }
+    #reel-lb-prev { left: 0.5rem; }
+    #reel-lb-prev:hover { transform: translateY(-50%) translateX(-2px); }
+    #reel-lb-next { right: 0.5rem; }
+    #reel-lb-next:hover { transform: translateY(-50%) translateX(2px); }
+
+    /* ── WORK STRIP 1 LIGHTBOX ── */
+    #work-lightbox {
+      position: fixed; inset: 0; z-index: 6000;
+      display: none; align-items: center; justify-content: center;
+      cursor: none; background: #0a0812;
+    }
+    #work-lightbox.open { display: flex; }
+    #work-lb-bg {
+      position: fixed;
+      top: -200px; left: -200px; right: -200px; bottom: -200px;
+      z-index: 0;
+      background-size: cover; background-position: center;
+      filter: blur(50px) brightness(0.45) saturate(1.3);
+      transition: background-image 0.3s ease;
+    }
+    #work-lb-img {
+      position: relative; z-index: 1;
+      max-width: 86vw; max-height: 78vh;
+      object-fit: contain; border-radius: 4px;
+      box-shadow: 0 0 60px rgba(120,100,200,0.4), 0 20px 60px rgba(0,0,0,0.6);
+      animation: lb-in 0.38s cubic-bezier(0.16,1,0.3,1);
+      user-select: none; -webkit-user-drag: none;
+    }
+    #work-lb-close {
+      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 3;
+      font-family: var(--font-body); font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.7);
+      cursor: none; transition: color 0.2s, background 0.2s;
+      padding: 0.6em 1.5em; border: 1px solid rgba(255,255,255,0.25); border-radius: 2rem;
+      backdrop-filter: blur(8px); background: rgba(255,255,255,0.08); white-space: nowrap;
+    }
+    #work-lb-close:hover { color: white; background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.55); }
+    #work-lb-prev { left: 0.5rem; }
+    #work-lb-prev:hover { transform: translateY(-50%) translateX(-2px); }
+    #work-lb-next { right: 0.5rem; }
+    #work-lb-next:hover { transform: translateY(-50%) translateX(2px); }
+
+    /* ── WORK STRIP 1 VIDEO LIGHTBOX ── */
+    #work-video-lightbox {
+      position: fixed; inset: 0; z-index: 6100;
+      display: none; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.94); cursor: none;
+    }
+    #work-video-lightbox.open { display: flex; }
+    #work-lb-video {
+      position: relative; z-index: 1;
+      height: 88vh; width: auto; max-width: 94vw;
+      object-fit: contain; border-radius: 6px;
+      box-shadow: 0 0 80px rgba(0,0,0,0.7);
+      animation: lb-in 0.38s cubic-bezier(0.16,1,0.3,1); display: block;
+    }
+    #work-vid-lb-close {
+      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 3;
+      font-family: var(--font-body); font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.7);
+      cursor: none; transition: color 0.2s, background 0.2s;
+      padding: 0.6em 1.5em; border: 1px solid rgba(255,255,255,0.25); border-radius: 2rem;
+      backdrop-filter: blur(8px); background: rgba(255,255,255,0.08); white-space: nowrap;
+    }
+    #work-vid-lb-close:hover { color: white; background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.55); }
+
+    /* ── POSTER OVERLAY ── */
+    #poster-overlay {
+      position: fixed; inset: 0; z-index: 6050;
+      display: none; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.88); cursor: none;
+    }
+    #poster-overlay.open { display: flex; }
+    #poster-overlay-inner {
+      width: min(88vw, 480px); max-height: 90vh;
+      overflow-y: auto; border-radius: 6px;
+      animation: lb-in 0.38s cubic-bezier(0.16,1,0.3,1);
+      flex-shrink: 0;
+    }
+    #poster-overlay-inner .card-poster-p { width: 100% !important; cursor: none; }
+    #poster-overlay-close {
+      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 3;
+      font-family: var(--font-body); font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.7);
+      cursor: none; padding: 0.6em 1.5em; border: 1px solid rgba(255,255,255,0.25); border-radius: 2rem;
+      backdrop-filter: blur(8px); background: rgba(255,255,255,0.08); white-space: nowrap;
+      transition: color 0.2s, background 0.2s;
+    }
+    #poster-overlay-close:hover { color: white; background: rgba(255,255,255,0.18); }
+
+    /* ── STRIP 2: COUNTER ABOVE VIDEO ── */
+    #reel-lb-counter {
+      position: absolute; top: 1.4rem; left: 50%; transform: translateX(-50%);
+      font-family: var(--font-accent); font-size: 0.48rem; font-weight: 700;
+      letter-spacing: 0.35em; text-transform: uppercase; color: rgba(255,255,255,0.38); z-index: 3;
+    }
 
   </style>
 </head>
@@ -1130,6 +1869,7 @@
     </div>
     <div class="loader-counter" id="loader-counter">0</div>
     <div class="loader-dots"><span></span><span></span><span></span></div>
+    <p class="loader-stuck-msg" id="loader-stuck-msg">Reload again if it is stuck on 100 :(</p>
   </div>
 
   <!-- NAV -->
@@ -1290,135 +2030,610 @@
         <div class="work-title-group">
           <h2 class="work-title">Work</h2>
         </div>
-        <span class="work-count">08 pieces</span>
       </div>
-      <p class="work-descriptor">A collection of motion, illustration &amp; visual work — crafted for brands, creators &amp; the internet.</p>
     </div>
 
-    <div class="work-scroll-wrap" id="work-scroll-wrap">
+    <div class="work-scroll-wrap" id="work-scroll-wrap" style="padding-bottom:0">
       <div class="work-track" id="work-track">
-      <article class="card" data-type="image" tabindex="0">
-        <div class="card-inner">
-          <div class="card-media">
-            <img src="https://picsum.photos/seed/sketch04/600/800" alt="Sketch 004" loading="lazy" />
-            <div class="card-overlay"><span class="card-overlay-cat">Procreate</span><p class="card-overlay-title">Sketch 004</p></div>
-          </div>
-          <div class="card-info"><span class="card-title">Sketch 004</span><span class="card-tag">Procreate</span></div>
-        </div>
-      </article>
 
-      <article class="card" data-type="image" tabindex="0">
-        <div class="card-inner">
-          <div class="card-media">
-            <img src="https://picsum.photos/seed/art01/600/800" alt="Study 001" loading="lazy" />
-            <div class="card-overlay"><span class="card-overlay-cat">Procreate</span><p class="card-overlay-title">Study 001</p></div>
-          </div>
-          <div class="card-info"><span class="card-title">Study 001</span><span class="card-tag">Procreate</span></div>
-        </div>
-      </article>
+        <!-- ── BASE SET (duplicated below for seamless loop) ── -->
 
-      <article class="card" data-type="video" tabindex="0">
-        <div class="card-inner">
-          <div class="card-media">
-            <video src="https://www.w3schools.com/html/mov_bbb.mp4" muted loop playsinline preload="none" aria-label="Reel 002"></video>
-            <span class="card-video-badge">▶ VIDEO</span>
-            <div class="card-overlay"><span class="card-overlay-cat">Reel Edit</span><p class="card-overlay-title">Reel 002</p></div>
-          </div>
-          <div class="card-info"><span class="card-title">Reel 002</span><span class="card-tag">Edit</span></div>
-        </div>
-      </article>
+        <article class="card card--featured" data-type="video" data-ratio="portrait" data-work-view tabindex="0">
+          <div class="card-inner"><div class="card-media">
+            <video src="images/work/playtime_web.mp4" muted loop playsinline preload="metadata"></video>
+            <div class="card-overlay"><span class="card-overlay-cat">Motion</span><p class="card-overlay-title">Playtime</p></div>
+          </div></div>
+        </article>
 
-      <article class="card" data-type="image" tabindex="0">
-        <div class="card-inner">
-          <div class="card-media">
-            <img src="https://picsum.photos/seed/thumb02/600/800" alt="Thumbnail 002" loading="lazy" />
-            <div class="card-overlay"><span class="card-overlay-cat">Art Direction</span><p class="card-overlay-title">Thumbnail 002</p></div>
-          </div>
-          <div class="card-info"><span class="card-title">Thumbnail 002</span><span class="card-tag">Art</span></div>
-        </div>
-      </article>
+        <article class="card" data-type="image" tabindex="0">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/lego.webp" alt="Lego" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Digital Art</span><p class="card-overlay-title">Lego</p></div>
+          </div></div>
+        </article>
 
-      <article class="card" data-type="image" data-ratio="landscape" tabindex="0">
-        <div class="card-inner">
-          <div class="card-media">
-            <img src="https://picsum.photos/seed/frame03/900/560" alt="Frame 003" loading="lazy" />
-            <div class="card-overlay"><span class="card-overlay-cat">Procreate</span><p class="card-overlay-title">Frame 003</p></div>
+        <!-- PORTRAIT POSTER 1 — BUSY -->
+        <div class="card-poster-p cpp-busy" aria-hidden="true">
+          <div class="cpp-topbar">
+            <span class="cpp-label">01 — 02</span>
+            <span class="cpp-caption">Some days are just busy for no reason.</span>
+            <span class="cpp-label">⊕ ✳</span>
           </div>
-          <div class="card-info"><span class="card-title">Frame 003</span><span class="card-tag">Procreate</span></div>
+          <div class="cpp-hero">
+            <div class="cpp-busy-word">BUSY</div>
+            <div class="cpp-but-still"><em>but<br>still<br>iconic.</em><span class="cpp-arrow">↗</span></div>
+          </div>
+          <div class="cpp-mid">
+            <div class="cpp-mid-left">
+              <div class="cpp-num24">24<br>/7</div>
+              <div class="cpp-barcode"><span style="height:100%"></span><span style="height:68%"></span><span style="height:88%"></span><span style="height:55%"></span><span style="height:100%"></span><span style="height:78%"></span><span style="height:52%"></span><span style="height:92%"></span><span style="height:70%"></span><span style="height:84%"></span><span style="height:100%"></span><span style="height:60%"></span></div>
+              <div class="cpp-pill-sm">OVERTHINKING CLUB.</div>
+            </div>
+            <div class="cpp-arch-wrap"><div class="cpp-arch"></div></div>
+            <div class="cpp-mid-right">
+              <div class="cpp-focus-v">FOCUS<br>MODE<span class="cpp-focus-ast">*</span></div>
+              <div class="cpp-toggle-row"><span>ON</span><span class="cpp-knob"></span><span style="opacity:0.35">OFF</span></div>
+              <div class="cpp-not-perf">Not<br>perfect,<br>just<br>progress.</div>
+            </div>
+          </div>
+          <div class="cpp-bottom">
+            <div class="cpp-bc"><span class="cpp-doing">DOING<br>MY BEST</span></div>
+            <div class="cpp-bc"><span class="cpp-grow-xs">SOME DAYS<br>ARE FOR<br>GROWING. ↗</span></div>
+            <div class="cpp-bc"><div class="cpp-good-pill">GOOD<br>DAYS<br>AHEAD</div></div>
+          </div>
+          <div class="cpp-footer"><span>@anirudhyadav</span><span>KEEP GOING</span><span>EST. 2025</span></div>
         </div>
-      </article>
 
-      <article class="card" data-type="video" data-ratio="portrait" tabindex="0">
-        <div class="card-inner">
-          <div class="card-media">
-            <video src="https://www.w3schools.com/html/mov_bbb.mp4" muted loop playsinline preload="none" aria-label="Reel 003"></video>
-            <span class="card-video-badge">▶ VIDEO</span>
-            <div class="card-overlay"><span class="card-overlay-cat">Reel Edit</span><p class="card-overlay-title">Reel 003</p></div>
-          </div>
-          <div class="card-info"><span class="card-title">Reel 003</span><span class="card-tag">Edit</span></div>
-        </div>
-      </article>
+        <article class="card" data-type="image" tabindex="0">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/moodboard.webp" alt="Moodboard" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Design</span><p class="card-overlay-title">Moodboard</p></div>
+          </div></div>
+        </article>
 
-      <article class="card" data-type="image" tabindex="0">
-        <div class="card-inner">
-          <div class="card-media">
-            <img src="https://picsum.photos/seed/sketch07/600/800" alt="Sketch 007" loading="lazy" />
-            <div class="card-overlay"><span class="card-overlay-cat">Procreate</span><p class="card-overlay-title">Sketch 007</p></div>
-          </div>
-          <div class="card-info"><span class="card-title">Sketch 007</span><span class="card-tag">Procreate</span></div>
-        </div>
-      </article>
+        <article class="card" data-type="image" tabindex="0">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/pisa-edit.webp" alt="Pisa Edit" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Edit</span><p class="card-overlay-title">Pisa Edit</p></div>
+          </div></div>
+        </article>
 
-      <article class="card" data-type="video" tabindex="0">
-        <div class="card-inner">
-          <div class="card-media">
-            <video src="https://www.w3schools.com/html/mov_bbb.mp4" muted loop playsinline preload="none" aria-label="Reel 004"></video>
-            <span class="card-video-badge">▶ VIDEO</span>
-            <div class="card-overlay"><span class="card-overlay-cat">Reel Edit</span><p class="card-overlay-title">Reel 004</p></div>
+        <!-- PORTRAIT POSTER 2 — GROW THROUGH -->
+        <div class="card-poster-p cpp-grow" aria-hidden="true">
+          <div class="cpp-grow-topbar">
+            <span class="cpp-label">N°.02</span>
+            <span class="cpp-label">YOU GOT THIS</span>
+            <span class="cpp-label">KEEP GOING</span>
           </div>
-          <div class="card-info"><span class="card-title">Reel 004</span><span class="card-tag">Edit</span></div>
+          <div class="cpp-grow-main">
+            <div class="cpp-grow-head-row">
+              <div class="cpp-grow-headline">GROW<br>THROUGH<br>WHAT YOU GO<br>THROUGH.<span class="cpp-grow-ast">*</span></div>
+              <div class="cpp-grow-right-col">
+                <div class="cpp-copy-sm">EVERY CHALLENGE IS SHAPING YOU INTO SOMEONE STRONGER, BRAVER, AND SMARTER THAN YOU WERE YESTERDAY.</div>
+                <div class="cpp-trust-oval">TRUST THE<br>PROCESS.</div>
+              </div>
+            </div>
+            <div class="cpp-grow-mid">
+              <div class="cpp-progress-bracket">[PROGRESS<br>OVER<br>PERFECTION]</div>
+              <div class="cpp-flower-arch"></div>
+              <div class="cpp-grow-num-col">
+                <div class="cpp-big365">02<br><span class="cpp-of-lbl">OF</span>365</div>
+                <div class="cpp-globe-row">⊕ ♻ ♻</div>
+              </div>
+            </div>
+          </div>
+          <div class="cpp-grow-footer"><span>@anirudhyadav</span><span>MAKE YOUR FUTURE SELF PROUD</span><span>2025</span></div>
         </div>
-      </article>
+
+        <article class="card" data-type="image" tabindex="0">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/procreate portrait.webp" alt="Procreate Portrait" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Procreate</span><p class="card-overlay-title">Portrait</p></div>
+          </div></div>
+        </article>
+
+        <article class="card" data-type="image" tabindex="0">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/pixelmator-pro.webp" alt="Pixelmator" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Design</span><p class="card-overlay-title">Pixelmator</p></div>
+          </div></div>
+        </article>
+
+        <!-- PORTRAIT POSTER 1 — BUSY (repeat) -->
+        <div class="card-poster-p cpp-busy" aria-hidden="true">
+          <div class="cpp-topbar">
+            <span class="cpp-label">01 — 02</span>
+            <span class="cpp-caption">Some days are just busy for no reason.</span>
+            <span class="cpp-label">⊕ ✳</span>
+          </div>
+          <div class="cpp-hero">
+            <div class="cpp-busy-word">BUSY</div>
+            <div class="cpp-but-still"><em>but<br>still<br>iconic.</em><span class="cpp-arrow">↗</span></div>
+          </div>
+          <div class="cpp-mid">
+            <div class="cpp-mid-left">
+              <div class="cpp-num24">24<br>/7</div>
+              <div class="cpp-barcode"><span style="height:100%"></span><span style="height:68%"></span><span style="height:88%"></span><span style="height:55%"></span><span style="height:100%"></span><span style="height:78%"></span><span style="height:52%"></span><span style="height:92%"></span><span style="height:70%"></span><span style="height:84%"></span><span style="height:100%"></span><span style="height:60%"></span></div>
+              <div class="cpp-pill-sm">OVERTHINKING CLUB.</div>
+            </div>
+            <div class="cpp-arch-wrap"><div class="cpp-arch"></div></div>
+            <div class="cpp-mid-right">
+              <div class="cpp-focus-v">FOCUS<br>MODE<span class="cpp-focus-ast">*</span></div>
+              <div class="cpp-toggle-row"><span>ON</span><span class="cpp-knob"></span><span style="opacity:0.35">OFF</span></div>
+              <div class="cpp-not-perf">Not<br>perfect,<br>just<br>progress.</div>
+            </div>
+          </div>
+          <div class="cpp-bottom">
+            <div class="cpp-bc"><span class="cpp-doing">DOING<br>MY BEST</span></div>
+            <div class="cpp-bc"><span class="cpp-grow-xs">SOME DAYS<br>ARE FOR<br>GROWING. ↗</span></div>
+            <div class="cpp-bc"><div class="cpp-good-pill">GOOD<br>DAYS<br>AHEAD</div></div>
+          </div>
+          <div class="cpp-footer"><span>@anirudhyadav</span><span>KEEP GOING</span><span>EST. 2025</span></div>
+        </div>
+
+        <article class="card" data-type="image" tabindex="0">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/pixel-mator pro 3.webp" alt="Pixelmator III" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Design</span><p class="card-overlay-title">Pixelmator III</p></div>
+          </div></div>
+        </article>
+
+        <article class="card" data-type="image" tabindex="0">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/paper-cut effect.png.webp" alt="Paper Cut" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Motion</span><p class="card-overlay-title">Paper Cut</p></div>
+          </div></div>
+        </article>
+
+        <!-- PORTRAIT POSTER 2 — GROW THROUGH (repeat) -->
+        <div class="card-poster-p cpp-grow" aria-hidden="true">
+          <div class="cpp-grow-topbar">
+            <span class="cpp-label">N°.02</span>
+            <span class="cpp-label">YOU GOT THIS</span>
+            <span class="cpp-label">KEEP GOING</span>
+          </div>
+          <div class="cpp-grow-main">
+            <div class="cpp-grow-head-row">
+              <div class="cpp-grow-headline">GROW<br>THROUGH<br>WHAT YOU GO<br>THROUGH.<span class="cpp-grow-ast">*</span></div>
+              <div class="cpp-grow-right-col">
+                <div class="cpp-copy-sm">EVERY CHALLENGE IS SHAPING YOU INTO SOMEONE STRONGER, BRAVER, AND SMARTER THAN YOU WERE YESTERDAY.</div>
+                <div class="cpp-trust-oval">TRUST THE<br>PROCESS.</div>
+              </div>
+            </div>
+            <div class="cpp-grow-mid">
+              <div class="cpp-progress-bracket">[PROGRESS<br>OVER<br>PERFECTION]</div>
+              <div class="cpp-flower-arch"></div>
+              <div class="cpp-grow-num-col">
+                <div class="cpp-big365">02<br><span class="cpp-of-lbl">OF</span>365</div>
+                <div class="cpp-globe-row">⊕ ♻ ♻</div>
+              </div>
+            </div>
+          </div>
+          <div class="cpp-grow-footer"><span>@anirudhyadav</span><span>MAKE YOUR FUTURE SELF PROUD</span><span>2025</span></div>
+        </div>
+
+        <article class="card" data-type="image" tabindex="0">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/poster on pixel-mator pro.webp" alt="Poster" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Design</span><p class="card-overlay-title">Poster</p></div>
+          </div></div>
+        </article>
+
+        <article class="card" data-type="image" tabindex="0">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/procreate portrait2.webp" alt="Portrait II" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Procreate</span><p class="card-overlay-title">Portrait II</p></div>
+          </div></div>
+        </article>
+
+        <!-- PORTRAIT POSTER 1 — BUSY (repeat) -->
+        <div class="card-poster-p cpp-busy" aria-hidden="true">
+          <div class="cpp-topbar">
+            <span class="cpp-label">01 — 02</span>
+            <span class="cpp-caption">Some days are just busy for no reason.</span>
+            <span class="cpp-label">⊕ ✳</span>
+          </div>
+          <div class="cpp-hero">
+            <div class="cpp-busy-word">BUSY</div>
+            <div class="cpp-but-still"><em>but<br>still<br>iconic.</em><span class="cpp-arrow">↗</span></div>
+          </div>
+          <div class="cpp-mid">
+            <div class="cpp-mid-left">
+              <div class="cpp-num24">24<br>/7</div>
+              <div class="cpp-barcode"><span style="height:100%"></span><span style="height:68%"></span><span style="height:88%"></span><span style="height:55%"></span><span style="height:100%"></span><span style="height:78%"></span><span style="height:52%"></span><span style="height:92%"></span><span style="height:70%"></span><span style="height:84%"></span><span style="height:100%"></span><span style="height:60%"></span></div>
+              <div class="cpp-pill-sm">OVERTHINKING CLUB.</div>
+            </div>
+            <div class="cpp-arch-wrap"><div class="cpp-arch"></div></div>
+            <div class="cpp-mid-right">
+              <div class="cpp-focus-v">FOCUS<br>MODE<span class="cpp-focus-ast">*</span></div>
+              <div class="cpp-toggle-row"><span>ON</span><span class="cpp-knob"></span><span style="opacity:0.35">OFF</span></div>
+              <div class="cpp-not-perf">Not<br>perfect,<br>just<br>progress.</div>
+            </div>
+          </div>
+          <div class="cpp-bottom">
+            <div class="cpp-bc"><span class="cpp-doing">DOING<br>MY BEST</span></div>
+            <div class="cpp-bc"><span class="cpp-grow-xs">SOME DAYS<br>ARE FOR<br>GROWING. ↗</span></div>
+            <div class="cpp-bc"><div class="cpp-good-pill">GOOD<br>DAYS<br>AHEAD</div></div>
+          </div>
+          <div class="cpp-footer"><span>@anirudhyadav</span><span>KEEP GOING</span><span>EST. 2025</span></div>
+        </div>
+
+        <article class="card" data-type="image" tabindex="0">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/pixel-mator pro -4.webp" alt="Pixelmator IV" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Design</span><p class="card-overlay-title">Pixelmator IV</p></div>
+          </div></div>
+        </article>
+
+        <article class="card" data-type="image" tabindex="0">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/sdvf.webp" alt="SDVF" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Edit</span><p class="card-overlay-title">SDVF</p></div>
+          </div></div>
+        </article>
+
+        <!-- ── DUPLICATE SET for seamless loop ── -->
+
+        <article class="card card--featured" data-type="video" data-ratio="portrait" data-work-view tabindex="-1" aria-hidden="true">
+          <div class="card-inner"><div class="card-media">
+            <video src="images/work/playtime_web.mp4" muted loop playsinline preload="none"></video>
+            <div class="card-overlay"><span class="card-overlay-cat">Motion</span><p class="card-overlay-title">Playtime</p></div>
+          </div></div>
+        </article>
+
+        <article class="card" data-type="image" tabindex="-1" aria-hidden="true">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/lego.webp" alt="" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Digital Art</span><p class="card-overlay-title">Lego</p></div>
+          </div></div>
+        </article>
+
+        <!-- PORTRAIT POSTER 1 (dupe) -->
+        <div class="card-poster-p cpp-busy" aria-hidden="true">
+          <div class="cpp-topbar">
+            <span class="cpp-label">01 — 02</span>
+            <span class="cpp-caption">Some days are just busy for no reason.</span>
+            <span class="cpp-label">⊕ ✳</span>
+          </div>
+          <div class="cpp-hero">
+            <div class="cpp-busy-word">BUSY</div>
+            <div class="cpp-but-still"><em>but<br>still<br>iconic.</em><span class="cpp-arrow">↗</span></div>
+          </div>
+          <div class="cpp-mid">
+            <div class="cpp-mid-left">
+              <div class="cpp-num24">24<br>/7</div>
+              <div class="cpp-barcode"><span style="height:100%"></span><span style="height:68%"></span><span style="height:88%"></span><span style="height:55%"></span><span style="height:100%"></span><span style="height:78%"></span><span style="height:52%"></span><span style="height:92%"></span><span style="height:70%"></span><span style="height:84%"></span><span style="height:100%"></span><span style="height:60%"></span></div>
+              <div class="cpp-pill-sm">OVERTHINKING CLUB.</div>
+            </div>
+            <div class="cpp-arch-wrap"><div class="cpp-arch"></div></div>
+            <div class="cpp-mid-right">
+              <div class="cpp-focus-v">FOCUS<br>MODE<span class="cpp-focus-ast">*</span></div>
+              <div class="cpp-toggle-row"><span>ON</span><span class="cpp-knob"></span><span style="opacity:0.35">OFF</span></div>
+              <div class="cpp-not-perf">Not<br>perfect,<br>just<br>progress.</div>
+            </div>
+          </div>
+          <div class="cpp-bottom">
+            <div class="cpp-bc"><span class="cpp-doing">DOING<br>MY BEST</span></div>
+            <div class="cpp-bc"><span class="cpp-grow-xs">SOME DAYS<br>ARE FOR<br>GROWING. ↗</span></div>
+            <div class="cpp-bc"><div class="cpp-good-pill">GOOD<br>DAYS<br>AHEAD</div></div>
+          </div>
+          <div class="cpp-footer"><span>@anirudhyadav</span><span>KEEP GOING</span><span>EST. 2025</span></div>
+        </div>
+
+        <article class="card" data-type="image" tabindex="-1" aria-hidden="true">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/moodboard.webp" alt="" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Design</span><p class="card-overlay-title">Moodboard</p></div>
+          </div></div>
+        </article>
+
+        <article class="card" data-type="image" tabindex="-1" aria-hidden="true">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/pisa-edit.webp" alt="" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Edit</span><p class="card-overlay-title">Pisa Edit</p></div>
+          </div></div>
+        </article>
+
+        <!-- PORTRAIT POSTER 2 (dupe) -->
+        <div class="card-poster-p cpp-grow" aria-hidden="true">
+          <div class="cpp-grow-topbar">
+            <span class="cpp-label">N°.02</span>
+            <span class="cpp-label">YOU GOT THIS</span>
+            <span class="cpp-label">KEEP GOING</span>
+          </div>
+          <div class="cpp-grow-main">
+            <div class="cpp-grow-head-row">
+              <div class="cpp-grow-headline">GROW<br>THROUGH<br>WHAT YOU GO<br>THROUGH.<span class="cpp-grow-ast">*</span></div>
+              <div class="cpp-grow-right-col">
+                <div class="cpp-copy-sm">EVERY CHALLENGE IS SHAPING YOU INTO SOMEONE STRONGER, BRAVER, AND SMARTER THAN YOU WERE YESTERDAY.</div>
+                <div class="cpp-trust-oval">TRUST THE<br>PROCESS.</div>
+              </div>
+            </div>
+            <div class="cpp-grow-mid">
+              <div class="cpp-progress-bracket">[PROGRESS<br>OVER<br>PERFECTION]</div>
+              <div class="cpp-flower-arch"></div>
+              <div class="cpp-grow-num-col">
+                <div class="cpp-big365">02<br><span class="cpp-of-lbl">OF</span>365</div>
+                <div class="cpp-globe-row">⊕ ♻ ♻</div>
+              </div>
+            </div>
+          </div>
+          <div class="cpp-grow-footer"><span>@anirudhyadav</span><span>MAKE YOUR FUTURE SELF PROUD</span><span>2025</span></div>
+        </div>
+
+        <article class="card" data-type="image" tabindex="-1" aria-hidden="true">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/procreate portrait.webp" alt="" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Procreate</span><p class="card-overlay-title">Portrait</p></div>
+          </div></div>
+        </article>
+
+        <article class="card" data-type="image" tabindex="-1" aria-hidden="true">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/pixelmator-pro.webp" alt="" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Design</span><p class="card-overlay-title">Pixelmator</p></div>
+          </div></div>
+        </article>
+
+        <!-- PORTRAIT POSTER 1 (dupe) -->
+        <div class="card-poster-p cpp-busy" aria-hidden="true">
+          <div class="cpp-topbar">
+            <span class="cpp-label">01 — 02</span>
+            <span class="cpp-caption">Some days are just busy for no reason.</span>
+            <span class="cpp-label">⊕ ✳</span>
+          </div>
+          <div class="cpp-hero">
+            <div class="cpp-busy-word">BUSY</div>
+            <div class="cpp-but-still"><em>but<br>still<br>iconic.</em><span class="cpp-arrow">↗</span></div>
+          </div>
+          <div class="cpp-mid">
+            <div class="cpp-mid-left">
+              <div class="cpp-num24">24<br>/7</div>
+              <div class="cpp-barcode"><span style="height:100%"></span><span style="height:68%"></span><span style="height:88%"></span><span style="height:55%"></span><span style="height:100%"></span><span style="height:78%"></span><span style="height:52%"></span><span style="height:92%"></span><span style="height:70%"></span><span style="height:84%"></span><span style="height:100%"></span><span style="height:60%"></span></div>
+              <div class="cpp-pill-sm">OVERTHINKING CLUB.</div>
+            </div>
+            <div class="cpp-arch-wrap"><div class="cpp-arch"></div></div>
+            <div class="cpp-mid-right">
+              <div class="cpp-focus-v">FOCUS<br>MODE<span class="cpp-focus-ast">*</span></div>
+              <div class="cpp-toggle-row"><span>ON</span><span class="cpp-knob"></span><span style="opacity:0.35">OFF</span></div>
+              <div class="cpp-not-perf">Not<br>perfect,<br>just<br>progress.</div>
+            </div>
+          </div>
+          <div class="cpp-bottom">
+            <div class="cpp-bc"><span class="cpp-doing">DOING<br>MY BEST</span></div>
+            <div class="cpp-bc"><span class="cpp-grow-xs">SOME DAYS<br>ARE FOR<br>GROWING. ↗</span></div>
+            <div class="cpp-bc"><div class="cpp-good-pill">GOOD<br>DAYS<br>AHEAD</div></div>
+          </div>
+          <div class="cpp-footer"><span>@anirudhyadav</span><span>KEEP GOING</span><span>EST. 2025</span></div>
+        </div>
+
+        <article class="card" data-type="image" tabindex="-1" aria-hidden="true">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/pixel-mator pro 3.webp" alt="" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Design</span><p class="card-overlay-title">Pixelmator III</p></div>
+          </div></div>
+        </article>
+
+        <article class="card" data-type="image" tabindex="-1" aria-hidden="true">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/paper-cut effect.png.webp" alt="" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Motion</span><p class="card-overlay-title">Paper Cut</p></div>
+          </div></div>
+        </article>
+
+        <!-- PORTRAIT POSTER 2 (dupe) -->
+        <div class="card-poster-p cpp-grow" aria-hidden="true">
+          <div class="cpp-grow-topbar">
+            <span class="cpp-label">N°.02</span>
+            <span class="cpp-label">YOU GOT THIS</span>
+            <span class="cpp-label">KEEP GOING</span>
+          </div>
+          <div class="cpp-grow-main">
+            <div class="cpp-grow-head-row">
+              <div class="cpp-grow-headline">GROW<br>THROUGH<br>WHAT YOU GO<br>THROUGH.<span class="cpp-grow-ast">*</span></div>
+              <div class="cpp-grow-right-col">
+                <div class="cpp-copy-sm">EVERY CHALLENGE IS SHAPING YOU INTO SOMEONE STRONGER, BRAVER, AND SMARTER THAN YOU WERE YESTERDAY.</div>
+                <div class="cpp-trust-oval">TRUST THE<br>PROCESS.</div>
+              </div>
+            </div>
+            <div class="cpp-grow-mid">
+              <div class="cpp-progress-bracket">[PROGRESS<br>OVER<br>PERFECTION]</div>
+              <div class="cpp-flower-arch"></div>
+              <div class="cpp-grow-num-col">
+                <div class="cpp-big365">02<br><span class="cpp-of-lbl">OF</span>365</div>
+                <div class="cpp-globe-row">⊕ ♻ ♻</div>
+              </div>
+            </div>
+          </div>
+          <div class="cpp-grow-footer"><span>@anirudhyadav</span><span>MAKE YOUR FUTURE SELF PROUD</span><span>2025</span></div>
+        </div>
+
+        <article class="card" data-type="image" tabindex="-1" aria-hidden="true">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/poster on pixel-mator pro.webp" alt="" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Design</span><p class="card-overlay-title">Poster</p></div>
+          </div></div>
+        </article>
+
+        <article class="card" data-type="image" tabindex="-1" aria-hidden="true">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/procreate portrait2.webp" alt="" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Procreate</span><p class="card-overlay-title">Portrait II</p></div>
+          </div></div>
+        </article>
+
+        <!-- PORTRAIT POSTER 1 (dupe) -->
+        <div class="card-poster-p cpp-busy" aria-hidden="true">
+          <div class="cpp-topbar">
+            <span class="cpp-label">01 — 02</span>
+            <span class="cpp-caption">Some days are just busy for no reason.</span>
+            <span class="cpp-label">⊕ ✳</span>
+          </div>
+          <div class="cpp-hero">
+            <div class="cpp-busy-word">BUSY</div>
+            <div class="cpp-but-still"><em>but<br>still<br>iconic.</em><span class="cpp-arrow">↗</span></div>
+          </div>
+          <div class="cpp-mid">
+            <div class="cpp-mid-left">
+              <div class="cpp-num24">24<br>/7</div>
+              <div class="cpp-barcode"><span style="height:100%"></span><span style="height:68%"></span><span style="height:88%"></span><span style="height:55%"></span><span style="height:100%"></span><span style="height:78%"></span><span style="height:52%"></span><span style="height:92%"></span><span style="height:70%"></span><span style="height:84%"></span><span style="height:100%"></span><span style="height:60%"></span></div>
+              <div class="cpp-pill-sm">OVERTHINKING CLUB.</div>
+            </div>
+            <div class="cpp-arch-wrap"><div class="cpp-arch"></div></div>
+            <div class="cpp-mid-right">
+              <div class="cpp-focus-v">FOCUS<br>MODE<span class="cpp-focus-ast">*</span></div>
+              <div class="cpp-toggle-row"><span>ON</span><span class="cpp-knob"></span><span style="opacity:0.35">OFF</span></div>
+              <div class="cpp-not-perf">Not<br>perfect,<br>just<br>progress.</div>
+            </div>
+          </div>
+          <div class="cpp-bottom">
+            <div class="cpp-bc"><span class="cpp-doing">DOING<br>MY BEST</span></div>
+            <div class="cpp-bc"><span class="cpp-grow-xs">SOME DAYS<br>ARE FOR<br>GROWING. ↗</span></div>
+            <div class="cpp-bc"><div class="cpp-good-pill">GOOD<br>DAYS<br>AHEAD</div></div>
+          </div>
+          <div class="cpp-footer"><span>@anirudhyadav</span><span>KEEP GOING</span><span>EST. 2025</span></div>
+        </div>
+
+        <article class="card" data-type="image" tabindex="-1" aria-hidden="true">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/pixel-mator pro -4.webp" alt="" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Design</span><p class="card-overlay-title">Pixelmator IV</p></div>
+          </div></div>
+        </article>
+
+        <article class="card" data-type="image" tabindex="-1" aria-hidden="true">
+          <div class="card-inner"><div class="card-media">
+            <img src="images/work/sdvf.webp" alt="" loading="lazy"/>
+            <div class="card-overlay"><span class="card-overlay-cat">Edit</span><p class="card-overlay-title">SDVF</p></div>
+          </div></div>
+        </article>
+
       </div><!-- /work-track -->
     </div><!-- /work-scroll-wrap -->
   </section>
 
-  <!-- FOOTER CTA -->
-  <div class="footer-cta-wrap" id="footer-cta-wrap">
-    <p class="footer-cta">Let's make<br><span class="cta-grad">something.</span></p>
-    <p class="footer-cta-sub">Open for freelance — hello@anirudhyadav.com</p>
+  <!-- ALERT MARQUEE -->
+  <div class="alert-marquee-wrap" aria-label="Quality notice">
+    <div class="alert-marquee-mid">
+      <div class="alert-marquee-track">
+        <span class="alert-marquee-item">⚠ THE QUALITY IS COMPROMISED IN BELOW REELS BECAUSE STORAGE COSTS ARE HIGH, DAMN AI <span class="alert-sep">✦</span></span>
+        <span class="alert-marquee-item">⚠ THE QUALITY IS COMPROMISED IN BELOW REELS BECAUSE STORAGE COSTS ARE HIGH, DAMN AI <span class="alert-sep">✦</span></span>
+        <span class="alert-marquee-item">⚠ THE QUALITY IS COMPROMISED IN BELOW REELS BECAUSE STORAGE COSTS ARE HIGH, DAMN AI <span class="alert-sep">✦</span></span>
+        <span class="alert-marquee-item">⚠ THE QUALITY IS COMPROMISED IN BELOW REELS BECAUSE STORAGE COSTS ARE HIGH, DAMN AI <span class="alert-sep">✦</span></span>
+      </div>
+    </div>
   </div>
 
-  <!-- TOOLS SECTION -->
-  <section class="standalone-tools">
-    <p class="footer-tools-label">Crafted with</p>
-    <div class="tools-flip-grid">
-      <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front"><img src="https://cdn.simpleicons.org/procreate/4B5DFD" alt="Procreate"><span>Procreate</span></div><div class="flip-card-back"><p class="flip-card-back-text">brain → screen</p><span class="flip-card-back-tag">illustration</span></div></div></div>
-      <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front"><img src="https://cdn.simpleicons.org/finalcutpro/333333" alt="Final Cut Pro"><span>Final Cut Pro</span></div><div class="flip-card-back"><p class="flip-card-back-text">where reels are born</p><span class="flip-card-back-tag">editing</span></div></div></div>
-      <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front"><img src="https://cdn.simpleicons.org/adobefresco/FF0000" alt="Adobe Fresco"><span>Adobe Fresco</span></div><div class="flip-card-back"><p class="flip-card-back-text">the messy one</p><span class="flip-card-back-tag">illustration</span></div></div></div>
-      <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front"><img src="https://cdn.simpleicons.org/davinciresolve/222222" alt="DaVinci Resolve"><span>DaVinci Resolve</span></div><div class="flip-card-back"><p class="flip-card-back-text">4am color grades</p><span class="flip-card-back-tag">color</span></div></div></div>
-      <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front"><img src="https://cdn.simpleicons.org/canva/00C4CC" alt="Canva"><span>Canva</span></div><div class="flip-card-back"><p class="flip-card-back-text">quick & dirty</p><span class="flip-card-back-tag">design</span></div></div></div>
-      <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front"><img src="https://cdn.simpleicons.org/capcut/222222" alt="CapCut"><span>CapCut</span></div><div class="flip-card-back"><p class="flip-card-back-text">viral machine</p><span class="flip-card-back-tag">reels</span></div></div></div>
-      <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front"><img src="https://cdn.simpleicons.org/adobeaftereffects/9999FF" alt="After Effects"><span>After Effects</span></div><div class="flip-card-back"><p class="flip-card-back-text">motion sickness</p><span class="flip-card-back-tag">motion</span></div></div></div>
-      <div class="flip-card"><div class="flip-card-inner"><div class="flip-card-front"><img src="https://cdn.simpleicons.org/adobepremierepro/9999FF" alt="Premiere Pro"><span>Premiere Pro</span></div><div class="flip-card-back"><p class="flip-card-back-text">the workhorse</p><span class="flip-card-back-tag">editing</span></div></div></div>
-    </div>
+  <!-- WORK STRIP 2 — REELS -->
+  <section id="work2" style="padding:0">
+    <div class="work-scroll-wrap" id="work-scroll-wrap2" style="padding-top:0">
+      <div class="work-track" id="work-track2">
+
+        <!-- BASE SET — 12 reels -->
+        <article class="card" data-type="video" data-reel-idx="0" tabindex="0"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/1_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">01</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="1" tabindex="0"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/2_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">02</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="2" tabindex="0"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/3_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">03</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="3" tabindex="0"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/4_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">04</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="4" tabindex="0"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/5_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">05</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="5" tabindex="0"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/6_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">06</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="6" tabindex="0"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/7_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">07</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="7" tabindex="0"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/8_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">08</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="8" tabindex="0"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/9_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">09</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="9" tabindex="0"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/10_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">10</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="10" tabindex="0"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/11_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">11</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="11" tabindex="0"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/12_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">12</p></div></div></div></article>
+
+        <!-- DUPLICATE SET for seamless loop -->
+        <article class="card" data-type="video" data-reel-idx="0" tabindex="-1" aria-hidden="true"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/1_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">01</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="1" tabindex="-1" aria-hidden="true"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/2_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">02</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="2" tabindex="-1" aria-hidden="true"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/3_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">03</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="3" tabindex="-1" aria-hidden="true"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/4_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">04</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="4" tabindex="-1" aria-hidden="true"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/5_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">05</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="5" tabindex="-1" aria-hidden="true"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/6_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">06</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="6" tabindex="-1" aria-hidden="true"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/7_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">07</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="7" tabindex="-1" aria-hidden="true"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/8_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">08</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="8" tabindex="-1" aria-hidden="true"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/9_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">09</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="9" tabindex="-1" aria-hidden="true"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/10_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">10</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="10" tabindex="-1" aria-hidden="true"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/11_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">11</p></div></div></div></article>
+        <article class="card" data-type="video" data-reel-idx="11" tabindex="-1" aria-hidden="true"><div class="card-inner"><div class="card-media" style="aspect-ratio:3/4"><video src="reels/12_web.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"><span class="card-overlay-cat">Reel</span><p class="card-overlay-title">12</p></div></div></div></article>
+
+      </div><!-- /work-track2 -->
+    </div><!-- /work-scroll-wrap2 -->
   </section>
 
-  <!-- FOOTER -->
-  <footer id="footer">
-    <div class="footer-top">
-      <span class="footer-name">Anirudh Yadav</span>
-      <span class="footer-since">Freelancing since 2020</span>
+  <!-- FOOTER CTA -->
+  <!-- INVOICE FOOTER -->
+  <section class="invoice-section" id="footer-cta-wrap">
+
+    <div class="invoice-cta">
+      <p class="invoice-headline">Hit me<br><em>up.</em></p>
+      <div class="invoice-contact">
+        <a href="mailto:anirudhoninternet@gmail.com" class="invoice-email">anirudhoninternet@gmail.com</a>
+        <a href="tel:+918447891191" class="invoice-email" style="font-size:clamp(0.75rem,1.4vw,1rem);opacity:0.7">+91 84478 91191</a>
+        <div class="invoice-handles">
+          <a href="https://www.behance.net/anirudhyadav17" target="_blank" rel="noopener" class="invoice-handle">Behance ↗</a>
+          <a href="https://drive.google.com/drive/folders/1YdQgixP_n1Vm7_hQZJqbY196CBwx4NQ_?usp=share_link" target="_blank" rel="noopener" class="invoice-handle">Portfolio Drive ↗</a>
+        </div>
+      </div>
     </div>
-    <div class="footer-contact">
-      <a href="mailto:hello@anirudhyadav.com" class="footer-link">hello@anirudhyadav.com</a>
-      <a href="https://instagram.com/anirudhyadav" target="_blank" rel="noopener" class="footer-link">@anirudhyadav</a>
-      <a href="https://twitter.com/anirudhyadav" target="_blank" rel="noopener" class="footer-link">Twitter / X</a>
+
+    <div class="invoice-wrap">
+      <div class="invoice-header">
+        <span class="invoice-title">Creative Invoice</span>
+        <span class="invoice-num">EST. 2020 &mdash; #001</span>
+      </div>
+      <div class="invoice-col-heads">
+        <span>Tool</span><span>Category</span><span>Notes</span>
+      </div>
+
+      <div class="invoice-row">
+        <span class="invoice-tool"><span class="tool-badge" style="background:#4B5DFD">Pr</span>Procreate</span>
+        <span class="invoice-cat">Illustration</span>
+        <span class="invoice-note">brain → screen</span>
+      </div>
+      <div class="invoice-row">
+        <span class="invoice-tool"><span class="tool-badge" style="background:#1c1c1e">FC</span>Final Cut Pro</span>
+        <span class="invoice-cat">Editing</span>
+        <span class="invoice-note">where reels are born</span>
+      </div>
+      <div class="invoice-row">
+        <span class="invoice-tool"><span class="tool-badge" style="background:#FF3A00">AF</span>Adobe Fresco</span>
+        <span class="invoice-cat">Illustration</span>
+        <span class="invoice-note">the messy one</span>
+      </div>
+      <div class="invoice-row">
+        <span class="invoice-tool"><span class="tool-badge" style="background:#4A9DE9">Px</span>Pixelmator Pro</span>
+        <span class="invoice-cat">Design</span>
+        <span class="invoice-note">pixels, perfected</span>
+      </div>
+      <div class="invoice-row">
+        <span class="invoice-tool"><span class="tool-badge" style="background:#31A8FF">Lr</span>Lightroom</span>
+        <span class="invoice-cat">Photo</span>
+        <span class="invoice-note">vibes in a slider</span>
+      </div>
+      <div class="invoice-row">
+        <span class="invoice-tool"><span class="tool-badge" style="background:#00C4CC">Cv</span>Canva</span>
+        <span class="invoice-cat">Design</span>
+        <span class="invoice-note">quick &amp; dirty</span>
+      </div>
+      <div class="invoice-row">
+        <span class="invoice-tool"><span class="tool-badge" style="background:#1D1D1D">DJI</span>DJI Mimo</span>
+        <span class="invoice-cat">Video</span>
+        <span class="invoice-note">cinematic mode, always</span>
+      </div>
+
+      <div class="invoice-total">
+        <span class="invoice-total-label">Full creative stack.</span>
+        <span class="invoice-total-val">Ready to deploy.</span>
+      </div>
     </div>
-    <div class="footer-bottom">
-      <span class="footer-copy">© 2025 — Freelancing Pro Max</span>
-      <button class="footer-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to top ↑</button>
-    </div>
+
+  </section>
+
+  <!-- FOOTER BAR -->
+  <footer id="footer" class="invoice-footer">
+    <span class="footer-copy">© 2025 — Freelancing Pro Max</span>
+    <button class="footer-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to top ↑</button>
   </footer>
   <div class="footer-bar" aria-hidden="true"></div>
   </div><!-- /#scroll-wrap -->
@@ -1430,6 +2645,44 @@
       <img id="pixel-avatar" src="images/pixel-avatar.png" alt="Pixel art avatar" draggable="false" />
     </div>
     <div class="pa-shadow"></div>
+  </div>
+
+  <!-- REEL LIGHTBOX -->
+  <div id="reel-lightbox" role="dialog" aria-modal="true">
+    <button id="reel-lb-close" aria-label="Close">✕ close</button>
+    <button class="lb-nav" id="reel-lb-prev" aria-label="Previous">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <video id="reel-lb-video" playsinline loop></video>
+    <button class="lb-nav" id="reel-lb-next" aria-label="Next">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+    </button>
+    <div id="reel-lb-counter"></div>
+  </div>
+
+  <!-- WORK STRIP 1 VIDEO LIGHTBOX -->
+  <div id="work-video-lightbox" role="dialog" aria-modal="true">
+    <video id="work-lb-video" playsinline loop></video>
+    <button id="work-vid-lb-close" aria-label="Close">✕ close</button>
+  </div>
+
+  <!-- POSTER OVERLAY -->
+  <div id="poster-overlay" role="dialog" aria-modal="true">
+    <div id="poster-overlay-inner"></div>
+    <button id="poster-overlay-close" aria-label="Close">✕ close</button>
+  </div>
+
+  <!-- WORK STRIP 1 LIGHTBOX -->
+  <div id="work-lightbox" role="dialog" aria-modal="true">
+    <div id="work-lb-bg"></div>
+    <button id="work-lb-close" aria-label="Close">✕ close</button>
+    <button class="lb-nav" id="work-lb-prev" aria-label="Previous">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <img id="work-lb-img" src="" alt="Full image">
+    <button class="lb-nav" id="work-lb-next" aria-label="Next">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+    </button>
   </div>
 
   <!-- THUMBNAIL LIGHTBOX -->
@@ -1534,7 +2787,7 @@
         cursor.style.transform = `translate(${e.clientX - cursor.offsetWidth/2}px, ${e.clientY - cursor.offsetHeight/2}px)`;
       }, { passive: true });
       document.querySelectorAll('.card').forEach(card => {
-        card.addEventListener('mouseenter', () => { cursor.classList.add('big'); cursorText.textContent = card.dataset.type === 'video' ? 'PLAY' : 'VIEW'; });
+        card.addEventListener('mouseenter', () => { cursor.classList.add('big'); cursorText.textContent = (card.dataset.type === 'video' && !card.hasAttribute('data-work-view')) ? 'PLAY' : 'VIEW'; });
         card.addEventListener('mouseleave', () => { cursor.classList.remove('big'); cursorText.textContent = ''; });
       });
     }
@@ -1542,7 +2795,29 @@
     document.querySelectorAll('.card[data-type="video"]').forEach(card => {
       const v = card.querySelector('video');
       if (!v) return;
+      const isWorkView = card.hasAttribute('data-work-view');
       const isFeatured = card.classList.contains('card--featured');
+
+      if (isWorkView) {
+        // Strip 1 featured video — autoplay muted via intersection, click opens lightbox
+        const obs = new IntersectionObserver(entries => {
+          entries.forEach(e => { if (e.isIntersecting) v.play().catch(() => {}); else { v.pause(); v.currentTime = 0; } });
+        }, { threshold: 0.3 });
+        obs.observe(card);
+        card.addEventListener('click', () => {
+          const lb = document.getElementById('work-video-lightbox');
+          const lbv = document.getElementById('work-lb-video');
+          if (lb && lbv) {
+            lbv.src = v.getAttribute('src');
+            lbv.muted = false;
+            lbv.play().catch(() => { lbv.muted = true; lbv.play().catch(() => {}); });
+            lb.classList.add('open');
+            document.body.style.overflow = 'hidden';
+          }
+        });
+        return;
+      }
+
       if (isFine) {
         card.addEventListener('mouseenter', () => { v.play().catch(() => {}); if (isFeatured) card.classList.add('is-playing'); });
         card.addEventListener('mouseleave', () => { v.pause(); v.currentTime = 0; if (isFeatured) card.classList.remove('is-playing'); });
@@ -1589,8 +2864,33 @@
       return tl;
     }
 
+    // Fallback: if loader is still visible after 4s, show the stuck message
+    setTimeout(() => {
+      const loader = document.getElementById('loader');
+      const msg    = document.getElementById('loader-stuck-msg');
+      if (loader && loader.style.display !== 'none' && msg) msg.classList.add('visible');
+    }, 4000);
+
     window.addEventListener('load', () => {
-      if (typeof gsap === 'undefined') return;
+      // If GSAP failed to load, do a plain CSS exit so the loader never freezes
+      if (typeof gsap === 'undefined') {
+        const loader = document.getElementById('loader');
+        if (loader) {
+          loader.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+          loader.style.opacity = '0';
+          loader.style.transform = 'translateY(-100%)';
+          setTimeout(() => {
+            loader.style.display = 'none';
+            document.documentElement.style.overflow = '';
+            const nav = document.querySelector('nav');
+            if (nav) nav.style.opacity = '1';
+            const cornerWrap = document.getElementById('pixel-avatar-wrap');
+            if (cornerWrap) cornerWrap.style.opacity = '1';
+          }, 500);
+        }
+        window._gsapReady = true;
+        return;
+      }
       gsap.registerPlugin(ScrollTrigger);
 
       const cornerWrap = document.getElementById('pixel-avatar-wrap');
@@ -1865,7 +3165,7 @@
         const dir = +(strip.dataset.dir || 1); /* 1=left, -1=right */
         let offset = 0, momentum = 0, dragging = false;
         let dragStartX=0, offsetAtDrag=0, prevX=0, prevT=0, dragVel=0;
-        const SPEED = 0.614;
+        const SPEED = 1.38;
 
         function half() { return track.scrollWidth / 2; }
         function norm(o) { const h=half(); return ((o%h)+h)%h; }
@@ -1892,7 +3192,7 @@
         window.addEventListener('mousemove', e=>{ if(dragging) moveDrag(e.clientX); });
         window.addEventListener('mouseup', endDrag);
         strip.addEventListener('touchstart', e=>startDrag(e.touches[0].clientX), {passive:true});
-        strip.addEventListener('touchmove',  e=>{ if(dragging) moveDrag(e.touches[0].clientX); }, {passive:true});
+        strip.addEventListener('touchmove',  e=>{ if(dragging){ e.preventDefault(); moveDrag(e.touches[0].clientX); } }, {passive:false});
         strip.addEventListener('touchend',   endDrag, {passive:true});
         strip.addEventListener('wheel', e=>{
           const ax=Math.abs(e.deltaX), ay=Math.abs(e.deltaY);
@@ -1936,8 +3236,9 @@
         const gc = byIdx[lbIdx]?.style.getPropertyValue('--gc') || '180,140,200';
         lb.style.setProperty('--lb-gc', gc);
         lb.classList.add('open');
+        document.body.style.overflow = 'hidden';
       }
-      function closeLb() { lb.classList.remove('open'); lbImg.src=''; }
+      function closeLb() { lb.classList.remove('open'); lbImg.src=''; document.body.style.overflow = ''; }
       function nav(dir) { openLb(lbIdx+dir); }
 
       allCards.forEach(card => {
@@ -2205,30 +3506,31 @@
     })();
 
     // ═══════════════════════════════════════════════════════
-    //  WORK HORIZONTAL DRAG SCROLL
+    //  WORK STRIP — auto-scroll + drag + scroll lock
     // ═══════════════════════════════════════════════════════
     (function initWorkScroll() {
       const wrap  = document.getElementById('work-scroll-wrap');
       const track = document.getElementById('work-track');
       if (!wrap || !track) return;
 
+      const SPEED = 1.6; // auto-scroll px/frame
       let offset = 0, momentum = 0, dragging = false;
       let dragStartX = 0, offsetAtDrag = 0, prevX = 0, prevT = 0, dragVel = 0;
       let didDrag = false;
 
-      const maxOffset = () => Math.max(0, track.scrollWidth - wrap.clientWidth);
-
-      function clamp(o) { return Math.max(0, Math.min(maxOffset(), o)); }
+      function half() { return track.scrollWidth / 2; }
+      function norm(o) { const h = half(); return ((o % h) + h) % h; }
 
       function startDrag(x) {
         dragging = true; didDrag = false; momentum = 0;
-        dragStartX = x; offsetAtDrag = offset; prevX = x; prevT = performance.now(); dragVel = 0;
+        dragStartX = x; offsetAtDrag = offset;
+        prevX = x; prevT = performance.now(); dragVel = 0;
       }
       function moveDrag(x) {
         if (!dragging) return;
         const delta = dragStartX - x;
         if (Math.abs(delta) > 6) didDrag = true;
-        offset = clamp(offsetAtDrag + delta);
+        offset = norm(offsetAtDrag + delta);
         const now = performance.now(), dt = Math.max(now - prevT, 1);
         dragVel = (prevX - x) / dt;
         prevX = x; prevT = now;
@@ -2236,33 +3538,304 @@
       function endDrag() {
         if (!dragging) return;
         dragging = false;
-        momentum = dragVel * 14;
+        momentum = dragVel * 13;
       }
 
-      wrap.addEventListener('mousedown',  e => { startDrag(e.clientX); e.preventDefault(); });
+      wrap.addEventListener('mousedown', e => { startDrag(e.clientX); e.preventDefault(); });
       window.addEventListener('mousemove', e => { if (dragging) moveDrag(e.clientX); });
-      window.addEventListener('mouseup',   endDrag);
-      wrap.addEventListener('touchstart',  e => startDrag(e.touches[0].clientX), { passive: true });
-      wrap.addEventListener('touchmove',   e => { if (dragging) moveDrag(e.touches[0].clientX); }, { passive: true });
-      wrap.addEventListener('touchend',    endDrag, { passive: true });
+      window.addEventListener('mouseup', endDrag);
+
+      // touch — lock vertical scroll while dragging
+      wrap.addEventListener('touchstart', e => startDrag(e.touches[0].clientX), { passive: true });
+      wrap.addEventListener('touchmove', e => {
+        if (dragging) { e.preventDefault(); moveDrag(e.touches[0].clientX); }
+      }, { passive: false });
+      wrap.addEventListener('touchend', endDrag, { passive: true });
+
       wrap.addEventListener('wheel', e => {
         const ax = Math.abs(e.deltaX), ay = Math.abs(e.deltaY);
-        if (ax > ay || ax > 6) { e.preventDefault(); offset = clamp(offset + e.deltaX * 0.6); momentum = e.deltaX * 0.4; }
+        if (ax > ay || ax > 6) { e.preventDefault(); momentum = e.deltaX * 0.5; offset = norm(offset + e.deltaX * 0.35); }
       }, { passive: false });
 
-      // block card clicks if drag happened
       wrap.addEventListener('click', e => { if (didDrag) { e.stopPropagation(); e.preventDefault(); didDrag = false; } }, true);
 
       (function loop() {
         if (!dragging) {
-          if (Math.abs(momentum) > 0.15) { offset = clamp(offset + momentum); momentum *= 0.92; }
-          else momentum = 0;
+          if (Math.abs(momentum) > 0.08) { offset = norm(offset + momentum); momentum *= 0.93; }
+          else { momentum = 0; offset = norm(offset + SPEED); }
         }
-        track.style.transform = `translateX(${-offset.toFixed(2)}px)`;
+        track.style.transform = `translateX(${-offset}px)`;
         requestAnimationFrame(loop);
       })();
     })();
 
+
+    // ═══════════════════════════════════════════════════════
+    //  WORK STRIP 1 — image lightbox on click
+    // ═══════════════════════════════════════════════════════
+    (function initWorkLightbox() {
+      const track   = document.getElementById('work-track');
+      const lb      = document.getElementById('work-lightbox');
+      const lbImg   = document.getElementById('work-lb-img');
+      const lbBg    = document.getElementById('work-lb-bg');
+      const lbClose = document.getElementById('work-lb-close');
+      const lbPrev  = document.getElementById('work-lb-prev');
+      const lbNext  = document.getElementById('work-lb-next');
+      if (!track || !lb) return;
+
+      // Collect unique srcs in order from the track
+      const seen = new Set(), srcs = [];
+      track.querySelectorAll('.card[data-type="image"] img').forEach(img => {
+        const s = img.getAttribute('src');
+        if (s && !seen.has(s)) { seen.add(s); srcs.push(s); }
+      });
+      const TOTAL = srcs.length;
+      let curIdx = 0, wlWheelLock = false;
+
+      function openWl(idx) {
+        curIdx = ((idx % TOTAL) + TOTAL) % TOTAL;
+        const src = srcs[curIdx];
+        lbImg.src = src;
+        if (lbBg) lbBg.style.backgroundImage = `url(${src})`;
+        lb.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeWl() { lb.classList.remove('open'); lbImg.src = ''; document.body.style.overflow = ''; }
+      function navWl(dir) { openWl(curIdx + dir); }
+
+      track.querySelectorAll('.card[data-type="image"]').forEach(card => {
+        card.addEventListener('click', () => {
+          const src = card.querySelector('img')?.getAttribute('src');
+          const idx = srcs.indexOf(src);
+          openWl(idx >= 0 ? idx : 0);
+        });
+      });
+
+      lb.addEventListener('click', e => { if (e.target === lb) closeWl(); });
+      lbClose?.addEventListener('click', closeWl);
+      lbPrev?.addEventListener('click', () => navWl(-1));
+      lbNext?.addEventListener('click', () => navWl(1));
+
+      document.addEventListener('keydown', e => {
+        if (!lb.classList.contains('open')) return;
+        if (e.key === 'Escape')     closeWl();
+        if (e.key === 'ArrowRight') navWl(1);
+        if (e.key === 'ArrowLeft')  navWl(-1);
+      });
+
+      let wlTx = 0;
+      lbImg.addEventListener('touchstart', e => { wlTx = e.touches[0].clientX; }, { passive: true });
+      lbImg.addEventListener('touchend',   e => {
+        const dx = wlTx - e.changedTouches[0].clientX;
+        if (Math.abs(dx) > 45) navWl(dx > 0 ? 1 : -1);
+      }, { passive: true });
+
+      lb.addEventListener('wheel', e => {
+        e.preventDefault();
+        if (wlWheelLock) return;
+        const ax = Math.abs(e.deltaX), ay = Math.abs(e.deltaY);
+        if (ax > ay && ax > 20) { navWl(e.deltaX > 0 ? 1 : -1); wlWheelLock = true; setTimeout(() => wlWheelLock = false, 500); }
+      }, { passive: false });
+    })();
+
+    // ── WORK VIDEO LIGHTBOX close ──
+    (() => {
+      const lb = document.getElementById('work-video-lightbox');
+      const lbv = document.getElementById('work-lb-video');
+      const cl = document.getElementById('work-vid-lb-close');
+      if (!lb) return;
+      function close() { lb.classList.remove('open'); lbv.pause(); lbv.src = ''; document.body.style.overflow = ''; }
+      cl?.addEventListener('click', close);
+      lb.addEventListener('click', e => { if (e.target === lb) close(); });
+      document.addEventListener('keydown', e => { if (lb.classList.contains('open') && e.key === 'Escape') close(); });
+    })();
+
+    // ── POSTER CARDS OVERLAY ──
+    (() => {
+      const overlay = document.getElementById('poster-overlay');
+      const inner   = document.getElementById('poster-overlay-inner');
+      const closeBtn = document.getElementById('poster-overlay-close');
+      if (!overlay) return;
+      function closeOverlay() { overlay.classList.remove('open'); inner.innerHTML = ''; document.body.style.overflow = ''; }
+      closeBtn?.addEventListener('click', closeOverlay);
+      overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });
+      document.addEventListener('keydown', e => { if (overlay.classList.contains('open') && e.key === 'Escape') closeOverlay(); });
+
+      document.querySelectorAll('#work-track .card-poster-p').forEach(poster => {
+        poster.style.pointerEvents = 'auto';
+        poster.removeAttribute('aria-hidden');
+        poster.setAttribute('tabindex', '0');
+        poster.addEventListener('click', () => {
+          const clone = poster.cloneNode(true);
+          clone.style.cssText = 'width:100%;transform:none;transition:none;cursor:none;';
+          inner.innerHTML = '';
+          inner.appendChild(clone);
+          overlay.classList.add('open');
+          document.body.style.overflow = 'hidden';
+        });
+      });
+    })();
+
+    // ═══════════════════════════════════════════════════════
+    //  REEL CARDS — muted autoplay in strip + lightbox on click
+    // ═══════════════════════════════════════════════════════
+    (function initReelCards() {
+      const wrap2 = document.getElementById('work-scroll-wrap2');
+      if (!wrap2) return;
+
+      const SRCS = [
+        'reels/1_web.mp4','reels/2_web.mp4','reels/3_web.mp4','reels/4_web.mp4',
+        'reels/5_web.mp4','reels/6_web.mp4','reels/7_web.mp4','reels/8_web.mp4',
+        'reels/9_web.mp4','reels/10_web.mp4','reels/11_web.mp4','reels/12_web.mp4'
+      ];
+      const TOTAL = SRCS.length;
+
+      // muted autoplay in strip via intersection
+      const stripObs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          const v = e.target.querySelector('video');
+          if (!v) return;
+          if (e.isIntersecting) v.play().catch(() => {});
+          else v.pause();
+        });
+      }, { threshold: 0.25 });
+      wrap2.querySelectorAll('.card[data-type="video"]').forEach(c => stripObs.observe(c));
+
+      // click opens lightbox — registered BEFORE the window load handler
+      // so stopImmediatePropagation blocks the generic card video toggle
+      wrap2.querySelectorAll('.card[data-type="video"]').forEach(card => {
+        card.addEventListener('click', e => {
+          e.stopImmediatePropagation();
+          const idx = parseInt(card.dataset.reelIdx ?? '0');
+          openReelLb(idx);
+        });
+      });
+
+      // ── LIGHTBOX ──
+      const lb      = document.getElementById('reel-lightbox');
+      const lbVid   = document.getElementById('reel-lb-video');
+      const lbClose = document.getElementById('reel-lb-close');
+      const lbPrev  = document.getElementById('reel-lb-prev');
+      const lbNext  = document.getElementById('reel-lb-next');
+      const lbCount = document.getElementById('reel-lb-counter');
+      if (!lb || !lbVid) return;
+
+      let curIdx = 0;
+
+      function openReelLb(idx) {
+        curIdx = ((idx % TOTAL) + TOTAL) % TOTAL;
+        lbVid.src = SRCS[curIdx];
+        lbVid.muted = false;
+        lbVid.play().catch(() => { lbVid.muted = true; lbVid.play().catch(() => {}); });
+        if (lbCount) lbCount.textContent = String(curIdx + 1).padStart(2,'0') + ' / ' + TOTAL;
+        lb.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+      window.openReelLb = openReelLb; // expose for card click handlers
+
+      function closeReelLb() {
+        lb.classList.remove('open');
+        lbVid.pause(); lbVid.src = '';
+        document.body.style.overflow = '';
+      }
+      function navReel(dir) { openReelLb(curIdx + dir); }
+
+      lbClose?.addEventListener('click', closeReelLb);
+      lb.addEventListener('click', e => { if (e.target === lb) closeReelLb(); });
+      lbPrev?.addEventListener('click', () => navReel(-1));
+      lbNext?.addEventListener('click', () => navReel(1));
+
+      document.addEventListener('keydown', e => {
+        if (!lb.classList.contains('open')) return;
+        if (e.key === 'Escape')     closeReelLb();
+        if (e.key === 'ArrowRight') navReel(1);
+        if (e.key === 'ArrowLeft')  navReel(-1);
+      });
+
+      // swipe (mobile) — whole lightbox
+      let swipeTx = 0;
+      lb.addEventListener('touchstart', e => { swipeTx = e.touches[0].clientX; }, { passive: true });
+      lb.addEventListener('touchend',   e => {
+        const dx = swipeTx - e.changedTouches[0].clientX;
+        if (Math.abs(dx) > 45) navReel(dx > 0 ? 1 : -1);
+      }, { passive: true });
+
+      // 2-finger trackpad horizontal swipe
+      let wheelLock = false;
+      lb.addEventListener('wheel', e => {
+        e.preventDefault();
+        if (wheelLock) return;
+        const ax = Math.abs(e.deltaX), ay = Math.abs(e.deltaY);
+        if (ax > ay && ax > 20) {
+          navReel(e.deltaX > 0 ? 1 : -1);
+          wheelLock = true;
+          setTimeout(() => wheelLock = false, 500);
+        }
+      }, { passive: false });
+    })();
+
+    // ═══════════════════════════════════════════════════════
+    //  WORK STRIP 2 — REELS, reverse direction
+    // ═══════════════════════════════════════════════════════
+    (function initWorkScroll2() {
+      const wrap  = document.getElementById('work-scroll-wrap2');
+      const track = document.getElementById('work-track2');
+      if (!wrap || !track) return;
+
+      const SPEED = 1.2; // auto-scroll px/frame, reverse
+      let offset = 0, momentum = 0, dragging = false;
+      let dragStartX = 0, offsetAtDrag = 0, prevX = 0, prevT = 0, dragVel = 0;
+      let didDrag = false;
+
+      function half() { return track.scrollWidth / 2; }
+      function norm(o) { const h = half(); return ((o % h) + h) % h; }
+
+      function startDrag(x) {
+        dragging = true; didDrag = false; momentum = 0;
+        dragStartX = x; offsetAtDrag = offset;
+        prevX = x; prevT = performance.now(); dragVel = 0;
+      }
+      function moveDrag(x) {
+        if (!dragging) return;
+        const delta = dragStartX - x;
+        if (Math.abs(delta) > 6) didDrag = true;
+        offset = norm(offsetAtDrag + delta);
+        const now = performance.now(), dt = Math.max(now - prevT, 1);
+        dragVel = (prevX - x) / dt;
+        prevX = x; prevT = now;
+      }
+      function endDrag() {
+        if (!dragging) return;
+        dragging = false;
+        momentum = dragVel * 13;
+      }
+
+      wrap.addEventListener('mousedown', e => { startDrag(e.clientX); e.preventDefault(); });
+      window.addEventListener('mousemove', e => { if (dragging) moveDrag(e.clientX); });
+      window.addEventListener('mouseup', endDrag);
+      wrap.addEventListener('touchstart', e => startDrag(e.touches[0].clientX), { passive: true });
+      wrap.addEventListener('touchmove', e => {
+        if (dragging) { e.preventDefault(); moveDrag(e.touches[0].clientX); }
+      }, { passive: false });
+      wrap.addEventListener('touchend', endDrag, { passive: true });
+      wrap.addEventListener('wheel', e => {
+        const ax = Math.abs(e.deltaX), ay = Math.abs(e.deltaY);
+        if (ax > ay || ax > 6) { e.preventDefault(); momentum = e.deltaX * 0.5; offset = norm(offset + e.deltaX * 0.35); }
+      }, { passive: false });
+      wrap.addEventListener('click', e => { if (didDrag) { e.stopPropagation(); e.preventDefault(); didDrag = false; } }, true);
+
+      // start at half so reverse scroll shows content immediately
+      offset = half();
+
+      (function loop() {
+        if (!dragging) {
+          if (Math.abs(momentum) > 0.08) { offset = norm(offset + momentum); momentum *= 0.93; }
+          else { momentum = 0; offset = norm(offset - SPEED); } // negative = reverse
+        }
+        track.style.transform = `translateX(${-offset}px)`;
+        requestAnimationFrame(loop);
+      })();
+    })();
 
     // ═══════════════════════════════════════════════════════
     //  PULL-TO-REFRESH EASTER EGG — overscroll at top
